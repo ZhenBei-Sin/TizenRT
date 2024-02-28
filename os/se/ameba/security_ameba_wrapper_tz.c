@@ -63,6 +63,20 @@ int se_ameba_hal_init(hal_init_param *params)
 	factory_struc input_data;
 	ns_passin_struc ns_passin;
 
+#ifdef CONFIG_AMEBASMART_TRUSTZONE
+	extern int ameba_secure_watchdog_refresh(void);
+	void *timerHandle = NULL;
+
+	ameba_secure_watchdog_init();
+	if(true == osif_timer_create(&timerHandle,"WDG3_Timer",(uint32_t)NULL, 3000, TRUE, ameba_secure_watchdog_refresh)) {
+		osif_timer_start(&timerHandle);
+	} else {
+		sedbg("Watchdog timer create error\n");
+	}
+#endif
+	sedbg("Start ameba_hal_get_status\n"); //need to remove as for test the sample data fault
+	ameba_hal_get_status();
+
 	/* Assign Pass in function and buff */
 	ns_buf = (uint8_t *)kmm_malloc(NS_BUF_LEN);
 	if (ns_buf == NULL) {

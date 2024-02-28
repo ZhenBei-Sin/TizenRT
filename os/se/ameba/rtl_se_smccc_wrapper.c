@@ -406,4 +406,18 @@ int ameba_ftl_load_from_storage(void *pdata, uint16_t offset, uint16_t size)
 	return ret;
 }
 
+/* Secure WatchDog CA32 WDG3 */
+int ameba_secure_watchdog_init(void)
+{
+	int ret = 0;
+	ret = invoke_securetest(0x82000043, 0, 0, 0, 0);
+	return ret;
+}
+
+int ameba_secure_watchdog_refresh(void)
+{
+	int ret = 0;
+	ret = invoke_securetest(0x82000044, 0, 0, 0, 0);
+	return ret;
+}
 

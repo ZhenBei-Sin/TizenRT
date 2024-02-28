@@ -86,8 +86,13 @@ static reboot_reason_code_t up_reboot_reason_get_hw_value(void)
 		}
 
 		/* KM4 or KM0 WDT reset */
-		else if ((boot_reason & AON_BIT_RSTF_WDG4) || (boot_reason & AON_BIT_RSTF_WDG3) || (boot_reason & AON_BIT_RSTF_WDG2) || (boot_reason & AON_BIT_RSTF_WDG1) || (boot_reason & AON_BIT_RSTF_IWDG) ) {
+		else if ((boot_reason & AON_BIT_RSTF_WDG4) || (boot_reason & AON_BIT_RSTF_WDG2) || (boot_reason & AON_BIT_RSTF_IWDG) ) {
 			return REBOOT_SYSTEM_WATCHDOG;
+		}
+
+		/* KM4 or CA32 Secure WDG reset */
+		else if ((boot_reason & AON_BIT_RSTF_WDG1) || (boot_reason & AON_BIT_RSTF_WDG3)) {
+			return REBOOT_SYSTEM_TZWD_RESET;
 		}
 
 		/* KM4 deep sleep handled by KM0 (KM4 sleep + KM0 tickless, KM4 deep sleep + KM0 deep sleep AON) */
