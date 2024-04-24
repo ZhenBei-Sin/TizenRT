@@ -102,6 +102,9 @@ config AMEBASMART_SPI1_CS
 endif
 endif
 
+config AMEBASMART_USBHOST
+	bool "AMEBASMART_USBHOST"
+	default n
 
 config AMEBASMART_MIPI
 	bool "AMEBASMART_MIPI"

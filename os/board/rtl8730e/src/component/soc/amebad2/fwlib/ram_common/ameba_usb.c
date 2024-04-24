@@ -16,8 +16,8 @@
 /* Includes ------------------------------------------------------------------*/
 
 #include "ameba_soc.h"
+#include "ameba_usb.h"
 
-static const char *TAG = "USB";
 /* Private defines -----------------------------------------------------------*/
 
 /* Private types -------------------------------------------------------------*/
@@ -27,6 +27,9 @@ static const char *TAG = "USB";
 /* Private function prototypes -----------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
+
+USB_DATA_SECTION
+static const char *TAG = "USB";
 
 USB_DATA_SECTION
 static const usb_cal_data_t usb_cut_a_cal_data[] = {
@@ -147,7 +150,7 @@ u8 usb_chip_init(void)
 		/* 1ms timeout expected, 10ms for safe */
 		DelayUs(10);
 		if (++count > 1000U) {
-			RTK_LOGE(TAG, "USB_Init timeout\n");
+			RTK_LOGE(TAG, "USB chip init timeout\n");
 			return HAL_TIMEOUT;
 		}
 	} while (!(HAL_READ32(USB_OTG_REG_BASE, USB_ADDON_REG_CTRL) & USB_ADDON_REG_CTRL_BIT_UPLL_CKRDY));

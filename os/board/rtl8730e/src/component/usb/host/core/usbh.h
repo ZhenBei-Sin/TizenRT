@@ -218,7 +218,7 @@ u8 usbh_reactivate_pipe(usb_host_t *host, u8 pipe_num);
 /* Interface operations */
 u8 usbh_get_interface(usb_host_t *host, u8 class_code, u8 sub_class_code, u8 protocol); /* 0xFF means interface not found */
 u8 usbh_set_interface(usb_host_t *host, u8 if_num);
-usbh_if_desc_t *usbh_get_interface_descriptor(usb_host_t *host, u8 if_num);
+usbh_if_desc_t *usbh_get_interface_descriptor(usb_host_t *host, u8 if_num, u8 alt_num);
 
 
 /* Get raw configuration descriptor data */

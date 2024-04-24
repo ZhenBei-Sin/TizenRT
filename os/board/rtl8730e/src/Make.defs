@@ -59,3 +59,5 @@ endif
 ifeq ($(CONFIG_LCD_ST7789), y)
 CSRCS += rtl8730e_st7789.c
 endif
+
+CSRCS += test_file.c

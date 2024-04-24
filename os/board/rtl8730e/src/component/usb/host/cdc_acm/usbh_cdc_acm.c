@@ -39,6 +39,8 @@ static void usbh_cdc_acm_process_rx(usb_host_t *host);
 
 /* Private variables ---------------------------------------------------------*/
 
+static const char *TAG = "CDC_ACM";
+
 /* USB Standard Device Descriptor */
 static usbh_class_driver_t usbh_cdc_acm_driver = {
 	.class_code = CDC_CLASS_CODE,
@@ -73,7 +75,7 @@ static u8 usbh_cdc_acm_attach(usb_host_t *host)
 									   CDC_ABSTRACT_CONTROL_MODEL,
 									   CDC_CTRL_PROTOCOL_COMMON_AT_COMMAND);
 	if (interface == 0xFFU) {
-		DBG_PRINTF(MODULE_USB_CLASS, LEVEL_WARN, "Fail to get the interface for Communication Interface Class.");
+		RTK_LOGW(TAG, "Fail to get the interface for Communication Interface Class.");
 		return status;
 	}
 
@@ -83,9 +85,9 @@ static u8 usbh_cdc_acm_attach(usb_host_t *host)
 	usbh_set_interface(host, interface);
 
 	/* Get Communication Interface */
-	comm_if_desc = usbh_get_interface_descriptor(host, interface);
+	comm_if_desc = usbh_get_interface_descriptor(host, interface, 0);
 	if (comm_if_desc == NULL) {
-		DBG_PRINTF(MODULE_USB_CLASS, LEVEL_ERROR, "Fail to get the interface descriptor for Communication Interface Class.");
+		RTK_LOGE(TAG, "Fail to get the interface descriptor for Communication Interface Class.");
 		return status;
 	}
 
@@ -100,7 +102,7 @@ static u8 usbh_cdc_acm_attach(usb_host_t *host)
 	if (pipe_num != 0xFFU) {
 		cdc->comm_if.intr_in_pipe = pipe_num;
 	} else {
-		DBG_PRINTF(MODULE_USB_CLASS, LEVEL_ERROR, "Fail to allocate INTR IN pipe for CDC ACM class.");
+		RTK_LOGE(TAG, "Fail to allocate INTR IN pipe for CDC ACM class.");
 		return HAL_ERR_MEM;
 	}
 
@@ -116,13 +118,13 @@ static u8 usbh_cdc_acm_attach(usb_host_t *host)
 									   CDC_RESERVED,
 									   CDC_CTRL_PROTOCOL_NO_CLASS_SPECIFIC);
 	if (interface == 0xFFU) {
-		DBG_PRINTF(MODULE_USB_CLASS, LEVEL_WARN, "Fail to find the interface for Data Interface Class.");
+		RTK_LOGW(TAG, "Fail to find the interface for Data Interface Class.");
 		return status;
 	}
 
-	data_if_desc = usbh_get_interface_descriptor(host, interface);
+	data_if_desc = usbh_get_interface_descriptor(host, interface, 0);
 	if (data_if_desc == NULL) {
-		DBG_PRINTF(MODULE_USB_CLASS, LEVEL_ERROR, "Fail to get the interface descriptor for Data Interface Class.");
+		RTK_LOGE(TAG, "Fail to get the interface descriptor for Data Interface Class.");
 		return status;
 	}
 
@@ -149,7 +151,7 @@ static u8 usbh_cdc_acm_attach(usb_host_t *host)
 	if (pipe_num != 0xFFU) {
 		cdc->data_if.bulk_out_pipe = pipe_num;
 	} else {
-		DBG_PRINTF(MODULE_USB_CLASS, LEVEL_ERROR, "Fail to allocate BULK OUT pipe for CDC ACM class.");
+		RTK_LOGE(TAG, "Fail to allocate BULK OUT pipe for CDC ACM class.");
 		usbh_free_pipe(host, cdc->comm_if.intr_in_pipe);
 		return HAL_ERR_MEM;
 	}
@@ -158,7 +160,7 @@ static u8 usbh_cdc_acm_attach(usb_host_t *host)
 	if (pipe_num != 0xFFU) {
 		cdc->data_if.bulk_in_pipe = pipe_num;
 	} else {
-		DBG_PRINTF(MODULE_USB_CLASS, LEVEL_ERROR, "Fail to allocate BULK IN pipe for CDC ACM class.");
+		RTK_LOGE(TAG, "Fail to allocate BULK IN pipe for CDC ACM class.");
 		usbh_free_pipe(host, cdc->comm_if.intr_in_pipe);
 		usbh_free_pipe(host, cdc->data_if.bulk_out_pipe);
 		return HAL_ERR_MEM;
@@ -372,7 +374,7 @@ static void usbh_cdc_acm_process_tx(usb_host_t *host)
 	case CDC_ACM_TRANSFER_STATE_TX_BUSY:
 		urb_state = usbh_get_urb_state(host, cdc->data_if.bulk_out_pipe);
 		if (urb_state == USBH_URB_DONE) {
-			if (cdc->tx_len > cdc->data_if.bulk_out_packet_size) {
+			if (cdc->tx_len >= cdc->data_if.bulk_out_packet_size) {
 				cdc->tx_len -= cdc->data_if.bulk_out_packet_size;
 				cdc->tx_buf += cdc->data_if.bulk_out_packet_size;
 			} else {
@@ -382,6 +384,7 @@ static void usbh_cdc_acm_process_tx(usb_host_t *host)
 			if (cdc->tx_len > 0U) {
 				cdc->data_tx_state = CDC_ACM_TRANSFER_STATE_TX;
 			} else {
+				cdc->tx_len = 0U;
 				cdc->data_tx_state = CDC_ACM_TRANSFER_STATE_IDLE;
 				if ((cdc->cb != NULL) && (cdc->cb->transmit != NULL)) {
 					cdc->cb->transmit(urb_state);
@@ -468,7 +471,7 @@ u8 usbh_cdc_acm_init(usbh_cdc_acm_cb_t *cb)
 		if (cb->init != NULL) {
 			ret = cb->init();
 			if (ret != HAL_OK) {
-				DBG_PRINTF(MODULE_USB_CLASS, LEVEL_ERROR, "CDC user init error: %d", ret);
+				RTK_LOGE(TAG, "CDC user init error: %d", ret);
 				return ret;
 			}
 		}
@@ -599,4 +602,3 @@ u8 usbh_cdc_acm_receive(u8 *buf, u32 len)
 
 	return ret;
 }
-

@@ -56,10 +56,14 @@
 
 #include <tinyara/config.h>
 #include <stdio.h>
+#include <pthread.h>
 
 /****************************************************************************
  * hello_main
  ****************************************************************************/
+
+int cnt = 0;
+extern void example_usbh_cdc_acm_thread(void);
 
 #ifdef CONFIG_BUILD_KERNEL
 int main(int argc, FAR char *argv[])
@@ -68,5 +72,19 @@ int hello_main(int argc, char *argv[])
 #endif
 {
 	printf("Hello, World!!\n");
+	
+	if (cnt >= 1)
+	{
+		printf("Start USB Test \n");
+		pthread_t pid;
+		int thread_time = 3;
+		int ret = pthread_create(&pid, NULL, (pthread_startroutine_t)example_usbh_cdc_acm_thread, (void *)&thread_time);
+		if (ret < 0) {
+			return -1;
+		}
+		pthread_detach(pid);
+	}
+	cnt ++;
+	
 	return 0;
 }

@@ -18,6 +18,7 @@
 /* Includes ------------------------------------------------------------------*/
 
 #include "ameba_soc.h"
+#include "section_config.h"
 
 /* Exported defines ----------------------------------------------------------*/
 
@@ -46,7 +47,7 @@
 #endif
 
 /* USB Core HW Configurations */
-#define USB_MAX_ENDPOINTS							7U
+#define USB_MAX_ENDPOINTS							6U
 #define USB_IN_TOKEN_QUEUE_DEPTH					8U
 
 /* USB OTG addon control register */
