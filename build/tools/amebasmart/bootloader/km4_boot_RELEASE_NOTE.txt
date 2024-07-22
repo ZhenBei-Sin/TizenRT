@@ -1,5 +1,9 @@
 /* == "version" + "Realtek git version" + "compile date" + "compile time" == */
 
+== version ==
+1.	Adjust layout for RTL8730EAH-VH6-CG NOR Flash 32MB + DDR2 64MB
+	- CA32_BL3_DRAM_NS address adjusted: 0x64000000 - 0x60100000; 63MB
+
 == version d08ed534e7 2024/05/31-17:08:07 ==
 1.	Add feature in fault handler to indicate KM4 fault
 

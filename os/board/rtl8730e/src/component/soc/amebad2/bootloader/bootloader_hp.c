@@ -280,7 +280,7 @@ void BOOT_DDR_Init(void)
 #ifdef CONFIG_LINUX_FW_EN
 	rxi316_DynSre_init(0xFFFF, ENABLE);		//for linux lcdc, set the max count
 #else
-	rxi316_DynSre_init(0x1FF, ENABLE);
+	rxi316_DynSre_init(0xFFF, ENABLE);
 #endif
 #endif
 }
