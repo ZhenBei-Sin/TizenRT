@@ -61,6 +61,10 @@
  * hello_main
  ****************************************************************************/
 
+/* ToDo: Need to remove as for run example only */
+extern void example_usbd_cdc_acm(void);
+int cnt = 0;
+
 #ifdef CONFIG_BUILD_KERNEL
 int main(int argc, FAR char *argv[])
 #else
@@ -68,5 +72,11 @@ int hello_main(int argc, char *argv[])
 #endif
 {
 	printf("Hello, World!!\n");
+
+	if (cnt >= 1) {
+		example_usbd_cdc_acm();
+	}
+	cnt ++;
+
 	return 0;
 }

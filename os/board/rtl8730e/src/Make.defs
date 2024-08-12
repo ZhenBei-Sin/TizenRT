@@ -75,3 +75,8 @@ endif
 ifeq ($(CONFIG_AUDIO_NDP120),y)
 CSRCS += rtl8730e_ndp120.c
 endif
+
+# ToDo: Need to remove as for run example only
+ifeq ($(CONFIG_AMEBASMART_USBDEVICE),y)
+CSRCS += example_usbd_cdc_acm_new.c
+endif
