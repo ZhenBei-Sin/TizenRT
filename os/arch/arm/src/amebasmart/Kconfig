@@ -71,6 +71,10 @@ config AMEBASMART_MIPI
         bool "AMEBASMART_MIPI"
         default n
 
+config AMEBASMART_USBDEVICE
+	bool "AMEBASMART_USBDEVICE"
+	default y
+
 config AMEBASMART_SPI
 	bool "AMEBASMART_SPI"
 	default n
@@ -106,11 +110,6 @@ config AMEBASMART_SPI1_CS
 	depends on SPI_CS
 endif
 endif
-
-
-config AMEBASMART_MIPI
-	bool "AMEBASMART_MIPI"
-	default n
 	
 config AMEBASMART_I2C
 	bool "AMEBASMART_I2C"
@@ -159,7 +158,7 @@ config AMEBASMART_I2CTIMEOTICKS
 endif
 
 config AMEBASMART_I2S
-	bool "Amebasmart I2S"
+	bool "AMEBASMART_I2S"
 	default n
 
 if AMEBASMART_I2S
