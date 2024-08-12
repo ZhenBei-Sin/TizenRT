@@ -120,6 +120,12 @@ include component/bluetooth/example/ble_scatternet/Make.defs
 endif
 endif
 
+ifeq ($(CONFIG_AMEBASMART_USBDEVICE),y)
+include component/usb/common_new/Make.defs
+include component/usb/device_new/cdc_acm/Make.defs
+include component/usb/device_new/core/Make.defs
+endif
+
 include component/file_system/ftl/Make.defs
 include component/file_system/kv/Make.defs
 include component/file_system/vfs2.0/Make.defs
@@ -134,6 +140,9 @@ DIR_OS = 	$(BOARD_SRCDIR)/$(CONFIG_ARCH_BOARD)/src/component/os
 DIR_MBED = 	$(BOARD_SRCDIR)/$(CONFIG_ARCH_BOARD)/src/component/mbed/targets/hal/rtl8730e
 ifeq ($(CONFIG_AMEBASMART_BLE),y)
 DIR_BT = 	$(BOARD_SRCDIR)/$(CONFIG_ARCH_BOARD)/src/component/bluetooth
+endif
+ifeq ($(CONFIG_AMEBASMART_USBDEVICE),y)
+DIR_USB = 	$(BOARD_SRCDIR)/$(CONFIG_ARCH_BOARD)/src/component/usb
 endif
 
 TARGETDIR = 	$(COMPONENT_DIR)/soc/amebad2
@@ -166,7 +175,6 @@ CFLAGS += -I$(COMPONENT_DIR)/mbed/hal_ext
 CFLAGS += -I$(COMPONENT_DIR)/mbed/targets/hal/rtl8730e
 CFLAGS += -I$(COMPONENT_DIR)/os_dep
 CFLAGS += -I$(TOPDIR)/net/netmgr
-# Temporary keep it, need further check whether the usb needs the filesystem
 CFLAGS += -I$(COMPONENT_DIR)/file_system/vfs2.0
 CFLAGS += -I$(COMPONENT_DIR)/file_system/ftl
 CFLAGS += -I$(COMPONENT_DIR)/file_system/kv
@@ -179,6 +187,12 @@ CFLAGS += -I$(DIR_BT)/driver/inc/hci
 CFLAGS += -I$(DIR_BT)/api/rtk_stack
 CFLAGS += -I$(DIR_BT)/rtk_stack/inc
 CFLAGS += -I$(DIR_BT)/rtk_stack/platform/amebad2/inc
+endif
+
+ifeq ($(CONFIG_AMEBASMART_USBDEVICE),y)
+CFLAGS += -I$(DIR_USB)/common_new
+CFLAGS += -I$(DIR_USB)/device_new/cdc_acm
+CFLAGS += -I$(DIR_USB)/device_new/core
 endif
 
 COBJS = $(CSRCS:.c=$(OBJEXT))

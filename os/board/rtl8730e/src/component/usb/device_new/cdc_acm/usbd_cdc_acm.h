@@ -15,11 +15,10 @@
 /* Includes ------------------------------------------------------------------*/
 
 #include "usbd.h"
-#include "usbd_cdc_acm_otp.h"
 
 /* Exported defines ----------------------------------------------------------*/
 
-#define CONFIG_CDC_ACM_NOTIFY                       1
+#define CONFIG_CDC_ACM_NOTIFY                       0
 
 /*  CDC definitions */
 #define CDC_SEND_ENCAPSULATED_COMMAND               0x00U
@@ -123,10 +122,6 @@ typedef struct {
 	__IO u32 intr_in_state;
 #endif
 
-#ifdef CONFIG_USB_USE_OTP_DESC
-	usbd_otp_t otp;
-#endif
-
 	usbd_cdc_acm_cb_t *cb;
 	usb_dev_t *dev;
 } usbd_cdc_acm_dev_t;
@@ -137,7 +132,7 @@ typedef struct {
 
 /* Exported functions --------------------------------------------------------*/
 
-u8 usbd_cdc_acm_init(usb_speed_type_t speed, usbd_cdc_acm_cb_t *cb);
+u8 usbd_cdc_acm_init(u16 bulk_out_xfer_size, u16 bulk_in_xfer_size, usbd_cdc_acm_cb_t *cb);
 u8 usbd_cdc_acm_deinit(void);
 u8 usbd_cdc_acm_transmit(u8 *buf, u16 len);
 u8 usbd_cdc_acm_receive(void);

@@ -24,8 +24,8 @@
 
 /* Exported defines ----------------------------------------------------------*/
 
-#define USBH_MAX_PIPES_NUM					7
-#define USBH_MAX_ENDPOINTS_NUM				5
+#define USBH_MAX_PIPES_NUM				7
+#define USBH_MAX_ENDPOINTS_NUM				6
 #define USBH_MAX_INTERFACES_NUM				4
 #define USBH_MAX_CLASSES_NUM				1
 

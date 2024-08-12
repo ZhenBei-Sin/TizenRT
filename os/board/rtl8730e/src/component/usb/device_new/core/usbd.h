@@ -35,8 +35,13 @@
 #define USBD_IDX_SERIAL_STR				0x03U
 
 /* USB device interrupt enable flag*/
-#define USBD_SOF_INTR                 (BIT0)
-#define USBD_EOPF_INTR                (BIT1)
+/* GINTSTS */
+#define USBD_SOF_INTR                 (BIT0) /* Start of (micro)Frame GINTSTS.bit3 */
+#define USBD_EOPF_INTR                (BIT1) /* End of Periodic Frame Interrupt GINTSTS.bit15 */
+#define USBD_EPMIS_INTR               (BIT2) /* Endpoint Mismatch Interrupt GINTSTS.bit17*/
+#define USBD_ICII_INTR                (BIT3) /* Incomplete Isochronous IN Transfer GINTSTS.bit20*/
+/* DIEPINTn/DOEPINTn */
+#define USBD_ITTXFE_INTR              (BIT16) /* IN Token Received When TxFIFO is Empty(INTknTXFEmp) DIEPINTn.bit4*/
 
 /* Exported types ------------------------------------------------------------*/
 
@@ -64,9 +69,15 @@ typedef struct {
 							   USB_SPEED_FULL: USB 1.1 transceiver, e.g. AmebaDPlus */
 	u8 dma_enable;			/* Enable USB internal DMA mode, 0-Disable, 1-Enable */
 	u8 isr_priority;		/* USB ISR thread priority */
-	u8 ext_intr_en;			/* allow class to enable some interrupts*/
 	u8 intr_use_ptx_fifo;	/* Use Periodic TX FIFO for INTR IN transfer, only for shared TxFIFO mode */
-	u32 nptx_max_err_cnt[USB_OTG_MAX_ENDPOINTS]; /* Max Non-Periodical TX transfer error count allowed, if transfer
+	u32 ext_intr_en;		/* allow class to enable some interrupts*/
+	u32 nptx_max_epmis_cnt; /* Max Non-Periodical TX transfer epmis count allowed, if transfer
+							   epmis count is higher than this value,the EMIPS interrupt will be handled.
+							   This param works with the USB_OTG_GINTMSK_EPMISM interrupt which enable by USBD_EPMIS_INTR,
+							   make sure you has configed the appropriate value,
+							   a few epmis are possible and do not need to handle, it is not error
+							   but when we get a lot of epmis, it is a true Endpoint Mismatch. */
+	u32 nptx_max_err_cnt[USB_MAX_ENDPOINTS]; /* Max Non-Periodical TX transfer error count allowed, if transfer
 							   error count is higher than this value, the transfer status will be determined as failed */
 } usbd_config_t;
 
