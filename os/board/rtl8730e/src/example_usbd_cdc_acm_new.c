@@ -51,6 +51,7 @@
 #define CONFIG_CDC_ACM_BULK_OUT_XFER_SIZE		2048U
 
 #define CONFIG_CDC_ACM_RX_TP_TEST				0
+#define CONFIG_TEST_TRANSMIT					1
 
 /* Private types -------------------------------------------------------------*/
 
@@ -62,6 +63,7 @@ static u8 cdc_acm_cb_init(void);
 static u8 cdc_acm_cb_deinit(void);
 static u8 cdc_acm_cb_setup(u8 cmd, u8 *pbuf, u16 length, u16 value);
 static u8 cdc_acm_cb_receive(u8 *pbuf, u32 Len);
+static void cdc_acm_cb_transmitted(u8 status);
 
 /* Private variables ---------------------------------------------------------*/
 
@@ -69,7 +71,8 @@ static usbd_cdc_acm_cb_t cdc_acm_cb = {
 	cdc_acm_cb_init,
 	cdc_acm_cb_deinit,
 	cdc_acm_cb_setup,
-	cdc_acm_cb_receive
+	cdc_acm_cb_receive,
+	cdc_acm_cb_transmitted
 };
 
 static usbd_cdc_acm_line_coding_t cdc_acm_line_coding;
@@ -140,6 +143,21 @@ static u8 cdc_acm_cb_deinit(void)
   */
 static u8 cdc_acm_cb_receive(u8 *buf, u32 len)
 {
+#if CONFIG_TEST_TRANSMIT
+	UNUSED(buf);
+	UNUSED(len);
+	int res = 0;
+	int length = 26;
+	uint8_t buffer[length];
+	for (int i = 0; i < length; i ++){
+		buffer[i] = 0x61 + i;
+	}
+	res = usbd_cdc_acm_transmit(buffer, length);
+	printf("\n[CDC] CONFIG_TEST_TRANSMIT res=%d length=%d\n", res, length);
+	printf("\n[CDC] Transmit Success, data0=0x%02x,len=%d bytes\n", buffer[0], length);
+	//usbd_cdc_acm_receive();
+	return HAL_OK;
+#endif
 #if CONFIG_CDC_ACM_RX_TP_TEST
 	UNUSED(buf);
 	UNUSED(len);
@@ -167,7 +185,7 @@ static u8 cdc_acm_cb_receive(u8 *buf, u32 len)
 	usbd_cdc_acm_receive();
 	return ret;
 #else
-	//printf("\n[CDC] Rx Success, data0=0x%02x,len=%d bytes\n", buf[0], len);
+	printf("\n[CDC] Rx Success, data0=0x%02x,len=%d bytes\n", buf[0], len);
 	usbd_cdc_acm_transmit(buf, len);
 	return usbd_cdc_acm_receive();
 #endif
@@ -250,6 +268,14 @@ static u8 cdc_acm_cb_setup(u8 cmd, u8 *pbuf, u16 len, u16 value)
 	}
 
 	return HAL_OK;
+}
+
+static void cdc_acm_cb_transmitted(u8 status)
+{
+	UNUSED(status);
+#if CONFIG_USBD_CDC_ACM_ASYNC_XFER
+	rtw_up_sema(&cdc_acm_async_xfer_sema);
+#endif
 }
 
 #if CONFIG_USDB_CDC_ACM_CHECK_USB_STATUS

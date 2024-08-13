@@ -102,6 +102,7 @@ typedef struct {
 	u8(* deinit)(void);
 	u8(* setup)(u8 cmd, u8 *buf, u16 len, u16 value);
 	u8(* receive)(u8 *buf, u32 len);
+	void(* transmit_complete)(u8 status);
 } usbd_cdc_acm_cb_t;
 
 typedef struct {
