@@ -380,6 +380,7 @@ static void usbd_pcd_handle_out_ep_interrupt(usbd_pcd_t *pcd)
 	u32 ep_intr;
 	u32 epint;
 	u8 ep_num = 0U;
+	u32 gSNPSiD = USB_GLOBAL->GSNPSID;
 
 	/* Read in the device interrupt bits */
 	ep_intr = usbd_hal_read_all_out_ep_interrupts(pcd);
@@ -410,7 +411,7 @@ static void usbd_pcd_handle_out_ep_interrupt(usbd_pcd_t *pcd)
 			/* Clear Status Phase Received interrupt */
 			if ((epint & USB_OTG_DOEPINT_OTEPSPR) == USB_OTG_DOEPINT_OTEPSPR) {
 				RTK_LOGD(TAG, "OUT EP%d SPR\n", ep_num);
-				if (pcd->config.dma_enable) {
+				if ((pcd->config.dma_enable) && (gSNPSiD == USB_OTG_CORE_ID_310A)) {
 					usbd_hal_ep0_out_start(pcd);
 				}
 				USB_PCD_CLEAR_OUT_EP_INTR(ep_num, USB_OTG_DOEPINT_OTEPSPR);
