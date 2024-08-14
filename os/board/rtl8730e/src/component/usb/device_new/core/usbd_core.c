@@ -14,10 +14,10 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "usb_hal.h"
+
+#include "usbd_hal.h"
 #include "usbd_core.h"
 #include "usbd_pcd.h"
-#include "usbd_hal.h"
 
 /* Private defines -----------------------------------------------------------*/
 
@@ -918,9 +918,11 @@ u8 usbd_core_suspend(usb_dev_t  *dev)
 USB_TEXT_SECTION
 u8 usbd_core_resume(usb_dev_t  *dev)
 {
-	dev->dev_state = dev->dev_old_state;
-	if (dev->driver->resume != NULL) {
-		dev->driver->resume(dev);
+	if (dev->dev_state == USBD_STATE_SUSPENDED) {
+		dev->dev_state = dev->dev_old_state;
+		if (dev->driver->resume != NULL) {
+			dev->driver->resume(dev);
+		}
 	}
 	return HAL_OK;
 }
@@ -937,33 +939,6 @@ u8 usbd_core_sof(usb_dev_t  *dev)
 		if (dev->driver->sof != NULL) {
 			dev->driver->sof(dev);
 		}
-	}
-	return HAL_OK;
-}
-/**
-  * @brief  Handle EOPF event
-  * @param  dev: USB device instance
-  * @retval Status
-  */
-USB_TEXT_SECTION
-u8 usbd_core_eopf(usb_dev_t  *dev)
-{
-	u8 ep_num;
-	if (dev->dev_state == USBD_STATE_CONFIGURED) {
-		usbd_pcd_t *pcd = dev->pcd;
-		usbd_pcd_ep_t *ep;
-
-		for (ep_num = 1U; ep_num < USB_MAX_ENDPOINTS; ep_num++) {
-			ep = &(pcd->out_ep[ep_num]);
-			if ((USB_CH_EP_TYPE_ISOC == ep->type) && USB_EP_IS_OUT(ep->addr) && ((USB_OUTEP(ep_num)->DOEPCTL & USB_OTG_DOEPCTL_EPENA) == USB_OTG_DOEPCTL_EPENA)) {
-				if ((USB_DEVICE->DSTS & BIT8) == 0U) { //work in next SOF
-					USB_OUTEP(ep_num)->DOEPCTL |= USB_OTG_DOEPCTL_SODDFRM;
-				} else {
-					USB_OUTEP(ep_num)->DOEPCTL |= USB_OTG_DOEPCTL_SD0PID_SEVNFRM;
-				}
-			}
-		}
-
 	}
 	return HAL_OK;
 }

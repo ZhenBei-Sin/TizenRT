@@ -85,7 +85,7 @@ static usbd_config_t cdc_acm_cfg = {
 };
 
 #if CONFIG_USBD_CDC_ACM_ASYNC_XFER
-static u8 cdc_acm_async_xfer_buf[CONFIG_CDC_ACM_ASYNC_BUF_SIZE];
+static u8 cdc_acm_async_xfer_buf[CONFIG_CDC_ACM_ASYNC_BUF_SIZE] __attribute_((aligned(CACHE_LINE_SIZE)));
 static u16 cdc_acm_async_xfer_buf_pos = 0;
 static volatile int cdc_acm_async_xfer_busy = 0;
 static _sema cdc_acm_async_xfer_sema;

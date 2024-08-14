@@ -14,10 +14,10 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "usb_hal.h"
+
+#include "usbd_hal.h"
 #include "usbd_core.h"
 #include "usbd_pcd.h"
-#include "usbd_hal.h"
 
 /* Private defines -----------------------------------------------------------*/
 
@@ -51,6 +51,7 @@ static void usbd_pcd_handle_ep_mismatch_interrupt(usbd_pcd_t *pcd);
 static void usbd_pcd_handle_in_nak_effective(usbd_pcd_t *pcd);
 static void usbd_pcd_handle_wakeup_interrupt(usbd_pcd_t *pcd);
 static void usbd_pcd_handle_sof_interrupt(usbd_pcd_t *pcd);
+static void usbd_pcd_handle_eopf_interrupt(usbd_pcd_t *pcd);
 static void usbd_pcd_handle_srq_interrupt(usbd_pcd_t *pcd);
 static void usbd_pcd_handle_otg_interrupt(usbd_pcd_t *pcd);
 static void usbd_pcd_handle_interrupt(usbd_pcd_t *pcd);
@@ -132,7 +133,7 @@ static void usbd_pcd_isr_task(void *data)
 	u32 gintsts;
 
 	for (;;) {
-		rtw_down_sema(&pcd->isr_sema);
+		rtw_down_timeout_sema(&pcd->isr_sema, 0xFFFFFFFF);
 
 		if (pcd->isr_task.blocked) {
 			RTK_LOGW(TAG, "USBD ISR task killed\n");
@@ -176,7 +177,7 @@ static void usbd_pcd_irq_handler(void)
 {
 	usbd_pcd_t *pcd = &usbd_pcd;
 	usb_hal_disable_interrupt();
-	rtw_up_sema_from_isr(&pcd->isr_sema);
+	rtw_up_sema(&pcd->isr_sema);
 }
 
 /**
@@ -190,6 +191,8 @@ static void usbd_pcd_handle_reset_interrupt(usbd_pcd_t *pcd)
 	u32 i;
 
 	USB_DEVICE->DCTL &= ~USB_OTG_DCTL_RWUSIG;
+	/* Set Default Address to 0 */
+	USB_DEVICE->DCFG &= ~USB_OTG_DCFG_DAD;
 
 	usb_hal_flush_tx_fifo(0x10U);
 
@@ -213,9 +216,6 @@ static void usbd_pcd_handle_reset_interrupt(usbd_pcd_t *pcd)
 						   USB_OTG_DIEPMSK_XFRCM |
 						   USB_OTG_DIEPMSK_EPDM |
 						   USB_OTG_DIEPMSK_INEPNMM;
-
-	/* Set Default Address to 0 */
-	USB_DEVICE->DCFG &= ~USB_OTG_DCFG_DAD;
 
 	/* setup EP0 to receive SETUP packets */
 	usbd_hal_ep0_out_start(pcd);
@@ -437,18 +437,22 @@ static void usbd_pcd_handle_out_ep_interrupt(usbd_pcd_t *pcd)
 USB_TEXT_SECTION
 static void usbd_pcd_handle_in_ep_disabled_interrupt(usbd_pcd_t *pcd, u8 ep_num)
 {
-	u32 i;
+	u32 i, j;
 	u32 reg;
+	u32 xfer_pktcnt;
 	u32 pktcnt_mask;
+	u32 pktcnt_pos;
+	u32 remain_to_transfer = 0;
 	u32 dma = pcd->config.dma_enable;
+	u8  in_ep_reactive[USB_MAX_ENDPOINTS];
 	usbd_pcd_ep_t *pep = &pcd->in_ep[ep_num];
 
 	if ((pcd->start_predict == 0) || (pep->is_ptx)) {   // period
-		// TODO: Clear the Global IN NP NAK and restart transfer
+		// not for periodic transfer
 		return;
 	}
 
-	if (pcd->start_predict > 2)  {
+	if (pcd->start_predict > 2)  {  // NP IN EP
 		pcd->start_predict--;
 		return;
 	}
@@ -456,10 +460,12 @@ static void usbd_pcd_handle_in_ep_disabled_interrupt(usbd_pcd_t *pcd, u8 ep_num)
 	pcd->start_predict--;
 
 	if (pcd->start_predict == 1)  { // All NP IN Ep's disabled now
-		if (dma) {
-			//predict nextep
-			usbd_pcd_get_in_ep_sequence_from_in_token_queue(pcd);
+		//predict nextep:
+		//slave mode, get the in_ep_sequence
+		//dma mode, get the nextep_seq
+		usbd_pcd_get_in_ep_sequence_from_in_token_queue(pcd);
 
+		if (dma != 0) {
 			/* Update all active IN EP's NextEP field based of nextep_seq[] */
 			for (i = 0; i < USB_MAX_ENDPOINTS; i++) {
 				if (pcd->nextep_seq[i] != 0xff) {   //Active NP IN EP
@@ -475,59 +481,163 @@ static void usbd_pcd_handle_in_ep_disabled_interrupt(usbd_pcd_t *pcd, u8 ep_num)
 		usb_hal_flush_tx_fifo(0x00);
 
 		/*
-			Not ZLP
-			loop to report the error status to all active ep(NP IN Ep)
+			Rewind buffers
+			check all IN EP list, but not for periodic and unenable EP
 		*/
-		usb_os_spinunlock(pcd->lock);
-		for (i = 0; i < USB_MAX_ENDPOINTS; i++) {
-			pep = &pcd->in_ep[i];
-			reg = USB_INEP(i)->DIEPTSIZ;
-			//EP0: PktCnt 20:19,XferSize 6:0
-			//EPN: PktCnt 28:19,XferSize 18:0
-			if (i == 0) {
-				pktcnt_mask = USB_OTG_DIEPTSIZ0_PKTCNT;
-			} else {
-				pktcnt_mask = USB_OTG_DIEPTSIZ_PKTCNT;
-			}
-			if ((!(pep->is_zlp)) && (reg & pktcnt_mask) && (!(pep->is_ptx)) && (pep->is_initialized)) {
-				RTK_LOGD(TAG, "EP%d report error\n", i);
-				usbd_core_data_in_stage(pcd->dev, (u8)i, NULL, HAL_TIMEOUT);
-			}
-		}
-		usb_os_spinlock(pcd->lock);
-
-		/*
-			ZLP ,Restart transfers
-			re enable the EP, the ZLP transmit will continue and finish
-		*/
-		i = (dma ? (pcd->first_in_nextep_seq) : (0));
+		i = (dma ? pcd->first_in_nextep_seq : 0);
 		do {
-			pep = &pcd->in_ep[i];
-			reg = USB_INEP(i)->DIEPTSIZ;
-			//EP0: PktCnt 20:19,XferSize 6:0
-			//EPN: PktCnt 28:19,XferSize 18:0
-			if (i == 0) {
-				pktcnt_mask = USB_OTG_DIEPTSIZ0_PKTCNT;
-			} else {
-				pktcnt_mask = USB_OTG_DIEPTSIZ_PKTCNT;
-			}
-			//RTK_LOGD(TAG,"for zlp ip=%d/zlp=%d/reg=0x%08x\n",i,pep->is_zlp,USB_INEP(i)->DIEPTSIZ);
-			if ((pep->is_zlp) && (reg & pktcnt_mask) && (!(pep->is_ptx)) && (pep->is_initialized)) {
-				RTK_LOGD(TAG, "Re-enable EP%d\n", i);
-				USB_INEP(i)->DIEPCTL |= (USB_OTG_DIEPCTL_CNAK | USB_OTG_DIEPCTL_EPENA);
+			if (i >= USB_MAX_ENDPOINTS) {
+				break;
 			}
 
-			if (dma) {
-				// dma mode, loop all next_seq ep
+			pep = &pcd->in_ep[i];
+			if (!(pep->is_ptx) && pep->is_initialized) {
+				if (i == 0) {
+					pktcnt_mask = USB_OTG_DIEPTSIZ0_PKTCNT;
+					pktcnt_pos = USB_OTG_DIEPTSIZ0_PKTCNT_Pos;
+				} else {
+					pktcnt_mask = USB_OTG_DIEPTSIZ_PKTCNT;
+					pktcnt_pos = USB_OTG_DIEPTSIZ_PKTCNT_Pos;
+				}
+				xfer_pktcnt = (USB_INEP(i)->DIEPTSIZ & pktcnt_mask) >> pktcnt_pos;
+				//RTK_LOGD(TAG, "Ep%d,pktcnt(%d)len(%d)xfercnt(%d)zlp(%d)\n", i, xfer_pktcnt, pep->xfer_len, pep->xfer_count, pep->is_zlp);
+
+				if (xfer_pktcnt != 0) {
+					//remain_to_transfer is the data length that did not sent success
+					//includes not copied to FIFO and copied to FIFO
+					if (pep->is_zlp || (0 == pep->xfer_len)) { //zlp
+						remain_to_transfer = 0U;
+					} else { //not zlp
+						//(1)all the trasnfer data has been wrote to the TX FIFO
+						//(2)part of the data has been wrote to the TX FIFO
+						//and when flush the TX FIFO, the wrote data has been dropped
+						if ((pep->xfer_len % pep->max_packet_len) == 0U) { //last packet = 0
+							remain_to_transfer = pep->max_packet_len * xfer_pktcnt;
+						} else {
+							remain_to_transfer = pep->xfer_len % pep->max_packet_len + pep->max_packet_len * (xfer_pktcnt - 1);
+						}
+					}
+
+					reg = USB_INEP(i)->DIEPTSIZ;
+					reg &= ~USB_OTG_DIEPTSIZ_XFRSIZ;
+					reg |= USB_OTG_DIEPTSIZ_XFRSIZ & (remain_to_transfer << USB_OTG_DIEPTSIZ_XFRSIZ_Pos);
+					USB_INEP(i)->DIEPTSIZ = reg;
+
+					if (dma) {
+						reg = pep->dma_addr + (pep->xfer_len - remain_to_transfer);
+						USB_INEP(i)->DIEPDMA = reg;
+					} else {
+						if (remain_to_transfer) {
+							pep->xfer_buff -= pep->xfer_count; //rewind to the begin
+							pep->xfer_buff += (pep->xfer_len - remain_to_transfer);
+						} else {
+							pep->xfer_buff = NULL;
+						}
+					}
+					pep->xfer_count = pep->xfer_len - remain_to_transfer;
+				}
+			}
+
+			if (dma != 0) {
 				i = pcd->nextep_seq[i];
 				if (i == pcd->first_in_nextep_seq) {
 					break;
 				}
 			} else {
-				// slave mode, loop all ep
 				if (++i >= USB_MAX_ENDPOINTS) {
 					break;
 				}
+			}
+		} while (1);
+
+		/* Restart transfers in predicted sequences */
+		if (dma == 0) { //slave mode
+			for (i = 0; i < USB_MAX_ENDPOINTS; i++) {
+				in_ep_reactive[i] = 0xFF;
+			}
+
+			j = 0, i = 0;
+			//first save in_ep_sequence[INTOKEN] in in_ep_reactive
+			do {
+				if (pcd->in_ep_sequence[j] < USB_MAX_ENDPOINTS) {  //valid ep
+					pep = &pcd->in_ep[pcd->in_ep_sequence[j]];
+					if (!(pep->is_ptx) && pep->is_initialized) {
+						in_ep_reactive[i++] = pcd->in_ep_sequence[j];
+					}
+				}
+				if (++j >= USB_MAX_ENDPOINTS) {
+					break;
+				}
+			} while (1);
+
+			j = 0, i = 0;
+			//second save other IN EPs in in_ep_reactive
+			do {
+				pep = &pcd->in_ep[j];
+				if (!(pep->is_ptx) && pep->is_initialized) {
+					do {
+						if ((0xFF == in_ep_reactive[i]) || (j == in_ep_reactive[i])) { //find
+							break;
+						}
+						i++;
+					} while (1);
+					if (0xFF == in_ep_reactive[i]) {
+						in_ep_reactive[i++] = j;
+					}
+				}
+				if ((i >= USB_MAX_ENDPOINTS) || (++j >= USB_MAX_ENDPOINTS)) {
+					break;
+				}
+			} while (1);
+		}
+
+		if (dma != 0) {
+			i = pcd->first_in_nextep_seq;
+		} else {
+			j = 0;
+			i = in_ep_reactive[j];
+		}
+
+		do {
+			if (i >= USB_MAX_ENDPOINTS) {
+				break;
+			}
+
+			pep = &pcd->in_ep[i];
+			if (!(pep->is_ptx) && pep->is_initialized) {
+				//EP0: PktCnt 20:19,XferSize 6:0
+				//EPN: PktCnt 28:19,XferSize 18:0
+				if (i == 0) {
+					pktcnt_mask = USB_OTG_DIEPTSIZ0_PKTCNT;
+				} else {
+					pktcnt_mask = USB_OTG_DIEPTSIZ_PKTCNT;
+				}
+				xfer_pktcnt = USB_INEP(i)->DIEPTSIZ & pktcnt_mask;
+				if (xfer_pktcnt != 0) {
+					/*Re-en IN EP*/
+					if ((dma == 0) && (pep->xfer_len > 0U)) {
+						if (pcd->ded_tx_fifo_en == 0U) {
+							USB_GLOBAL->GINTMSK |= USB_OTG_GINTMSK_NPTXFEM;
+						} else {
+							USB_DEVICE->DIEPEMPMSK |= 1UL << (ep_num & EP_ADDR_MSK);
+						}
+					}
+
+					/* Enable the Tx FIFO Empty Interrupt for this EP */
+					USB_INEP(i)->DIEPCTL |= (USB_OTG_DIEPCTL_CNAK | USB_OTG_DIEPCTL_EPENA);
+				}
+			}
+
+			if (dma != 0) {
+				i = pcd->nextep_seq[i];
+				if (i == pcd->first_in_nextep_seq) {
+					break;
+				}
+			} else {
+				if (++j >= USB_MAX_ENDPOINTS) {
+					break;
+				}
+				i = in_ep_reactive[j];
 			}
 		} while (1);
 
@@ -629,28 +739,29 @@ static void usbd_pcd_handle_in_ep_nak_effective_interrupt(usbd_pcd_t *pcd, u32 e
 USB_TEXT_SECTION
 static void usbd_pcd_handle_incomplete_in_isoc(usbd_pcd_t *pcd)
 {
-	u32 i ;
-	u32 regvalue ;
+	u32 i;
+	u32 reg;
+	u32 regvalue;
 	usbd_pcd_ep_t *ep;
 	u8 ep_num;
 
 	for (i = 1U; i < USB_MAX_ENDPOINTS; i++) {
 		ep = &(pcd->in_ep[i]);  //in
 		ep_num = USB_EP_NUM(ep->addr);
-		if ((ep->type == USB_CH_EP_TYPE_ISOC) && USB_EP_IS_IN(ep->addr) && ((USB_INEP(ep_num)->DIEPCTL & USB_OTG_DIEPCTL_EPENA) == USB_OTG_DIEPCTL_EPENA)) {
-			regvalue = USB_INEP(ep_num)->DIEPCTL ;
-			if ((regvalue & USB_OTG_DIEPCTL_EONUM_DPID) == 0) {
-				regvalue |= USB_OTG_DIEPCTL_SODDFRM;
+		reg = USB_INEP(ep_num)->DIEPCTL;
+		if ((ep->type == USB_CH_EP_TYPE_ISOC) && USB_EP_IS_IN(ep->addr) && ((reg & USB_OTG_DIEPCTL_EPENA) == USB_OTG_DIEPCTL_EPENA)) {
+			if ((reg & USB_OTG_DIEPCTL_EONUM_DPID) == 0) {
+				reg |= USB_OTG_DIEPCTL_SODDFRM;
 			} else {
-				regvalue |= USB_OTG_DIEPCTL_SD0PID_SEVNFRM;
+				reg |= USB_OTG_DIEPCTL_SD0PID_SEVNFRM;
 			}
 			/*
 				Fix Isoc In Issue:
 				if set bit31=1 again, HW will force to send a ZLP in next in token, and packet lost
 				while set 0 not change bit31 value, it is still 1
 			*/
-			regvalue &= ~(USB_OTG_DIEPCTL_EPENA); //bit31
-			USB_INEP(ep_num)->DIEPCTL = regvalue;
+			reg &= ~(USB_OTG_DIEPCTL_EPENA); //bit31
+			USB_INEP(ep_num)->DIEPCTL = reg;
 		}
 	}
 }
@@ -960,9 +1071,7 @@ static u8 usbd_pcd_handle_ep_np_tx_fifo_empty_interrupt(usbd_pcd_t *pcd, u8 ep_n
 	while (((reg & USB_OTG_GNPTXSTS_NPTQXSAV_Msk) > 0)
 		   && ((reg & USB_OTG_GNPTXSTS_NPTXFSAV_Msk) >= ((len + 3U) / 4U))
 		   && (ep->xfer_count < ep->xfer_len)) {
-		if (pcd->config.dma_enable == 0U) {
 			usb_hal_write_packet(ep->xfer_buff, ep_num, (u16)len);
-		}
 		ep->xfer_count += len;
 		ep->xfer_buff += len;
 		len = ep->xfer_len - ep->xfer_count;
@@ -995,6 +1104,10 @@ static void usbd_pcd_handle_np_tx_fifo_empty_interrupt(usbd_pcd_t *pcd)
 #endif
 
 	USB_GLOBAL->GINTMSK &= ~USB_OTG_GINTMSK_NPTXFEM;
+
+	if (pcd->config.dma_enable) {
+		return;
+	}
 
 	usbd_pcd_get_in_ep_sequence_from_in_token_queue(pcd);
 
@@ -1054,7 +1167,7 @@ static void usbd_pcd_handle_ep_mismatch_interrupt(usbd_pcd_t *pcd)
 	u32 reg;
 	u32 gintsts = usb_hal_read_interrupts();
 
-	if (!(gintsts & (USB_OTG_GINTSTS_GINAKEFF)) && (++pcd->nptx_epmis_cnt > pcd->config.nptx_max_epmis_cnt)) {
+	if ((++pcd->nptx_epmis_cnt >= pcd->config.nptx_max_epmis_cnt) && (!(gintsts & (USB_OTG_GINTSTS_GINAKEFF)))) {
 		RTK_LOGD(TAG, "EPMIS count overflow: %d\n", pcd->config.nptx_max_epmis_cnt);
 
 		pcd->nptx_epmis_cnt = 0;
@@ -1133,6 +1246,13 @@ static void usbd_pcd_handle_wakeup_interrupt(usbd_pcd_t *pcd)
 USB_TEXT_SECTION
 static void usbd_pcd_handle_sof_interrupt(usbd_pcd_t *pcd)
 {
+#if USBD_SWITCH_TO_ACTIVE_BY_SOF_INTR
+	/* if the config do not config the sof,so should disable it */
+	if ((pcd->config.ext_intr_en & USBD_SOF_INTR) == 0) {
+		USB_GLOBAL->GINTMSK &= ~(USB_OTG_GINTMSK_SOFM);
+	}
+#endif
+
 	usb_os_spinunlock(pcd->lock);
 	usbd_core_sof(pcd->dev);
 	usb_os_spinlock(pcd->lock);
@@ -1146,7 +1266,22 @@ static void usbd_pcd_handle_sof_interrupt(usbd_pcd_t *pcd)
 USB_TEXT_SECTION
 static void usbd_pcd_handle_eopf_interrupt(usbd_pcd_t *pcd)
 {
-	usbd_core_eopf(pcd->dev);
+	usb_dev_t *dev = pcd->dev;
+	u8 ep_num;
+	if (dev->dev_state == USBD_STATE_CONFIGURED) {
+		usbd_pcd_ep_t *ep;
+
+		for (ep_num = 1U; ep_num < USB_MAX_ENDPOINTS; ep_num++) {
+			ep = &(pcd->out_ep[ep_num]);
+			if ((USB_CH_EP_TYPE_ISOC == ep->type) && USB_EP_IS_OUT(ep->addr) && ((USB_OUTEP(ep_num)->DOEPCTL & USB_OTG_DOEPCTL_EPENA) == USB_OTG_DOEPCTL_EPENA)) {
+				if ((USB_DEVICE->DSTS & BIT8) == 0U) { //work in next SOF
+					USB_OUTEP(ep_num)->DOEPCTL |= USB_OTG_DOEPCTL_SODDFRM;
+				} else {
+					USB_OUTEP(ep_num)->DOEPCTL |= USB_OTG_DOEPCTL_SD0PID_SEVNFRM;
+				}
+			}
+		}
+	}
 }
 
 /**
@@ -1278,6 +1413,14 @@ static void usbd_pcd_handle_interrupt(usbd_pcd_t *pcd)
 		/* Handle SOF Interrupt */
 		if (gintsts & (USB_OTG_GINTSTS_SOF)) {
 			RTK_LOGD(TAG, "SOF\n");
+#if USBD_SWITCH_TO_ACTIVE_BY_SOF_INTR
+			/*
+				if the device wakes up the host remotely,
+				WKUINT intr will not be triggered
+				depend on sof intr to run the wakeup callback
+			*/
+			usbd_pcd_handle_wakeup_interrupt(pcd);
+#endif
 			usbd_pcd_handle_sof_interrupt(pcd);
 			USB_PCD_CLEAR_FLAG(USB_OTG_GINTSTS_SOF);
 		}
@@ -1331,9 +1474,7 @@ u8 usbd_pcd_init(usb_dev_t *dev, usbd_config_t *config)
 	RTK_LOGI(TAG, "* dma_enable: %d\n", config->dma_enable);
 	RTK_LOGI(TAG, "* isr_priority: %d\n", config->isr_priority);
 	RTK_LOGI(TAG, "* intr_use_ptx_fifo: %d\n", config->intr_use_ptx_fifo);
-	RTK_LOGI(TAG, "* rx_fifo_depth: %d\n", config->rx_fifo_depth);
-	RTK_LOGI(TAG, "* nptx_fifo_depth: %d\n", config->nptx_fifo_depth);
-	RTK_LOGI(TAG, "* ptx_fifo_depth: %d\n", config->ptx_fifo_depth);
+	RTK_LOGI(TAG, "* ptx_fifo_first: %d\n", config->ptx_fifo_first);
 	RTK_LOGI(TAG, "* ext_intr_en: 0x%08X\n", config->ext_intr_en);
 	RTK_LOGI(TAG, "* nptx_max_epmis_cnt: %d\n", config->nptx_max_epmis_cnt);
 	for (i = 0U; i < USB_MAX_ENDPOINTS; i++) {
@@ -1638,11 +1779,6 @@ u8 usbd_pcd_ep_init(usbd_pcd_t *pcd, u8 ep_addr, u16 ep_mps, u8 ep_type)
 		}
 	}
 
-	/* Set initial data PID. */
-	if (ep_type == USB_CH_EP_TYPE_BULK) {
-		ep->data_pid_start = 0U;
-	}
-
 	usb_os_spinlock(pcd->lock);
 	usbd_hal_ep_activate(pcd, ep);
 	usb_os_spinunlock(pcd->lock);
@@ -1805,7 +1941,7 @@ u8 usbd_pcd_ep_set_stall(usbd_pcd_t *pcd, u8 ep_addr)
 	usbd_pcd_ep_t *ep;
 	u8 ep_num = USB_EP_NUM(ep_addr);
 
-	if (ep_num > USB_MAX_ENDPOINTS) {
+	if (ep_num >= USB_MAX_ENDPOINTS) {
 		return HAL_ERR_PARA;
 	}
 
@@ -1842,7 +1978,7 @@ u8 usbd_pcd_ep_clear_stall(usbd_pcd_t *pcd, u8 ep_addr)
 	usbd_pcd_ep_t *ep;
 	u8 ep_num = USB_EP_NUM(ep_addr);
 
-	if (ep_num > USB_MAX_ENDPOINTS) {
+	if (ep_num >= USB_MAX_ENDPOINTS) {
 		return HAL_ERR_PARA;
 	}
 

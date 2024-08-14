@@ -47,7 +47,6 @@ u8 usbd_core_set_speed(usb_dev_t  *dev, usb_speed_type_t speed);
 u8 usbd_core_suspend(usb_dev_t  *dev);
 u8 usbd_core_resume(usb_dev_t  *dev);
 u8 usbd_core_sof(usb_dev_t  *dev);
-u8 usbd_core_eopf(usb_dev_t  *dev);
 u8 usbd_core_connected(usb_dev_t  *dev);
 u8 usbd_core_disconnected(usb_dev_t  *dev);
 u8 usbd_core_ep_set_stall(usb_dev_t *dev, u8 ep_addr);

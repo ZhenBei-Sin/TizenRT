@@ -15,7 +15,6 @@
 
 /* Includes ------------------------------------------------------------------ */
 
-#include "usb_hal.h"
 #include "usbd.h"
 #include "usbd_hal.h"
 #include "usbd_core.h"

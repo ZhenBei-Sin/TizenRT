@@ -15,7 +15,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 
-#include "usb_hal.h"
 #include "usbd_hal.h"
 
 /* Private defines -----------------------------------------------------------*/
@@ -32,8 +31,6 @@ USB_DATA_SECTION
 static const char *const TAG = "USB";
 
 /* Private functions ---------------------------------------------------------*/
-
-#if (defined(CONFIG_AMEBAD2) || defined(CONFIG_AMEBADPLUS) || defined(CONFIG_RTL8721D) || defined (CONFIG_RTL8720F))
 
 /**
   * @brief  Set Tx FIFO
@@ -76,10 +73,6 @@ static u8 usbd_hal_set_tx_fifo(usbd_pcd_t *pcd, u8 fifo, u16 size)
 	return HAL_OK;
 }
 
-#endif
-
-#if (defined(CONFIG_AMEBAD2) || defined(CONFIG_AMEBADPLUS) || defined(CONFIG_RTL8721D))
-
 /**
   * @brief  Set Rx FIFO
   * @param  pcd: PCD handle
@@ -96,8 +89,6 @@ static u8 usbd_hal_set_rx_fifo(usbd_pcd_t *pcd, u16 size)
 	return HAL_OK;
 }
 
-#endif
-
 /* Exported functions --------------------------------------------------------*/
 
 /**
@@ -109,6 +100,7 @@ USB_TEXT_SECTION
 u8 usbd_hal_set_turnaround_time(usbd_pcd_t *pcd)
 {
 	u32 UsbTrd;
+	u32 reg;
 
 	/* The USBTRD is configured according to the tables below, depending on AHB frequency
 	used by application. In the low AHB frequency range it is used to stretch enough the USB response
@@ -119,9 +111,10 @@ u8 usbd_hal_set_turnaround_time(usbd_pcd_t *pcd)
 	} else {
 		UsbTrd = USBD_FS_TRDT_VALUE;
 	}
-
-	USB_GLOBAL->GUSBCFG &= ~USB_OTG_GUSBCFG_TRDT;
-	USB_GLOBAL->GUSBCFG |= (u32)((UsbTrd << 10) & USB_OTG_GUSBCFG_TRDT);
+	reg = USB_GLOBAL->GUSBCFG;
+	reg &= ~USB_OTG_GUSBCFG_TRDT;
+	reg |= (u32)((UsbTrd << 10) & USB_OTG_GUSBCFG_TRDT);
+	USB_GLOBAL->GUSBCFG = reg;
 
 	return HAL_OK;
 }
@@ -241,33 +234,36 @@ u8 usbd_hal_device_init(usbd_pcd_t *pcd)
 	USB_DEVICE->DAINTMSK = 0U;
 
 	for (i = 0U; i < USB_MAX_ENDPOINTS; i++) {
-		if ((USB_INEP(i)->DIEPCTL & USB_OTG_DIEPCTL_EPENA) == USB_OTG_DIEPCTL_EPENA) {
+		reg = USB_INEP(i)->DIEPCTL;
+		if ((reg & USB_OTG_DIEPCTL_EPENA) == USB_OTG_DIEPCTL_EPENA) {
 			if (i == 0U) {
-				USB_INEP(i)->DIEPCTL = USB_OTG_DIEPCTL_SNAK;
+				reg = USB_OTG_DIEPCTL_SNAK;
 			} else {
-				USB_INEP(i)->DIEPCTL = USB_OTG_DIEPCTL_EPDIS | USB_OTG_DIEPCTL_SNAK;
+				reg = USB_OTG_DIEPCTL_EPDIS | USB_OTG_DIEPCTL_SNAK;
 			}
 		} else {
-			USB_INEP(i)->DIEPCTL = 0U;
+			reg = 0U;
 		}
-
+		USB_INEP(i)->DIEPCTL = reg;
 		USB_INEP(i)->DIEPTSIZ = 0U;
 		USB_INEP(i)->DIEPINT  = 0xFFFFU; //0xFB7FU;
 		USB_INEP(i)->DIEPDMA  = 0U;
 	}
 
 	for (i = 0U; i < USB_MAX_ENDPOINTS; i++) {
+		reg = USB_OUTEP(i)->DOEPCTL;
 		/* FIXME: sgoutnak & epdis+snak & cgoutnak */
-		if ((USB_OUTEP(i)->DOEPCTL & USB_OTG_DOEPCTL_EPENA) == USB_OTG_DOEPCTL_EPENA) {
+		if ((reg & USB_OTG_DOEPCTL_EPENA) == USB_OTG_DOEPCTL_EPENA) {
 			if (i == 0U) {
-				USB_OUTEP(i)->DOEPCTL = USB_OTG_DOEPCTL_SNAK;
+				reg = USB_OTG_DOEPCTL_SNAK;
 			} else {
-				USB_OUTEP(i)->DOEPCTL = USB_OTG_DOEPCTL_EPDIS | USB_OTG_DOEPCTL_SNAK;
+				reg = USB_OTG_DOEPCTL_EPDIS | USB_OTG_DOEPCTL_SNAK;
 			}
 		} else {
-			USB_OUTEP(i)->DOEPCTL = 0U;
+			reg = 0U;
 		}
 
+		USB_OUTEP(i)->DOEPCTL = reg;
 		USB_OUTEP(i)->DOEPTSIZ = 0U;
 		USB_OUTEP(i)->DOEPINT  = 0xFFFFU; //0xFB7FU;
 		USB_OUTEP(i)->DOEPDMA  = 0U;
@@ -275,41 +271,42 @@ u8 usbd_hal_device_init(usbd_pcd_t *pcd)
 
 	USB_DEVICE->DIEPMSK &= ~(USB_OTG_DIEPMSK_TXFURM);
 
-	/* Disable all interrupts. */
-	USB_GLOBAL->GINTMSK = 0U;
-
 	/* Clear any pending interrupts */
 	USB_GLOBAL->GINTSTS = 0xFFFFFFFF; // 0xBFFFFFFFU;
 
+	/* Disable all interrupts: GINTMSK. */
+	reg = 0U;
+
 	/* Enable the common interrupts */
 	if (cfg->dma_enable == 0U) {
-		USB_GLOBAL->GINTMSK |= USB_OTG_GINTMSK_RXFLVLM;
+		reg |= USB_OTG_GINTMSK_RXFLVLM;
 	}
 
 	/* FIXME: from AmebaD */
-	//USB_GLOBAL->GINTMSK |= USB_OTG_GINTMSK_MMISM | USB_OTG_GINTMSK_OTGINT | USB_OTG_GINTMSK_CIDSCHGM | USB_OTG_GINTMSK_SRQIM;
-	USB_GLOBAL->GINTMSK |= USB_OTG_GINTMSK_WUIM;
+	//reg |= USB_OTG_GINTMSK_MMISM | USB_OTG_GINTMSK_OTGINT | USB_OTG_GINTMSK_CIDSCHGM | USB_OTG_GINTMSK_SRQIM;
+	reg |= USB_OTG_GINTMSK_WUIM;
 
 	/* For attach status check */
-	//USB_GLOBAL->GINTMSK |= USB_OTG_GINTMSK_ESUSPM;
+	//reg |= USB_OTG_GINTMSK_ESUSPM;
 
 	/* Enable interrupts matching to the Device mode ONLY */
-	USB_GLOBAL->GINTMSK |= USB_OTG_GINTMSK_USBSUSPM | USB_OTG_GINTMSK_USBRST |
-						   USB_OTG_GINTMSK_ENUMDNEM | USB_OTG_GINTMSK_IEPINT |
-						   USB_OTG_GINTMSK_OEPINT;
+	reg |= USB_OTG_GINTMSK_USBSUSPM | USB_OTG_GINTMSK_USBRST |
+		   USB_OTG_GINTMSK_ENUMDNEM | USB_OTG_GINTMSK_IEPINT |
+		   USB_OTG_GINTMSK_OEPINT;
 
 	if (cfg->ext_intr_en & USBD_SOF_INTR) {
-		USB_GLOBAL->GINTMSK |= USB_OTG_GINTMSK_SOFM;
+		reg |= USB_OTG_GINTMSK_SOFM;
 	}
 	if (cfg->ext_intr_en & USBD_EOPF_INTR) {
-		USB_GLOBAL->GINTMSK |= USB_OTG_GINTMSK_EOPFM;
+		reg |= USB_OTG_GINTMSK_EOPFM;
 	}
 	if (cfg->ext_intr_en & USBD_ICII_INTR) {
-		USB_GLOBAL->GINTMSK |= USB_OTG_GINTMSK_IISOIXFRM;
+		reg |= USB_OTG_GINTMSK_IISOIXFRM;
 	}
 	if (cfg->ext_intr_en & USBD_EPMIS_INTR) {
-		USB_GLOBAL->GINTMSK |= USB_OTG_GINTMSK_EPMISM;
+		reg |= USB_OTG_GINTMSK_EPMISM;
 	}
+	USB_GLOBAL->GINTMSK = reg;
 
 	return ret;
 }
@@ -363,72 +360,19 @@ u8 usbd_hal_device_stop(usbd_pcd_t *pcd)
 USB_TEXT_SECTION
 u8 usbd_hal_config_dfifo(usbd_pcd_t *pcd)
 {
-#if defined (CONFIG_RTL8720F)
-	usbd_hal_set_tx_fifo(pcd, 1, 16);
-	usbd_hal_set_tx_fifo(pcd, 2, 256);
-	usbd_hal_set_tx_fifo(pcd, 3, 32);
-	usbd_hal_set_tx_fifo(pcd, 4, 256);
-#elif (defined(CONFIG_AMEBAD2) || defined(CONFIG_AMEBADPLUS) || defined(CONFIG_RTL8721D))
-	u8 auto_adjust_dfifo_depth = 0U;
 	usbd_config_t *cfg = &pcd->config;
 	u32 max_rx_fifo_depth = (USB_GLOBAL->GRXFSIZ & USB_OTG_GRXFSIZ_RXFD_Msk) >> USB_OTG_GRXFSIZ_RXFD_Pos;
 	u32 max_nptx_fifo_depth = (USB_GLOBAL->GNPTXFSIZ & USB_OTG_GNPTXFSIZ_NPTXFDEP_Msk) >> USB_OTG_GNPTXFSIZ_NPTXFDEP_Pos;
-	u32 max_ptx_fifo_depth = (USB_GLOBAL->DPTXFSIZ_DIEPTXF[0] & USB_OTG_DPTXFSIZ_DIEPTXF_TXFD_Msk) >> USB_OTG_DPTXFSIZ_DIEPTXF_TXFD_Pos;
+	//u32 max_ptx_fifo_depth = (USB_GLOBAL->DPTXFSIZ_DIEPTXF[0] & USB_OTG_DPTXFSIZ_DIEPTXF_TXFD_Msk) >> USB_OTG_DPTXFSIZ_DIEPTXF_TXFD_Pos;
 	u32 max_fifo_depth = (USB_GLOBAL->GHWCFG3 & USB_OTG_GHWCFG3_DFIFODEP_Msk) >> USB_OTG_GHWCFG3_DFIFODEP_Pos;
 
-	if ((cfg->rx_fifo_depth  == 0U) && (cfg->nptx_fifo_depth  == 0U) && (cfg->ptx_fifo_depth  == 0U)) {
-		RTK_LOGI(TAG, "DFIFO size not specified, use default value\n");
-		auto_adjust_dfifo_depth = 1U;
-		cfg->rx_fifo_depth = max_rx_fifo_depth;
-		cfg->nptx_fifo_depth = max_nptx_fifo_depth;
-		cfg->ptx_fifo_depth = max_fifo_depth - max_rx_fifo_depth - max_nptx_fifo_depth;
-	} else {
-		if (cfg->rx_fifo_depth > max_rx_fifo_depth) {
-			RTK_LOGE(TAG, "Invalid rx_fifo_depth value %d, allowed max value %d\n", cfg->rx_fifo_depth, max_rx_fifo_depth);
-			return HAL_ERR_PARA;
-		} else if (cfg->rx_fifo_depth  == 0U) {
-			auto_adjust_dfifo_depth = 1U;
-			cfg->rx_fifo_depth = max_rx_fifo_depth;
-			RTK_LOGW(TAG, "No rx_fifo_depth specified, use default value %d\n", max_rx_fifo_depth);
-		}
-
-		if (cfg->nptx_fifo_depth > max_nptx_fifo_depth) {
-			RTK_LOGE(TAG, "Invalid nptx_fifo_depth value %d, allowed max value %d\n", cfg->nptx_fifo_depth, max_nptx_fifo_depth);
-			return HAL_ERR_PARA;
-		} else if (cfg->nptx_fifo_depth  == 0U) {
-			auto_adjust_dfifo_depth = 1U;
-			cfg->nptx_fifo_depth = max_nptx_fifo_depth;
-			RTK_LOGW(TAG, "No nptx_fifo_depth specified, use default value %d\n", max_nptx_fifo_depth);
-		}
-
-		if (cfg->ptx_fifo_depth > max_ptx_fifo_depth) {
-			RTK_LOGE(TAG, "Invalid ptx_fifo_depth value %d, allowed max value %d\n", cfg->rx_fifo_depth, max_rx_fifo_depth);
-			return HAL_ERR_PARA;
-		} else if (cfg->ptx_fifo_depth  == 0U) {
-			auto_adjust_dfifo_depth = 1U;
-			cfg->ptx_fifo_depth = max_ptx_fifo_depth;
-			RTK_LOGW(TAG, "No ptx_fifo_depth specified, use default value %d\n", max_ptx_fifo_depth);
-		}
-
-		if (cfg->rx_fifo_depth + cfg->nptx_fifo_depth + cfg->ptx_fifo_depth > max_fifo_depth) {
-			RTK_LOGE(TAG, "Invalid DFIFO configuration, please limit the max total DFIFO size to %d\n", max_fifo_depth);
-			return HAL_ERR_PARA;
-		}
+	if (cfg->ptx_fifo_first) {
+		max_rx_fifo_depth -= 8U;
 	}
 
-	if (auto_adjust_dfifo_depth) {
-		RTK_LOGI(TAG, "DFIFO configurations:\n");
-		RTK_LOGI(TAG, "* rx_fifo_depth: %d\n", cfg->rx_fifo_depth);
-		RTK_LOGI(TAG, "* nptx_fifo_depth: %d\n", cfg->nptx_fifo_depth);
-		RTK_LOGI(TAG, "* ptx_fifo_depth: %d\n", cfg->ptx_fifo_depth);
-	}
-
-	usbd_hal_set_rx_fifo(pcd, cfg->rx_fifo_depth);
-	usbd_hal_set_tx_fifo(pcd, 0, cfg->nptx_fifo_depth);
-	usbd_hal_set_tx_fifo(pcd, 1, cfg->ptx_fifo_depth);
-#else
-	UNUSED(pcd);
-#endif
+	usb_hal_set_rx_fifo(max_rx_fifo_depth);
+	usb_hal_set_np_tx_fifo(max_nptx_fifo_depth);
+	usb_hal_set_ptx_fifo(1, max_fifo_depth - max_rx_fifo_depth - max_nptx_fifo_depth);
 
 	return HAL_OK;
 }
@@ -523,10 +467,9 @@ u8 usbd_hal_ep_activate(usbd_pcd_t *pcd, usbd_pcd_ep_t *ep)
 
 	if (USB_EP_IS_IN(ep->addr)) {
 		USB_DEVICE->DAINTMSK |= USB_OTG_DAINTMSK_IEPM & (u32)(1UL << ep_num);
-
-		if ((USB_INEP(ep_num)->DIEPCTL & USB_OTG_DIEPCTL_USBAEP) == 0U) {
+		reg = USB_INEP(ep_num)->DIEPCTL;
+		if ((reg & USB_OTG_DIEPCTL_USBAEP) == 0U) {
 			tx_fifo_num = usbd_hal_get_tx_fifo_num(pcd, ep);
-			reg = USB_INEP(ep_num)->DIEPCTL;
 			reg &= ~(USB_OTG_DIEPCTL_MPSIZ_Msk | USB_OTG_DIEPCTL_EPTYP_Msk | USB_OTG_DIEPCTL_TXFNUM_Msk);
 			reg |= (ep->max_packet_len & USB_OTG_DIEPCTL_MPSIZ_Msk) |
 				   ((u32)ep->type << USB_OTG_DIEPCTL_EPTYP_Pos) | (tx_fifo_num << USB_OTG_DIEPCTL_TXFNUM_Pos) |
@@ -557,9 +500,8 @@ u8 usbd_hal_ep_activate(usbd_pcd_t *pcd, usbd_pcd_ep_t *ep)
 		}
 	} else {
 		USB_DEVICE->DAINTMSK |= USB_OTG_DAINTMSK_OEPM & ((u32)(1UL << ep_num) << USB_OTG_DAINTMSK_OEPM_Pos);
-
-		if (((USB_OUTEP(ep_num)->DOEPCTL) & USB_OTG_DOEPCTL_USBAEP) == 0U) {
-			reg = USB_OUTEP(ep_num)->DOEPCTL;
+		reg = USB_OUTEP(ep_num)->DOEPCTL;
+		if ((reg & USB_OTG_DOEPCTL_USBAEP) == 0U) {
 			reg &= ~(USB_OTG_DOEPCTL_MPSIZ_Msk | USB_OTG_DOEPCTL_EPTYP_Msk);
 			reg |= (ep->max_packet_len & USB_OTG_DOEPCTL_MPSIZ) |
 				   ((u32)ep->type << USB_OTG_DOEPCTL_EPTYP_Pos) |
@@ -635,30 +577,33 @@ u8 usbd_hal_ep_start_transfer(usbd_pcd_t *pcd, usbd_pcd_ep_t *ep)
 	u8 ep_num = USB_EP_NUM(ep->addr);
 	u8 dma = pcd->config.dma_enable;
 	u32 pktcnt;
-
+	u32 reg;
 	/* IN endpoint */
 	if (USB_EP_IS_IN(ep->addr)) {
+		reg = USB_INEP(ep_num)->DIEPTSIZ;
 		/* Zero Length Packet? */
-		if (ep->xfer_len == 0U) {
-			USB_INEP(ep_num)->DIEPTSIZ &= ~(USB_OTG_DIEPTSIZ_PKTCNT);
-			USB_INEP(ep_num)->DIEPTSIZ |= (USB_OTG_DIEPTSIZ_PKTCNT & (1U << USB_OTG_DIEPTSIZ_PKTCNT_Pos));
-			USB_INEP(ep_num)->DIEPTSIZ &= ~(USB_OTG_DIEPTSIZ_XFRSIZ);
+		if (ep->is_zlp) {
+			reg &= ~(USB_OTG_DIEPTSIZ_PKTCNT);
+			reg |= (USB_OTG_DIEPTSIZ_PKTCNT & (1U << USB_OTG_DIEPTSIZ_PKTCNT_Pos));
+			reg &= ~(USB_OTG_DIEPTSIZ_XFRSIZ);
 		} else {
 			/* Program the transfer size and packet count
 			* as follows: xfersize = N * max_packet_len +
 			* short_packet pktcnt = N + (short_packet
 			* exist ? 1 : 0)
 			*/
-			USB_INEP(ep_num)->DIEPTSIZ &= ~(USB_OTG_DIEPTSIZ_XFRSIZ);
-			USB_INEP(ep_num)->DIEPTSIZ &= ~(USB_OTG_DIEPTSIZ_PKTCNT);
-			USB_INEP(ep_num)->DIEPTSIZ |= (USB_OTG_DIEPTSIZ_PKTCNT & (((ep->xfer_len + ep->max_packet_len - 1U) / ep->max_packet_len) << USB_OTG_DIEPTSIZ_PKTCNT_Pos));
-			USB_INEP(ep_num)->DIEPTSIZ |= (USB_OTG_DIEPTSIZ_XFRSIZ & (ep->xfer_len << USB_OTG_DIEPTSIZ_XFRSIZ_Pos));
+			reg &= ~(USB_OTG_DIEPTSIZ_XFRSIZ);
+			reg &= ~(USB_OTG_DIEPTSIZ_PKTCNT);
+			reg |= (USB_OTG_DIEPTSIZ_PKTCNT & (((ep->xfer_len + ep->max_packet_len - 1U) / ep->max_packet_len) << USB_OTG_DIEPTSIZ_PKTCNT_Pos));
+			reg |= (USB_OTG_DIEPTSIZ_XFRSIZ & (ep->xfer_len << USB_OTG_DIEPTSIZ_XFRSIZ_Pos));
 
 			if (ep->is_ptx) {
-				USB_INEP(ep_num)->DIEPTSIZ &= ~(USB_OTG_DIEPTSIZ_MULCNT);
-				USB_INEP(ep_num)->DIEPTSIZ |= (USB_OTG_DIEPTSIZ_MULCNT & (1U << USB_OTG_DIEPTSIZ_MULCNT_Pos));
+				reg &= ~(USB_OTG_DIEPTSIZ_MULCNT);
+				reg |= (USB_OTG_DIEPTSIZ_MULCNT & (1U << USB_OTG_DIEPTSIZ_MULCNT_Pos));
 			}
 		}
+
+		USB_INEP(ep_num)->DIEPTSIZ = reg;
 
 		if (dma) {
 			if (ep->dma_addr != 0U) {
@@ -678,18 +623,20 @@ u8 usbd_hal_ep_start_transfer(usbd_pcd_t *pcd, usbd_pcd_ep_t *ep)
 			}
 		}
 
+		reg = USB_INEP(ep_num)->DIEPCTL;
 		if (ep->is_ptx) {
 			if ((USB_DEVICE->DSTS & (1U << USB_OTG_DSTS_FNSOF_Pos)) == 0U) {
-				USB_INEP(ep_num)->DIEPCTL |= USB_OTG_DIEPCTL_SODDFRM;
+				reg |= USB_OTG_DIEPCTL_SODDFRM;
 			} else {
-				USB_INEP(ep_num)->DIEPCTL |= USB_OTG_DIEPCTL_SD0PID_SEVNFRM;
+				reg |= USB_OTG_DIEPCTL_SD0PID_SEVNFRM;
 			}
 		}
 
 		/* EP enable */
-		USB_INEP(ep_num)->DIEPCTL |= (USB_OTG_DIEPCTL_CNAK | USB_OTG_DIEPCTL_EPENA);
+		reg |= (USB_OTG_DIEPCTL_CNAK | USB_OTG_DIEPCTL_EPENA);
+		USB_INEP(ep_num)->DIEPCTL = reg;
 
-		if ((ep->is_ptx) && (dma == 0U)) {
+		if ((ep->is_ptx) && (dma == 0U) && (ep->is_zlp == 0)) {
 			usb_hal_write_packet(ep->xfer_buff, ep_num, (u16)ep->xfer_len);
 		}
 	} else { /* OUT endpoint */
@@ -697,17 +644,20 @@ u8 usbd_hal_ep_start_transfer(usbd_pcd_t *pcd, usbd_pcd_ep_t *ep)
 		* pktcnt = N
 		* xfersize = N * max_packet_len
 		*/
-		USB_OUTEP(ep_num)->DOEPTSIZ &= ~(USB_OTG_DOEPTSIZ_XFRSIZ);
-		USB_OUTEP(ep_num)->DOEPTSIZ &= ~(USB_OTG_DOEPTSIZ_PKTCNT);
+		reg = USB_OUTEP(ep_num)->DOEPTSIZ;
+		reg &= ~(USB_OTG_DOEPTSIZ_XFRSIZ);
+		reg &= ~(USB_OTG_DOEPTSIZ_PKTCNT);
 
-		if (ep->xfer_len == 0U) {
-			USB_OUTEP(ep_num)->DOEPTSIZ |= (USB_OTG_DOEPTSIZ_XFRSIZ & ep->max_packet_len);
-			USB_OUTEP(ep_num)->DOEPTSIZ |= (USB_OTG_DOEPTSIZ_PKTCNT & (1U << USB_OTG_DOEPTSIZ_PKTCNT_Pos));
+		if (ep->is_zlp) {
+			reg |= (USB_OTG_DOEPTSIZ_XFRSIZ & ep->max_packet_len);
+			reg |= (USB_OTG_DOEPTSIZ_PKTCNT & (1U << USB_OTG_DOEPTSIZ_PKTCNT_Pos));
 		} else {
 			pktcnt = (ep->xfer_len + ep->max_packet_len - 1U) / ep->max_packet_len;
-			USB_OUTEP(ep_num)->DOEPTSIZ |= USB_OTG_DOEPTSIZ_PKTCNT & (pktcnt << USB_OTG_DOEPTSIZ_PKTCNT_Pos);
-			USB_OUTEP(ep_num)->DOEPTSIZ |= USB_OTG_DOEPTSIZ_XFRSIZ & ((ep->max_packet_len * pktcnt) << USB_OTG_DOEPTSIZ_XFRSIZ_Pos);
+			reg |= USB_OTG_DOEPTSIZ_PKTCNT & (pktcnt << USB_OTG_DOEPTSIZ_PKTCNT_Pos);
+			reg |= USB_OTG_DOEPTSIZ_XFRSIZ & ((ep->max_packet_len * pktcnt) << USB_OTG_DOEPTSIZ_XFRSIZ_Pos);
 		}
+
+		USB_OUTEP(ep_num)->DOEPTSIZ = reg;
 
 		if (dma) {
 			if (ep->dma_addr != 0U) {
@@ -715,17 +665,19 @@ u8 usbd_hal_ep_start_transfer(usbd_pcd_t *pcd, usbd_pcd_ep_t *ep)
 			}
 		}
 
+		reg = USB_OUTEP(ep_num)->DOEPCTL;
 		if (ep->type == USB_CH_EP_TYPE_ISOC) {
 			if ((USB_DEVICE->DSTS & (1U << USB_OTG_DSTS_FNSOF_Pos)) == 0U) {
-				USB_OUTEP(ep_num)->DOEPCTL |= USB_OTG_DOEPCTL_SODDFRM;
+				reg |= USB_OTG_DOEPCTL_SODDFRM;
 			} else {
-				USB_OUTEP(ep_num)->DOEPCTL |= USB_OTG_DOEPCTL_SD0PID_SEVNFRM;
+				reg |= USB_OTG_DOEPCTL_SD0PID_SEVNFRM;
 			}
 			//program guide : ISOC OUT Application Flow
-			USB_OUTEP(ep_num)->DOEPCTL &= ~(USB_OTG_DOEPCTL_SNAK | USB_OTG_DOEPCTL_EPDIS);
+			reg &= ~(USB_OTG_DOEPCTL_SNAK | USB_OTG_DOEPCTL_EPDIS);
 		}
 		/* EP enable */
-		USB_OUTEP(ep_num)->DOEPCTL |= (USB_OTG_DOEPCTL_CNAK | USB_OTG_DOEPCTL_EPENA);
+		reg |= (USB_OTG_DOEPCTL_CNAK | USB_OTG_DOEPCTL_EPENA);
+		USB_OUTEP(ep_num)->DOEPCTL = reg;
 	}
 
 	return HAL_OK;
@@ -742,29 +694,32 @@ u8 usbd_hal_ep0_start_transfer(usbd_pcd_t *pcd, usbd_pcd_ep_t *ep)
 {
 	u8 ep_num = USB_EP_NUM(ep->addr);
 	u8 dma = pcd->config.dma_enable;
+	u32 reg;
 
 	/* IN endpoint */
 	if (USB_EP_IS_IN(ep->addr)) {
+		reg = USB_INEP(ep_num)->DIEPTSIZ;
 		/* Zero Length Packet? */
-		if (ep->xfer_len == 0U) {
-			USB_INEP(ep_num)->DIEPTSIZ &= ~(USB_OTG_DIEPTSIZ0_PKTCNT);
-			USB_INEP(ep_num)->DIEPTSIZ |= (USB_OTG_DIEPTSIZ0_PKTCNT & (1U << USB_OTG_DIEPTSIZ0_PKTCNT_Pos));
-			USB_INEP(ep_num)->DIEPTSIZ &= ~(USB_OTG_DIEPTSIZ0_XFRSIZ);
+		if (ep->is_zlp) {
+			reg &= ~(USB_OTG_DIEPTSIZ0_PKTCNT);
+			reg |= (USB_OTG_DIEPTSIZ0_PKTCNT & (1U << USB_OTG_DIEPTSIZ0_PKTCNT_Pos));
+			reg &= ~(USB_OTG_DIEPTSIZ0_XFRSIZ);
 		} else {
 			/* Program the transfer size and packet count
 			* as follows: xfersize = N * max_packet_len +
 			* short_packet pktcnt = N + (short_packet
 			* exist ? 1 : 0)
 			*/
-			USB_INEP(ep_num)->DIEPTSIZ &= ~(USB_OTG_DIEPTSIZ0_XFRSIZ);
-			USB_INEP(ep_num)->DIEPTSIZ &= ~(USB_OTG_DIEPTSIZ0_PKTCNT);
+			reg &= ~(USB_OTG_DIEPTSIZ0_XFRSIZ);
+			reg &= ~(USB_OTG_DIEPTSIZ0_PKTCNT);
 
 			if (ep->xfer_len > ep->max_packet_len) {
 				ep->xfer_len = ep->max_packet_len;
 			}
-			USB_INEP(ep_num)->DIEPTSIZ |= (USB_OTG_DIEPTSIZ0_PKTCNT & (1U << USB_OTG_DIEPTSIZ0_PKTCNT_Pos));
-			USB_INEP(ep_num)->DIEPTSIZ |= (USB_OTG_DIEPTSIZ0_XFRSIZ & ep->xfer_len);
+			reg |= (USB_OTG_DIEPTSIZ0_PKTCNT & (1U << USB_OTG_DIEPTSIZ0_PKTCNT_Pos));
+			reg |= (USB_OTG_DIEPTSIZ0_XFRSIZ & ep->xfer_len);
 		}
+		USB_INEP(ep_num)->DIEPTSIZ = reg;
 
 		if (dma) {
 			if (ep->dma_addr != 0U) {
@@ -789,15 +744,17 @@ u8 usbd_hal_ep0_start_transfer(usbd_pcd_t *pcd, usbd_pcd_ep_t *ep)
 		* pktcnt = N
 		* xfersize = N * max_packet_len
 		*/
-		USB_OUTEP(ep_num)->DOEPTSIZ &= ~(USB_OTG_DOEPTSIZ0_XFRSIZ);
-		USB_OUTEP(ep_num)->DOEPTSIZ &= ~(USB_OTG_DOEPTSIZ0_PKTCNT);
+		reg = USB_OUTEP(ep_num)->DOEPTSIZ;
+		reg &= ~(USB_OTG_DOEPTSIZ0_XFRSIZ);
+		reg &= ~(USB_OTG_DOEPTSIZ0_PKTCNT);
 
 		if (ep->xfer_len > 0U) {
 			ep->xfer_len = ep->max_packet_len;
 		}
 
-		USB_OUTEP(ep_num)->DOEPTSIZ |= (USB_OTG_DOEPTSIZ0_PKTCNT & (1U << USB_OTG_DOEPTSIZ0_PKTCNT_Pos));
-		USB_OUTEP(ep_num)->DOEPTSIZ |= (USB_OTG_DOEPTSIZ0_XFRSIZ & (ep->max_packet_len << USB_OTG_DOEPTSIZ0_XFRSIZ_Pos));
+		reg |= (USB_OTG_DOEPTSIZ0_PKTCNT & (1U << USB_OTG_DOEPTSIZ0_PKTCNT_Pos));
+		reg |= (USB_OTG_DOEPTSIZ0_XFRSIZ & (ep->max_packet_len << USB_OTG_DOEPTSIZ0_XFRSIZ_Pos));
+		USB_OUTEP(ep_num)->DOEPTSIZ = reg;
 
 		if (dma) {
 			if (ep->dma_addr != 0U) {
@@ -823,17 +780,22 @@ u8 usbd_hal_ep_set_stall(usbd_pcd_t *pcd, usbd_pcd_ep_t *ep)
 {
 	UNUSED(pcd);
 	u8 ep_num = USB_EP_NUM(ep->addr);
+	u32 reg;
 
 	if (USB_EP_IS_IN(ep->addr)) {
-		if (((USB_INEP(ep_num)->DIEPCTL & USB_OTG_DIEPCTL_EPENA) == 0U) && (ep_num != 0U)) {
-			USB_INEP(ep_num)->DIEPCTL &= ~(USB_OTG_DIEPCTL_EPDIS);
+		reg = USB_INEP(ep_num)->DIEPCTL;
+		if (((reg & USB_OTG_DIEPCTL_EPENA) == 0U) && (ep_num != 0U)) {
+			reg &= ~(USB_OTG_DIEPCTL_EPDIS);
 		}
-		USB_INEP(ep_num)->DIEPCTL |= USB_OTG_DIEPCTL_STALL;
+		reg |= USB_OTG_DIEPCTL_STALL;
+		USB_INEP(ep_num)->DIEPCTL = reg;
 	} else {
-		if (((USB_OUTEP(ep_num)->DOEPCTL & USB_OTG_DOEPCTL_EPENA) == 0U) && (ep_num != 0U)) {
-			USB_OUTEP(ep_num)->DOEPCTL &= ~(USB_OTG_DOEPCTL_EPDIS);
+		reg = USB_OUTEP(ep_num)->DOEPCTL;
+		if (((reg & USB_OTG_DOEPCTL_EPENA) == 0U) && (ep_num != 0U)) {
+			reg &= ~(USB_OTG_DOEPCTL_EPDIS);
 		}
-		USB_OUTEP(ep_num)->DOEPCTL |= USB_OTG_DOEPCTL_STALL;
+		reg |= USB_OTG_DOEPCTL_STALL;
+		USB_OUTEP(ep_num)->DOEPCTL = reg;
 	}
 
 	return HAL_OK;
@@ -850,17 +812,22 @@ u8 usbd_hal_ep_clear_stall(usbd_pcd_t *pcd, usbd_pcd_ep_t *ep)
 {
 	UNUSED(pcd);
 	u8 ep_num = USB_EP_NUM(ep->addr);
+	u32 reg;
 
 	if (USB_EP_IS_IN(ep->addr)) {
-		USB_INEP(ep_num)->DIEPCTL &= ~USB_OTG_DIEPCTL_STALL;
+		reg = USB_INEP(ep_num)->DIEPCTL;
+		reg &= ~USB_OTG_DIEPCTL_STALL;
 		if ((ep->type == USB_CH_EP_TYPE_INTR) || (ep->type == USB_CH_EP_TYPE_BULK)) {
-			USB_INEP(ep_num)->DIEPCTL |= USB_OTG_DIEPCTL_SD0PID_SEVNFRM; /* DATA0 */
+			reg |= USB_OTG_DIEPCTL_SD0PID_SEVNFRM; /* DATA0 */
 		}
+		USB_INEP(ep_num)->DIEPCTL = reg;
 	} else {
-		USB_OUTEP(ep_num)->DOEPCTL &= ~USB_OTG_DOEPCTL_STALL;
+		reg = USB_OUTEP(ep_num)->DOEPCTL;
+		reg &= ~USB_OTG_DOEPCTL_STALL;
 		if ((ep->type == USB_CH_EP_TYPE_INTR) || (ep->type == USB_CH_EP_TYPE_BULK)) {
-			USB_OUTEP(ep_num)->DOEPCTL |= USB_OTG_DOEPCTL_SD0PID_SEVNFRM; /* DATA0 */
+			reg |= USB_OTG_DOEPCTL_SD0PID_SEVNFRM; /* DATA0 */
 		}
+		USB_OUTEP(ep_num)->DOEPCTL = reg;
 	}
 	return HAL_OK;
 }
@@ -875,8 +842,12 @@ USB_TEXT_SECTION
 u8 usbd_hal_set_device_address(usbd_pcd_t *pcd, u8 address)
 {
 	UNUSED(pcd);
-	USB_DEVICE->DCFG &= ~(USB_OTG_DCFG_DAD);
-	USB_DEVICE->DCFG |= ((u32)address << 4) & USB_OTG_DCFG_DAD;
+	u32 reg;
+
+	reg = USB_DEVICE->DCFG;
+	reg &= ~(USB_OTG_DCFG_DAD);
+	reg |= ((u32)address << 4) & USB_OTG_DCFG_DAD;
+	USB_DEVICE->DCFG = reg;
 
 	return HAL_OK;
 }
@@ -918,12 +889,12 @@ USB_TEXT_SECTION
 u32 usbd_hal_read_all_out_ep_interrupts(usbd_pcd_t *pcd)
 {
 	UNUSED(pcd);
-	u32 tmpreg;
+	u32 reg;
 
-	tmpreg  = USB_DEVICE->DAINT;
-	tmpreg &= USB_DEVICE->DAINTMSK;
+	reg = USB_DEVICE->DAINT;
+	reg &= USB_DEVICE->DAINTMSK;
 
-	return ((tmpreg & 0xffff0000U) >> 16);
+	return ((reg & 0xffff0000U) >> 16);
 }
 
 /**
@@ -935,12 +906,12 @@ USB_TEXT_SECTION
 u32 usbd_hal_read_all_in_ep_interrupts(usbd_pcd_t *pcd)
 {
 	UNUSED(pcd);
-	u32 tmpreg;
+	u32 reg;
 
-	tmpreg  = USB_DEVICE->DAINT;
-	tmpreg &= USB_DEVICE->DAINTMSK;
+	reg = USB_DEVICE->DAINT;
+	reg &= USB_DEVICE->DAINTMSK;
 
-	return ((tmpreg & 0xFFFFU));
+	return ((reg & 0xFFFFU));
 }
 
 /**
@@ -953,12 +924,12 @@ USB_TEXT_SECTION
 u32 usbd_hal_read_out_ep_interrupts(usbd_pcd_t *pcd, u8 ep_num)
 {
 	UNUSED(pcd);
-	u32 tmpreg;
+	u32 reg;
 
-	tmpreg  = USB_OUTEP((u32)ep_num)->DOEPINT;
-	tmpreg &= USB_DEVICE->DOEPMSK;
+	reg = USB_OUTEP((u32)ep_num)->DOEPINT;
+	reg &= USB_DEVICE->DOEPMSK;
 
-	return tmpreg;
+	return reg;
 }
 
 /**
@@ -992,13 +963,15 @@ USB_TEXT_SECTION
 u8  usbd_hal_ep0_setup_activate(usbd_pcd_t *pcd)
 {
 	UNUSED(pcd);
-
+	u32 reg;
 	/* Set the MPS of the IN EP based on the enumeration speed */
-	USB_INEP(0U)->DIEPCTL &= ~USB_OTG_DIEPCTL_MPSIZ;
+	reg = USB_INEP(0U)->DIEPCTL;
+	reg &= ~USB_OTG_DIEPCTL_MPSIZ;
 
 	if ((USB_DEVICE->DSTS & USB_OTG_DSTS_ENUMSPD) == DSTS_ENUMSPD_LS_PHY_6MHZ) {
-		USB_INEP(0U)->DIEPCTL |= 3U;
+		reg |= 3U;
 	}
+	USB_INEP(0U)->DIEPCTL = reg;
 	USB_DEVICE->DCTL |= USB_OTG_DCTL_CGINAK;
 
 	return HAL_OK;
@@ -1015,6 +988,7 @@ u8 usbd_hal_ep0_out_start(usbd_pcd_t *pcd)
 	u32 gSNPSiD = USB_GLOBAL->GSNPSID;
 	u32 dma = pcd->config.dma_enable;
 	u32 setup = (u32)pcd->setup;
+	u32 reg;
 
 	if (gSNPSiD > USB_OTG_CORE_ID_300A) {
 		if ((USB_OUTEP(0U)->DOEPCTL & USB_OTG_DOEPCTL_EPENA) == USB_OTG_DOEPCTL_EPENA) {
@@ -1022,10 +996,10 @@ u8 usbd_hal_ep0_out_start(usbd_pcd_t *pcd)
 		}
 	}
 
-	USB_OUTEP(0U)->DOEPTSIZ = 0U;
-	USB_OUTEP(0U)->DOEPTSIZ |= (USB_OTG_DOEPTSIZ0_PKTCNT & (1U << 19));
-	USB_OUTEP(0U)->DOEPTSIZ |= (3U * 8U);
-	USB_OUTEP(0U)->DOEPTSIZ |= USB_OTG_DOEPTSIZ0_STUPCNT;
+	reg = (USB_OTG_DOEPTSIZ0_PKTCNT & (USBD_SETUP_PACKET_CNT << 19));
+	reg |= USBD_SETUP_PACKET_BUF_LEN;
+	reg |= USB_OTG_DOEPTSIZ0_STUPCNT;
+	USB_OUTEP(0U)->DOEPTSIZ = reg;
 
 	if (dma) {
 		_memset((void *)pcd->setup, 0, USBD_SETUP_PACKET_BUF_LEN);
@@ -1111,6 +1085,16 @@ u8 usbd_hal_wake_host(usbd_pcd_t *pcd)
 	u32 dsts;
 
 	usb_os_spinlock(pcd->lock);
+
+#if USBD_SWITCH_TO_ACTIVE_BY_SOF_INTR
+	/*
+		The device wakes up the host remotely;
+		While this function is called, it is means that the device has been resumed,
+		And the WkUpInt interrupt will not be triggered
+		Therefore, enable the sof interrupt to check that the host has indeed recovered the device
+	 */
+	USB_GLOBAL->GINTMSK |= USB_OTG_GINTMSK_SOFM;
+#endif
 
 	dsts = USB_DEVICE->DCTL & ~USB_OTG_DCTL_RWUSIG;
 	dsts |= USB_OTG_DCTL_RWUSIG;

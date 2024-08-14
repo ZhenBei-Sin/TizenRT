@@ -18,10 +18,10 @@
 
 /* Includes ------------------------------------------------------------------*/
 
+#include "usb_os.h"
+#include "usb_ch9.h"
 #include "basic_types.h"
 #include "ameba_soc.h"
-#include "usb_ch9.h"
-#include "usb_os.h"
 
 /* Exported defines ----------------------------------------------------------*/
 

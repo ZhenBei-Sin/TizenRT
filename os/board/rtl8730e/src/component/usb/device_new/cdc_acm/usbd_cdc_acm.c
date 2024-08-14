@@ -461,6 +461,9 @@ static u8 cdc_acm_handle_ep_data_in(usb_dev_t *dev, u8 ep_addr, u8 status)
 				cdc_acm_transmit_zlp();
 			} else {
 				cdev->bulk_in_state = 0U;
+				if (cdev->cb->transmitted) {
+					cdev->cb->transmitted(status);
+				}
 			}
 		}
 #if CONFIG_CDC_ACM_NOTIFY

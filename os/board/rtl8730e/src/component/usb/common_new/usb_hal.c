@@ -15,8 +15,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 
-#include "ameba_soc.h"
-#include "usb_os.h"
 #include "usb_hal.h"
 
 /* Private defines -----------------------------------------------------------*/
@@ -42,6 +40,7 @@ USB_TEXT_SECTION
 static u8 usb_hal_core_reset(void)
 {
 	u32 count = 0U;
+	u32 reg;
 	u32 gSNPSiD = USB_GLOBAL->GSNPSID;
 
 	RTK_LOGI(TAG, "GSNPSID = 0x%08X\n", gSNPSiD);
@@ -76,8 +75,10 @@ static u8 usb_hal_core_reset(void)
 			usb_os_delay_us(1U);
 		} while ((USB_GLOBAL->GRSTCTL & USB_OTG_GRSTCTL_CSRSTDONE) == 0U);
 
-		USB_GLOBAL->GRSTCTL &= ~USB_OTG_GRSTCTL_CSRST;
-		USB_GLOBAL->GRSTCTL |= USB_OTG_GRSTCTL_CSRSTDONE;
+		reg = USB_GLOBAL->GRSTCTL;
+		reg &= ~USB_OTG_GRSTCTL_CSRST;
+		reg |= USB_OTG_GRSTCTL_CSRSTDONE;
+		USB_GLOBAL->GRSTCTL = reg;
 	}
 
 	/* Wait for AHB master IDLE state. */
@@ -135,7 +136,7 @@ static u8 usb_hal_select_phy_register_page(u8 page)
 
 	ret = usb_hal_read_phy_register(USB_OTG_PHY_REG_F4, &reg);
 	if (ret != HAL_OK) {
-		RTK_LOGE(TAG, "Fail to read USB_OTG_PHY_REG_F4: %d\n", ret);
+		RTK_LOGE(TAG, "Fail to R PHY F4: %d\n", ret);
 		return ret;
 	}
 
@@ -143,7 +144,7 @@ static u8 usb_hal_select_phy_register_page(u8 page)
 	reg |= (page << USB_OTG_PHY_REG_F4_BIT_PAGE_SEL_POS) & USB_OTG_PHY_REG_F4_BIT_PAGE_SEL_MASK;
 	ret = usb_hal_write_phy_register(USB_OTG_PHY_REG_F4, reg);
 	if (ret != HAL_OK) {
-		RTK_LOGE(TAG, "Fail to write USB_OTG_PHY_REG_F4: %d\n", ret);
+		RTK_LOGE(TAG, "Fail to W PHY F4: %d\n", ret);
 	}
 
 	return ret;
@@ -162,9 +163,12 @@ USB_TEXT_SECTION
 u8 usb_hal_core_init(u8 dma_enable)
 {
 	u8 ret = HAL_OK;
+	u32 reg;
 
-	USB_GLOBAL->GUSBCFG &= ~USB_OTG_GUSBCFG_ULPIUTMISEL;
-	USB_GLOBAL->GUSBCFG |= USB_OTG_GUSBCFG_PHYIF;
+	reg = USB_GLOBAL->GUSBCFG;
+	reg &= ~USB_OTG_GUSBCFG_ULPIUTMISEL;
+	reg |= USB_OTG_GUSBCFG_PHYIF;
+	USB_GLOBAL->GUSBCFG = reg;
 
 	ret = usb_hal_core_reset();
 	if (ret != HAL_OK) {
@@ -172,7 +176,7 @@ u8 usb_hal_core_init(u8 dma_enable)
 	}
 
 	if (dma_enable == 1U) {
-		USB_GLOBAL->GAHBCFG |= (USB_OTG_GAHBCFG_HBSTLEN_2 | USB_OTG_GAHBCFG_DMAEN);
+		USB_GLOBAL->GAHBCFG |= (USB_OTG_GAHBCFG_HBSTLEN_4 | USB_OTG_GAHBCFG_DMAEN);
 	}
 
 	USB_GLOBAL->GOTGCTL &= ~USB_OTG_GOTGCTL_OTGVER;
@@ -209,7 +213,7 @@ USB_TEXT_SECTION
 void usb_hal_register_irq_handler(usb_irq_fun_t handler)
 {
 	if (handler != NULL) {
-		InterruptRegister(handler, USB_IRQ, NULL, USB_IRQ_PRI);
+		InterruptRegister(handler, USB_IRQ, (u32)NULL, USB_IRQ_PRI);
 	}
 }
 
@@ -277,18 +281,20 @@ void usb_hal_clear_interrupts(u32 interrupt)
 USB_TEXT_SECTION
 u8 usb_hal_set_otg_mode(usb_otg_mode_t mode)
 {
+	u32 reg;
 	u32 count = 0U;
 
-	USB_GLOBAL->GUSBCFG &= ~(USB_OTG_GUSBCFG_FHMOD | USB_OTG_GUSBCFG_FDMOD);
+	reg = USB_GLOBAL->GUSBCFG;
+	reg &= ~(USB_OTG_GUSBCFG_FHMOD | USB_OTG_GUSBCFG_FDMOD);
 
 	if (mode == USB_OTG_MODE_DEVICE) {
-		USB_GLOBAL->GUSBCFG |= USB_OTG_GUSBCFG_FDMOD;
+		reg |= USB_OTG_GUSBCFG_FDMOD;
+		USB_GLOBAL->GUSBCFG = reg;
 	} else if (mode == USB_OTG_MODE_HOST) {
-#if CONFIG_USB_OTG
-		USB_GLOBAL->GUSBCFG &= ~USB_OTG_GUSBCFG_FHMOD;
-#else
-		USB_GLOBAL->GUSBCFG |= USB_OTG_GUSBCFG_FHMOD;
+#if (CONFIG_USB_OTG == 0)
+		reg |= USB_OTG_GUSBCFG_FHMOD;
 #endif
+		USB_GLOBAL->GUSBCFG = reg;
 	} else {
 		return HAL_ERR_PARA;
 	}
@@ -298,12 +304,22 @@ u8 usb_hal_set_otg_mode(usb_otg_mode_t mode)
 	usb_os_sleep_ms(100U);
 #else
 	do {
-		usb_os_delay_us(10U);
-		if (++count > 1000000U) {
-			RTK_LOGE(TAG, "[USB] Set OTG mode %d TO\n", mode);
+		/* the max timeout is 100ms
+		 * the value of 25ms is got from the amebaD branch
+		 * the linux code suggests that maybe sleep 2ms (each time) is enough
+		 * if the boot time is very important, the sleep time can be decreased
+		 */
+		usb_os_sleep_ms(25U);
+
+		if ((USB_GLOBAL->GINTSTS & USB_OTG_GINTSTS_CMOD) == (u32)mode) {
+			break;
+		}
+
+		if (++count > 3U) {
+			RTK_LOGD(TAG, "[USB] Set OTG mode %d TO\n", mode);
 			return HAL_TIMEOUT;
 		}
-	} while ((USB_GLOBAL->GINTSTS & USB_OTG_GINTSTS_CMOD) != (u32)mode);
+	} while (1);
 #endif
 
 	return HAL_OK;
@@ -325,6 +341,63 @@ usb_otg_mode_t usb_hal_get_otg_mode(void)
 	}
 
 	return mode;
+}
+
+/**
+  * @brief  Set Rx FIFO
+  * @param  size: Rx fifo size
+  * @retval HAL status
+  */
+USB_TEXT_SECTION
+int usb_hal_set_rx_fifo(u16 size)
+{
+	USB_GLOBAL->GRXFSIZ = size;
+
+	return HAL_OK;
+}
+
+/**
+  * @brief  Set Non-periodic Tx FIFO
+  * @param  pcd: PCD handle
+  * @param  fifo: Tx fifo number
+  * @param  size: Fifo size
+  * @retval HAL status
+  */
+USB_TEXT_SECTION
+int usb_hal_set_np_tx_fifo(u16 size)
+{
+	USB_GLOBAL->GNPTXFSIZ = ((u32)size << USB_OTG_GNPTXFSIZ_NPTXFDEP_Pos) | USB_GLOBAL->GRXFSIZ;
+
+	return HAL_OK;
+}
+
+/**
+  * @brief  Set Periodic Tx FIFO
+  * @param  fifo: ptx fifo number
+  * @param  size: Fifo size
+  * @retval HAL status
+  */
+USB_TEXT_SECTION
+int usb_hal_set_ptx_fifo(u8 fifo, u16 size)
+{
+	u8 i;
+	u32 tx_offset;
+
+	tx_offset = USB_GLOBAL->GRXFSIZ;
+	tx_offset += (USB_GLOBAL->GNPTXFSIZ) >> USB_OTG_GNPTXFSIZ_NPTXFDEP_Pos;
+
+	if (USB_OTG_MODE_DEVICE == usb_hal_get_otg_mode()) {  /* device */
+		for (i = 0U; i < (fifo - 1U); i++) {
+			tx_offset += (USB_GLOBAL->DPTXFSIZ_DIEPTXF[i] >> USB_OTG_DPTXFSIZ_DIEPTXF_TXFD_Pos);
+		}
+
+		/* Multiply Tx_Size by 2 to get higher performance */
+		USB_GLOBAL->DPTXFSIZ_DIEPTXF[fifo - 1U] = ((u32)size << USB_OTG_DPTXFSIZ_DIEPTXF_TXFD_Pos) | tx_offset;
+	} else { /* host */
+		USB_GLOBAL->HPTXFSIZ = (u32)(((size << USB_OTG_HPTXFSIZ_PTXFD_Pos) & USB_OTG_HPTXFSIZ_PTXFD) | (tx_offset));
+	}
+
+	return HAL_OK;
 }
 
 /**

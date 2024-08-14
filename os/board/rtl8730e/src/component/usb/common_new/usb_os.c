@@ -15,8 +15,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 
-#include "ameba_soc.h"
-#include "usb_os.h"
 #include "usb_hal.h"
 #ifndef CONFIG_FLOADER_USBD_EN
 #include "osdep_service.h"
