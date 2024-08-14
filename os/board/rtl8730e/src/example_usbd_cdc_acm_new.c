@@ -1,13 +1,4 @@
 /**
-  ******************************************************************************
-  * @file    example_usbd_cdc_acm_new.c
-  * @author  Realsil WLAN5 Team
-  * @version V1.0.0
-  * @date    2021-6-18
-  * @brief   This file is example of usbd cdc acm class
-  ******************************************************************************
-  * @attention
-  *
   * This module is a confidential and proprietary property of RealTek and
   * possession or use of this module requires written permission of RealTek.
   *
@@ -16,8 +7,6 @@
   */
 
 /* Includes ------------------------------------------------------------------ */
-
-/* ToDo: Need to remove as for run example only */
 
 #include <platform_opts.h>
 #include "usbd.h"
@@ -28,27 +17,32 @@
 
 // This configuration is used to enable a thread to check hotplug event
 // and reset USB stack to avoid memory leak, only for example.
-#define CONFIG_USDB_CDC_ACM_CHECK_USB_STATUS	0
+#define CONFIG_USBD_CDC_ACM_HOTPLUG				0
 
 // USB speed
-#define CONFIG_USB_FS		/* For testing purpose */
-
+#define CONFIG_USB_FS          /* For testing purpose */
 #ifdef CONFIG_USB_FS
-#define CONFIG_CDC_ACM_SPEED					USB_SPEED_FULL
+#define CONFIG_USBD_CDC_ACM_SPEED				USB_SPEED_FULL
 #else
-#define CONFIG_CDC_ACM_SPEED					USB_SPEED_HIGH
+#define CONFIG_USBD_CDC_ACM_SPEED				USB_SPEED_HIGH
 #endif
 
 // Echo asynchronously, for transfer size larger than packet size. While fpr
 // transfer size less than packet size, the synchronous way is preferred.
-#define CONFIG_USBD_CDC_ACM_ASYNC_XFER			0
+#define CONFIG_USBD_CDC_ACM_ASYNC_XFER				0
 
 // Asynchronous transfer size
-#define CONFIG_CDC_ACM_ASYNC_BUF_SIZE			2048U
+#define CONFIG_CDC_ACM_ASYNC_BUF_SIZE				2048U
 
 // Do not change the settings unless indeed necessary
-#define CONFIG_CDC_ACM_BULK_IN_XFER_SIZE		2048U
-#define CONFIG_CDC_ACM_BULK_OUT_XFER_SIZE		2048U
+#define CONFIG_CDC_ACM_BULK_IN_XFER_SIZE			2048U
+#define CONFIG_CDC_ACM_BULK_OUT_XFER_SIZE			2048U
+
+// Thread priorities
+#define CONFIG_CDC_ACM_INIT_THREAD_PRIORITY			5
+#define CONFIG_CDC_ACM_ISR_THREAD_PRIORITY			7
+#define CONFIG_CDC_ACM_HOTPLUG_THREAD_PRIORITY			8 // Should be higher than CONFIG_CDC_ACM_ISR_THREAD_PRIORITY
+#define CONFIG_CDC_ACM_XFER_THREAD_PRIORITY			5
 
 #define CONFIG_CDC_ACM_RX_TP_TEST				0
 #define CONFIG_TEST_TRANSMIT					1
@@ -61,18 +55,18 @@
 
 static u8 cdc_acm_cb_init(void);
 static u8 cdc_acm_cb_deinit(void);
-static u8 cdc_acm_cb_setup(u8 cmd, u8 *pbuf, u16 length, u16 value);
-static u8 cdc_acm_cb_receive(u8 *pbuf, u32 Len);
-static void cdc_acm_cb_transmitted(u8 status);
+static u8 cdc_acm_cb_setup(usb_setup_req_t *req, u8 *buf);
+static u8 cdc_acm_cb_received(u8 *buf, u32 Len);
+static void cdc_acm_cb_status_changed(u8 status);
 
 /* Private variables ---------------------------------------------------------*/
 
 static usbd_cdc_acm_cb_t cdc_acm_cb = {
-	cdc_acm_cb_init,
-	cdc_acm_cb_deinit,
-	cdc_acm_cb_setup,
-	cdc_acm_cb_receive,
-	cdc_acm_cb_transmitted
+	.init = cdc_acm_cb_init,
+	.deinit = 	cdc_acm_cb_deinit,
+	.setup = cdc_acm_cb_setup,
+	.received = cdc_acm_cb_received,
+	.status_changed = cdc_acm_cb_status_changed
 };
 
 static usbd_cdc_acm_line_coding_t cdc_acm_line_coding;
@@ -81,11 +75,11 @@ static u16 cdc_acm_ctrl_line_state;
 
 #define CONFIG_AMEBASMART_CDC_ACM_ISR_THREAD_PRIORITY  100 //9U
 static usbd_config_t cdc_acm_cfg = {
-	.speed = USB_SPEED_FULL,
+	.speed = CONFIG_USBD_CDC_ACM_SPEED,
 	.dma_enable = 1U,
 	.isr_priority = CONFIG_AMEBASMART_CDC_ACM_ISR_THREAD_PRIORITY,
 	.intr_use_ptx_fifo = 0U,
-	.nptx_max_epmis_cnt = 1U,
+	.nptx_max_epmis_cnt = 10U,
 	.ext_intr_en        = USBD_EPMIS_INTR,
 	.nptx_max_err_cnt = {0U, 0U, 0U, 2000U, }
 };
@@ -95,6 +89,11 @@ static u8 cdc_acm_async_xfer_buf[CONFIG_CDC_ACM_ASYNC_BUF_SIZE];
 static u16 cdc_acm_async_xfer_buf_pos = 0;
 static volatile int cdc_acm_async_xfer_busy = 0;
 static _sema cdc_acm_async_xfer_sema;
+#endif
+
+#if CONFIG_USBD_CDC_ACM_HOTPLUG
+static u8 cdc_acm_attach_status;
+static _sema cdc_acm_attach_status_changed_sema;
 #endif
 
 /* Private functions ---------------------------------------------------------*/
@@ -141,7 +140,7 @@ static u8 cdc_acm_cb_deinit(void)
   * @param  Len: RX data length (in bytes)
   * @retval Status
   */
-static u8 cdc_acm_cb_receive(u8 *buf, u32 len)
+static u8 cdc_acm_cb_received(u8 *buf, u32 len)
 {
 #if CONFIG_TEST_TRANSMIT
 	UNUSED(buf);
@@ -182,12 +181,10 @@ static u8 cdc_acm_cb_receive(u8 *buf, u32 len)
 		ret = HAL_BUSY;
 	}
 
-	usbd_cdc_acm_receive();
 	return ret;
 #else
-	printf("\n[CDC] Rx Success, data0=0x%02x,len=%d bytes\n", buf[0], len);
-	usbd_cdc_acm_transmit(buf, len);
-	return usbd_cdc_acm_receive();
+	//printf("\n[CDC] Rx Success, data0=0x%02x,len=%d bytes\n", buf[0], len);
+	return usbd_cdc_acm_transmit(buf, len);
 #endif
 #endif
 }
@@ -199,11 +196,11 @@ static u8 cdc_acm_cb_receive(u8 *buf, u32 len)
   * @param  len: Number of data to be sent (in bytes)
   * @retval Status
   */
-static u8 cdc_acm_cb_setup(u8 cmd, u8 *pbuf, u16 len, u16 value)
+static u8 cdc_acm_cb_setup(usb_setup_req_t *req, u8 *buf)
 {
 	usbd_cdc_acm_line_coding_t *lc = &cdc_acm_line_coding;
 
-	switch (cmd) {
+	switch (req->bRequest) {
 	case CDC_SEND_ENCAPSULATED_COMMAND:
 		/* Do nothing */
 		break;
@@ -225,22 +222,22 @@ static u8 cdc_acm_cb_setup(u8 cmd, u8 *pbuf, u16 len, u16 value)
 		break;
 
 	case CDC_SET_LINE_CODING:
-		if (len == CDC_ACM_LINE_CODING_SIZE) {
-			lc->bitrate = (u32)(pbuf[0] | (pbuf[1] << 8) | (pbuf[2] << 16) | (pbuf[3] << 24));
-			lc->format = pbuf[4];
-			lc->parity_type = pbuf[5];
-			lc->data_type = pbuf[6];
+		if (req->wLength == CDC_ACM_LINE_CODING_SIZE) {
+			lc->bitrate = (u32)(buf[0] | (buf[1] << 8) | (buf[2] << 16) | (buf[3] << 24));
+			lc->format = buf[4];
+			lc->parity_type = buf[5];
+			lc->data_type = buf[6];
 		}
 		break;
 
 	case CDC_GET_LINE_CODING:
-		pbuf[0] = (u8)(lc->bitrate & 0xFF);
-		pbuf[1] = (u8)((lc->bitrate >> 8) & 0xFF);
-		pbuf[2] = (u8)((lc->bitrate >> 16) & 0xFF);
-		pbuf[3] = (u8)((lc->bitrate >> 24) & 0xFF);
-		pbuf[4] = lc->format;
-		pbuf[5] = lc->parity_type;
-		pbuf[6] = lc->data_type;
+		buf[0] = (u8)(lc->bitrate & 0xFF);
+		buf[1] = (u8)((lc->bitrate >> 8) & 0xFF);
+		buf[2] = (u8)((lc->bitrate >> 16) & 0xFF);
+		buf[3] = (u8)((lc->bitrate >> 24) & 0xFF);
+		buf[4] = lc->format;
+		buf[5] = lc->parity_type;
+		buf[6] = lc->data_type;
 		break;
 
 	case CDC_SET_CONTROL_LINE_STATE:
@@ -250,8 +247,8 @@ static u8 cdc_acm_cb_setup(u8 cmd, u8 *pbuf, u16 len, u16 value)
 				D1:	RTS, 0 - Deactivate, 1 - Activate
 				D0:	DTR, 0 - Not Present, 1 - Present
 		*/
-		cdc_acm_ctrl_line_state = value;
-		if (value & 0x01) {
+		cdc_acm_ctrl_line_state = req->wValue;
+		if (cdc_acm_ctrl_line_state & 0x01) {
 			printf("\n[CDC] VCOM port activated\n");
 #if CONFIG_CDC_ACM_NOTIFY
 			usbd_cdc_acm_notify_serial_state(CDC_ACM_CTRL_DSR | CDC_ACM_CTRL_DCD);
@@ -270,29 +267,25 @@ static u8 cdc_acm_cb_setup(u8 cmd, u8 *pbuf, u16 len, u16 value)
 	return HAL_OK;
 }
 
-static void cdc_acm_cb_transmitted(u8 status)
+static void cdc_acm_cb_status_changed(u8 status)
 {
-	UNUSED(status);
-#if CONFIG_USBD_CDC_ACM_ASYNC_XFER
-	rtw_up_sema(&cdc_acm_async_xfer_sema);
+	printf("\n[CDC] USB status changed: %d\n", status);
+#if CONFIG_USBD_CDC_ACM_HOTPLUG
+	cdc_acm_attach_status = status;
+	rtw_up_sema(&cdc_acm_attach_status_changed_sema);
 #endif
 }
 
-#if CONFIG_USDB_CDC_ACM_CHECK_USB_STATUS
-static void cdc_acm_check_usb_status_thread(void *param)
+#if CONFIG_USBD_CDC_ACM_HOTPLUG
+static void cdc_acm_hotplug_thread(void *param)
 {
 	int ret = 0;
-	int usb_status = USBD_ATTACH_STATUS_INIT;
-	static int old_usb_status = USBD_ATTACH_STATUS_INIT;
 
 	UNUSED(param);
 
 	for (;;) {
-		rtw_mdelay_os(100);
-		usb_status = usbd_get_status();
-		if (old_usb_status != usb_status) {
-			old_usb_status = usb_status;
-			if (usb_status == USBD_ATTACH_STATUS_DETACHED) {
+		if (rtw_down_sema(&cdc_acm_attach_status_changed_sema)) {
+			if (cdc_acm_attach_status == USBD_ATTACH_STATUS_DETACHED) {
 				printf("\n[CDC] USB DETACHED\n");
 				usbd_cdc_acm_deinit();
 				ret = usbd_deinit();
@@ -300,8 +293,7 @@ static void cdc_acm_check_usb_status_thread(void *param)
 					printf("\n[CDC] Fail to de-init USBD driver\n");
 					break;
 				}
-				rtw_mdelay_os(100);
-				printf("\n[CDC] Free heap size: 0x%lx\n", rtw_getFreeHeapSize());
+				printf("\n[CDC] Free heap size: 0x%d\n", rtw_getFreeHeapSize());
 				ret = usbd_init(&cdc_acm_cfg);
 				if (ret != 0) {
 					printf("\n[CDC] Fail to re-init USBD driver\n");
@@ -313,7 +305,7 @@ static void cdc_acm_check_usb_status_thread(void *param)
 					usbd_deinit();
 					break;
 				}
-			} else if (usb_status == USBD_ATTACH_STATUS_ATTACHED) {
+			} else if (cdc_acm_attach_status == USBD_ATTACH_STATUS_ATTACHED) {
 				printf("\n[CDC] USB ATTACHED\n");
 			} else {
 				printf("\n[CDC] USB INIT\n");
@@ -323,7 +315,7 @@ static void cdc_acm_check_usb_status_thread(void *param)
 
 	rtw_thread_exit();
 }
-#endif // CONFIG_USDB_MSC_CHECK_USB_STATUS
+#endif // CONFIG_USBD_MSC_CHECK_USB_STATUS
 
 #if CONFIG_USBD_CDC_ACM_ASYNC_XFER
 static void cdc_acm_xfer_thread(void *param)
@@ -371,7 +363,7 @@ static void cdc_acm_xfer_thread(void *param)
 static void example_usbd_cdc_acm_thread(void *param)
 {
 	int ret = 0;
-#if CONFIG_USDB_CDC_ACM_CHECK_USB_STATUS
+#if CONFIG_USBD_CDC_ACM_HOTPLUG
 	struct task_struct check_task;
 #endif
 #if CONFIG_USBD_CDC_ACM_ASYNC_XFER
@@ -384,16 +376,8 @@ static void example_usbd_cdc_acm_thread(void *param)
 	rtw_init_sema(&cdc_acm_async_xfer_sema, 0);
 #endif
 
-#if 0
-	DBG_ERR_MSG_ON(MODULE_USB_OTG);
-	DBG_WARN_MSG_ON(MODULE_USB_OTG);
-	DBG_INFO_MSG_ON(MODULE_USB_OTG);
-	//ConfigDebug[LEVEL_TRACE] |= BIT(MODULE_USB_OTG);
-
-	DBG_ERR_MSG_ON(MODULE_USB_CLASS);
-	DBG_WARN_MSG_ON(MODULE_USB_CLASS);
-	DBG_INFO_MSG_ON(MODULE_USB_CLASS);
-	//ConfigDebug[LEVEL_TRACE] |= BIT(MODULE_USB_CLASS);
+#if CONFIG_USBD_CDC_ACM_HOTPLUG
+	rtw_init_sema(&cdc_acm_attach_status_changed_sema, 0);
 #endif
 
 	ret = usbd_init(&cdc_acm_cfg);
@@ -408,8 +392,8 @@ static void example_usbd_cdc_acm_thread(void *param)
 		goto exit_usbd_cdc_acm_init_fail;
 	}
 
-#if CONFIG_USDB_CDC_ACM_CHECK_USB_STATUS
-	ret = rtw_create_task(&check_task, "cdc_check_usb_status_thread", 512, 2, cdc_acm_check_usb_status_thread, NULL);
+#if CONFIG_USBD_CDC_ACM_HOTPLUG
+	ret = rtw_create_task(&check_task, "cdc_check_usb_status_thread", 512, CONFIG_CDC_ACM_HOTPLUG_THREAD_PRIORITY, cdc_acm_hotplug_thread, NULL);
 	if (ret != 1) {
 		printf("\n[CDC] Fail to create CDC ACM status check thread\n");
 		goto exit_create_check_task_fail;
@@ -418,7 +402,7 @@ static void example_usbd_cdc_acm_thread(void *param)
 
 #if CONFIG_USBD_CDC_ACM_ASYNC_XFER
 	// The priority of transfer thread shall be lower than USB isr priority
-	ret = rtw_create_task(&xfer_task, "cdc_acm_xfer_thread", 512, 2, cdc_acm_xfer_thread, NULL);
+	ret = rtw_create_task(&xfer_task, "cdc_acm_xfer_thread", 512, CONFIG_CDC_ACM_XFER_THREAD_PRIORITY, cdc_acm_xfer_thread, NULL);
 	if (ret != 1) {
 		printf("\n[CDC] Fail to create CDC ACM transfer thread\n");
 		goto exit_create_xfer_task_fail;
@@ -435,12 +419,12 @@ static void example_usbd_cdc_acm_thread(void *param)
 
 #if CONFIG_USBD_CDC_ACM_ASYNC_XFER
 exit_create_xfer_task_fail:
-#if CONFIG_USDB_CDC_ACM_CHECK_USB_STATUS
+#if CONFIG_USBD_CDC_ACM_HOTPLUG
 	rtw_delete_task(&check_task);
 #endif
 #endif
 
-#if CONFIG_USDB_CDC_ACM_CHECK_USB_STATUS
+#if CONFIG_USBD_CDC_ACM_HOTPLUG
 exit_create_check_task_fail:
 	usbd_cdc_acm_deinit();
 #endif
@@ -449,12 +433,17 @@ exit_usbd_cdc_acm_init_fail:
 	usbd_deinit();
 
 exit_usbd_init_fail:
+#if CONFIG_USBD_CDC_ACM_HOTPLUG
+	rtw_free_sema(&cdc_acm_attach_status_changed_sema);
+#endif
 #if CONFIG_USBD_CDC_ACM_ASYNC_XFER
 	rtw_free_sema(&cdc_acm_async_xfer_sema);
 #endif
 
 	rtw_thread_exit();
 }
+
+/* Exported functions --------------------------------------------------------*/
 
 /**
   * @brief  USB download de-initialize
@@ -466,7 +455,7 @@ void example_usbd_cdc_acm(void)
 	int ret;
 	struct task_struct task;
 
-	ret = rtw_create_task(&task, "example_usbd_cdc_acm_thread", 1024, 5, example_usbd_cdc_acm_thread, NULL);
+	ret = rtw_create_task(&task, "example_usbd_cdc_acm_thread", 1024, CONFIG_CDC_ACM_INIT_THREAD_PRIORITY, example_usbd_cdc_acm_thread, NULL);
 	if (ret != 1) {
 		printf("\n[CDC] Fail to create CDC ACM thread\n");
 	}
