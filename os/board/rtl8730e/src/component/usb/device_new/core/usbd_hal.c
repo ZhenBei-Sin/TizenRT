@@ -1035,7 +1035,7 @@ u8 usbd_hal_ep0_out_start(usbd_pcd_t *pcd)
 
 	if (dma) {
 		_memset((void *)pcd->setup, 0, USBD_SETUP_PACKET_BUF_LEN);
-		DCache_CleanInvalidate(setup, USBD_SETUP_PACKET_BUF_LEN);
+		DCache_Clean(setup, USBD_SETUP_PACKET_BUF_LEN);
 		USB_OUTEP(0U)->DOEPDMA = (u32)setup;
 		/* EP enable */
 		USB_OUTEP(0U)->DOEPCTL |= USB_OTG_DOEPCTL_EPENA | USB_OTG_DOEPCTL_USBAEP;
