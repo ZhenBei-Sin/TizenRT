@@ -891,9 +891,6 @@ u8 usbd_hal_connect(usbd_pcd_t *pcd)
 {
 	UNUSED(pcd);
 	USB_DEVICE->DCTL &= ~USB_OTG_DCTL_SDIS;
-#ifndef CONFIG_USB_FS
-	usb_os_sleep_ms(100U);
-#endif
 
 	return HAL_OK;
 }
@@ -908,9 +905,6 @@ u8 usbd_hal_disconnect(usbd_pcd_t *pcd)
 {
 	UNUSED(pcd);
 	USB_DEVICE->DCTL |= USB_OTG_DCTL_SDIS;
-#ifndef CONFIG_USB_FS
-	usb_os_sleep_ms(3U);
-#endif
 
 	return HAL_OK;
 }

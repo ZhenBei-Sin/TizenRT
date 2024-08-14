@@ -80,9 +80,14 @@ static u8 usb_hal_core_reset(void)
 		USB_GLOBAL->GRSTCTL |= USB_OTG_GRSTCTL_CSRSTDONE;
 	}
 
-#ifndef CONFIG_USB_FS
-	usb_os_sleep_ms(100);
-#endif
+	/* Wait for AHB master IDLE state. */
+	do {
+		usb_os_delay_us(10U);
+		if (++count > 100000U) {
+			RTK_LOGE(TAG, "[USB] Core reset: TO3 0x%08x\n", USB_GLOBAL->GRSTCTL);
+			return HAL_TIMEOUT;
+		}
+	} while ((USB_GLOBAL->GRSTCTL & USB_OTG_GRSTCTL_AHBIDL) == 0U);
 
 	return HAL_OK;
 }
@@ -272,6 +277,8 @@ void usb_hal_clear_interrupts(u32 interrupt)
 USB_TEXT_SECTION
 u8 usb_hal_set_otg_mode(usb_otg_mode_t mode)
 {
+	u32 count = 0U;
+
 	USB_GLOBAL->GUSBCFG &= ~(USB_OTG_GUSBCFG_FHMOD | USB_OTG_GUSBCFG_FDMOD);
 
 	if (mode == USB_OTG_MODE_DEVICE) {
@@ -286,8 +293,17 @@ u8 usb_hal_set_otg_mode(usb_otg_mode_t mode)
 		return HAL_ERR_PARA;
 	}
 
-#ifndef CONFIG_USB_FS
+	/* Wait for mode switch ready */
+#if CONFIG_USB_OTG
 	usb_os_sleep_ms(100U);
+#else
+	do {
+		usb_os_delay_us(10U);
+		if (++count > 1000000U) {
+			RTK_LOGE(TAG, "[USB] Set OTG mode %d TO\n", mode);
+			return HAL_TIMEOUT;
+		}
+	} while ((USB_GLOBAL->GINTSTS & USB_OTG_GINTSTS_CMOD) != (u32)mode);
 #endif
 
 	return HAL_OK;
@@ -304,7 +320,7 @@ USB_TEXT_SECTION
 usb_otg_mode_t usb_hal_get_otg_mode(void)
 {
 	usb_otg_mode_t mode = USB_OTG_MODE_DEVICE;
-	if (((USB_GLOBAL->GINTSTS) & 0x1U) != 0U) {
+	if (((USB_GLOBAL->GINTSTS) & USB_OTG_GINTSTS_CMOD) != 0U) {
 		mode = USB_OTG_MODE_HOST;
 	}
 
