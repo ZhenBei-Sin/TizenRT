@@ -118,6 +118,10 @@
 /* bmAttributes D1..0 Transfer type */
 #define USB_EP_XFER_TYPE_MASK                          0x03U
 
+/* EP0 address */
+#define USB_EP0_OUT                                    (0U | USB_H2D)
+#define USB_EP0_IN                                     (0U | USB_D2H)
+
 /* Exported types ------------------------------------------------------------*/
 
 /* USB Endpoint Type */
@@ -145,8 +149,8 @@ typedef int usb_otg_mode_t;
 
 /* Exported macros -----------------------------------------------------------*/
 
-#define USB_EP_IS_IN(ep_num)	(((ep_num) & USB_REQ_DIR_MASK) == USB_D2H)
-#define USB_EP_IS_OUT(ep_num)	(((ep_num) & USB_REQ_DIR_MASK) == USB_H2D)
+#define USB_EP_IS_IN(ep_addr)	(((ep_addr) & USB_REQ_DIR_MASK) == USB_D2H)
+#define USB_EP_IS_OUT(ep_addr)	(((ep_addr) & USB_REQ_DIR_MASK) == USB_H2D)
 #define USB_EP_NUM(ep_addr)		((ep_addr) & USB_REQ_NUM_MASK)
 
 /* Exported variables --------------------------------------------------------*/

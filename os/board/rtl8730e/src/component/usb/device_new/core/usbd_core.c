@@ -51,6 +51,9 @@ static u8 usbd_core_clear_class_config(usb_dev_t  *dev, u8 config);
 USB_BSS_SECTION
 static u8 usbd_cfg;
 
+USB_DATA_SECTION
+static const char *const TAG = "USB";
+
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -68,14 +71,13 @@ static void usbd_core_get_descriptor(usb_dev_t *dev, usb_setup_req_t *req)
 
 	buf = dev->driver->get_descriptor(dev, req, (usb_speed_type_t)dev->dev_speed, &len);
 	if (buf == NULL) {
-		//usbd_core_ep0_set_stall(dev);
-		usbd_core_ep_set_stall(dev, 0x80U);
+		usbd_core_ep_set_stall(dev, USB_EP0_IN);
 		return;
 	}
 
-	if ((dma == 1) && (!USB_IS_MEM_DMA_ALIGNED(buf))) {
-		DBG_PRINTF(MODULE_USB_OTG, LEVEL_ERROR, "Descriptor buffer is not 32 bytes aligned in dma mode!\n");
-		usbd_core_ep_set_stall(dev, 0x80U);
+	if (dma && (!USB_IS_MEM_DMA_ALIGNED(buf))) {
+		RTK_LOGE(TAG, "Descriptor buffer alignment error!\n");
+		usbd_core_ep_set_stall(dev, USB_EP0_IN);
 		return;
 	}
 
@@ -306,7 +308,7 @@ static void usbd_core_clear_feature(usb_dev_t *dev, usb_setup_req_t *req)
 USB_TEXT_SECTION
 static u8 usbd_core_ep0_continue_receive_data(usb_dev_t *dev, u8 *buf, u16 len)
 {
-	usbd_ep_receive(dev, 0U, buf, len);
+	usbd_ep_receive(dev, USB_EP0_OUT, buf, len);
 
 	return HAL_OK;
 }
@@ -322,7 +324,7 @@ USB_TEXT_SECTION
 static u8 usbd_core_ep0_continue_transmit_data(usb_dev_t *dev, u8 *buf, u16 len)
 {
 	/* Start the next transfer */
-	usbd_ep_transmit(dev, 0x00U, buf, len);
+	usbd_ep_transmit(dev, USB_EP0_IN, buf, len);
 
 	return HAL_OK;
 }
@@ -336,11 +338,11 @@ static u8 usbd_core_ep0_continue_transmit_data(usb_dev_t *dev, u8 *buf, u16 len)
 USB_TEXT_SECTION
 static void usbd_core_parse_setup_request(usb_setup_req_t *req, u8 *data)
 {
-	req->bmRequestType = *(u8 *)(data);
-	req->bRequest = *(u8 *)(data + 1);
-	req->wValue = (u16)(*(u8 *)(data + 2U)) + ((u16)(*(u8 *)(data + 3U)) << 8U);
-	req->wIndex = (u16)(*(u8 *)(data + 4U)) + ((u16)(*(u8 *)(data + 5U)) << 8U);
-	req->wLength = (u16)(*(u8 *)(data + 6U)) + ((u16)(*(u8 *)(data + 7U)) << 8U);
+	req->bmRequestType = data[0];
+	req->bRequest = data[1];
+	req->wValue = (u16)data[2] + ((u16)data[3] << 8U);
+	req->wIndex = (u16)data[4] + ((u16)data[5] << 8U);
+	req->wLength = (u16)data[6] + ((u16)data[7] << 8U);
 
 }
 
@@ -366,7 +368,7 @@ static u8 usbd_core_ep_flush(usb_dev_t *dev, u8 ep_addr)
 * @retval Status
 */
 USB_TEXT_SECTION
-static u8 usbd_core_handle_ep_request(usb_dev_t *dev, usb_setup_req_t  *req)
+static u8 usbd_core_handle_ep_request(usb_dev_t *dev, usb_setup_req_t *req)
 {
 	u8 ep_addr;
 	u8 ret = HAL_OK;
@@ -391,9 +393,9 @@ static u8 usbd_core_handle_ep_request(usb_dev_t *dev, usb_setup_req_t  *req)
 
 			switch (dev->dev_state) {
 			case USBD_STATE_ADDRESSED:
-				if ((ep_addr != 0x00U) && (ep_addr != 0x80U)) {
+				if ((ep_addr != USB_EP0_OUT) && (ep_addr != USB_EP0_IN)) {
 					usbd_core_ep_set_stall(dev, ep_addr);
-					usbd_core_ep_set_stall(dev, 0x80U);
+					usbd_core_ep_set_stall(dev, USB_EP0_IN);
 				} else {
 					usbd_core_ep0_set_stall(dev);
 				}
@@ -401,7 +403,7 @@ static u8 usbd_core_handle_ep_request(usb_dev_t *dev, usb_setup_req_t  *req)
 
 			case USBD_STATE_CONFIGURED:
 				if (req->wValue == USB_FEATURE_EP_HALT) {
-					if ((ep_addr != 0x00U) && (ep_addr != 0x80U) && (req->wLength == 0x00U)) {
+					if ((ep_addr != USB_EP0_OUT) && (ep_addr != USB_EP0_IN) && (req->wLength == 0x00U)) {
 						usbd_core_ep_set_stall(dev, ep_addr);
 					}
 				}
@@ -419,9 +421,9 @@ static u8 usbd_core_handle_ep_request(usb_dev_t *dev, usb_setup_req_t  *req)
 
 			switch (dev->dev_state) {
 			case USBD_STATE_ADDRESSED:
-				if ((ep_addr != 0x00U) && (ep_addr != 0x80U)) {
+				if ((ep_addr != USB_EP0_OUT) && (ep_addr != USB_EP0_IN)) {
 					usbd_core_ep_set_stall(dev, ep_addr);
-					usbd_core_ep_set_stall(dev, 0x80U);
+					usbd_core_ep_set_stall(dev, USB_EP0_IN);
 				} else {
 					usbd_core_ep0_set_stall(dev);
 				}
@@ -429,7 +431,7 @@ static u8 usbd_core_handle_ep_request(usb_dev_t *dev, usb_setup_req_t  *req)
 
 			case USBD_STATE_CONFIGURED:
 				if (req->wValue == USB_FEATURE_EP_HALT) {
-					if ((ep_addr & EP_ADDR_MSK) != 0x00U) {
+					if ((ep_addr != USB_EP0_OUT) && (ep_addr != USB_EP0_IN)) {
 						usbd_core_ep_clear_stall(dev, ep_addr);
 					}
 					usbd_core_ep0_transmit_status(dev);
@@ -445,7 +447,7 @@ static u8 usbd_core_handle_ep_request(usb_dev_t *dev, usb_setup_req_t  *req)
 		case USB_REQ_GET_STATUS:
 			switch (dev->dev_state) {
 			case USBD_STATE_ADDRESSED:
-				if ((ep_addr != 0x00U) && (ep_addr != 0x80U)) {
+				if ((ep_addr != USB_EP0_OUT) && (ep_addr != USB_EP0_IN)) {
 					usbd_core_ep0_set_stall(dev);
 					break;
 				}
@@ -457,19 +459,19 @@ static u8 usbd_core_handle_ep_request(usb_dev_t *dev, usb_setup_req_t  *req)
 				break;
 
 			case USBD_STATE_CONFIGURED:
-				if ((ep_addr & 0x80U) == 0x80U) {
-					if (pcd->in_ep[ep_addr & EP_ADDR_MSK].is_initialized == 0U) {
+				if (USB_EP_IS_IN(ep_addr)) {
+					if (pcd->in_ep[USB_EP_NUM(ep_addr)].is_initialized == 0U) {
 						usbd_core_ep0_set_stall(dev);
 						break;
 					}
 				} else {
-					if (pcd->out_ep[ep_addr & EP_ADDR_MSK].is_initialized == 0U) {
+					if (pcd->out_ep[USB_EP_NUM(ep_addr)].is_initialized == 0U) {
 						usbd_core_ep0_set_stall(dev);
 						break;
 					}
 				}
 
-				if ((ep_addr == 0x00U) || (ep_addr == 0x80U)) {
+				if ((ep_addr == USB_EP0_OUT) || (ep_addr == USB_EP0_IN)) {
 					dev->ctrl_buf[0] = 0U;
 				} else if (usbd_core_ep_is_stall(dev, ep_addr)) {
 					dev->ctrl_buf[0] = 1U;
@@ -512,8 +514,8 @@ static u8 usbd_core_handle_interface_request(usb_dev_t *dev, usb_setup_req_t  *r
 {
 	u8 ret = HAL_OK;
 
-	DBG_PRINTF(MODULE_USB_OTG, LEVEL_TRACE, "usbd_core_handle_interface_request: wIndex=0x%04X bmRequestType=0x%02X bRequest=0x%02X wLength=0x%04X\n", req->wIndex,
-			   req->bmRequestType, req->bRequest, req->wLength);
+	RTK_LOGD(TAG, "usbd_core_handle_interface_request: wIndex=0x%04X bmRequestType=0x%02X bRequest=0x%02X wLength=0x%04X\n", req->wIndex,
+			 req->bmRequestType, req->bRequest, req->wLength);
 
 	switch (req->bmRequestType & USB_REQ_TYPE_MASK) {
 	case USB_REQ_TYPE_CLASS:
@@ -577,43 +579,43 @@ static u8 usbd_core_handle_device_request(usb_dev_t *dev, usb_setup_req_t  *req)
 
 		switch (req->bRequest) {
 		case USB_REQ_GET_DESCRIPTOR:
-			DBG_PRINTF(MODULE_USB_OTG, LEVEL_TRACE, "usbd_core_handle_device_request USB_REQ_GET_DESCRIPTOR\n");
+			RTK_LOGD(TAG, "usbd_core_handle_device_request USB_REQ_GET_DESCRIPTOR\n");
 			usbd_core_get_descriptor(dev, req);
 			break;
 
 		case USB_REQ_SET_ADDRESS:
-			DBG_PRINTF(MODULE_USB_OTG, LEVEL_TRACE, "usbd_core_handle_device_request USB_REQ_SET_ADDRESS\n");
+			RTK_LOGD(TAG, "usbd_core_handle_device_request USB_REQ_SET_ADDRESS\n");
 			usbd_core_set_address(dev, req);
 			break;
 
 		case USB_REQ_SET_CONFIGURATION:
-			DBG_PRINTF(MODULE_USB_OTG, LEVEL_TRACE, "usbd_core_handle_device_request USB_REQ_SET_CONFIGURATION\n");
+			RTK_LOGD(TAG, "usbd_core_handle_device_request USB_REQ_SET_CONFIGURATION\n");
 			usbd_core_set_config(dev, req);
 			break;
 
 		case USB_REQ_GET_CONFIGURATION:
-			DBG_PRINTF(MODULE_USB_OTG, LEVEL_TRACE, "usbd_core_handle_device_request USB_REQ_GET_CONFIGURATION\n");
+			RTK_LOGD(TAG, "usbd_core_handle_device_request USB_REQ_GET_CONFIGURATION\n");
 			usbd_core_get_config(dev, req);
 			break;
 
 		case USB_REQ_GET_STATUS:
-			DBG_PRINTF(MODULE_USB_OTG, LEVEL_TRACE, "usbd_core_handle_device_request USB_REQ_GET_STATUS\n");
+			RTK_LOGD(TAG, "usbd_core_handle_device_request USB_REQ_GET_STATUS\n");
 			usbd_core_get_status(dev, req);
 			break;
 
 
 		case USB_REQ_SET_FEATURE:
-			DBG_PRINTF(MODULE_USB_OTG, LEVEL_TRACE, "usbd_core_handle_device_request USB_REQ_SET_FEATURE\n");
+			RTK_LOGD(TAG, "usbd_core_handle_device_request USB_REQ_SET_FEATURE\n");
 			usbd_core_set_feature(dev, req);
 			break;
 
 		case USB_REQ_CLEAR_FEATURE:
-			DBG_PRINTF(MODULE_USB_OTG, LEVEL_TRACE, "usbd_core_handle_device_request USB_REQ_CLEAR_FEATURE\n");
+			RTK_LOGD(TAG, "usbd_core_handle_device_request USB_REQ_CLEAR_FEATURE\n");
 			usbd_core_clear_feature(dev, req);
 			break;
 
 		default:
-			DBG_PRINTF(MODULE_USB_OTG, LEVEL_TRACE, "usbd_core_handle_device_request unexpected request: 0x%02X\n", req->bRequest);
+			RTK_LOGD(TAG, "usbd_core_handle_device_request unexpected request: 0x%02X\n", req->bRequest);
 			usbd_core_ep0_set_stall(dev);
 			break;
 		}
@@ -671,9 +673,9 @@ static u8 usbd_core_clear_class_config(usb_dev_t  *dev, u8 config)
   * @retval Recived Data Size
   */
 USB_TEXT_SECTION
-u32 usbd_core_get_rx_data_size(usb_dev_t *dev, u8 ep_addr)
+u32 usbd_core_get_rx_data_size(usb_dev_t *dev, u8 ep_num)
 {
-	return usbd_pcd_ep_get_rx_data_size(dev->pcd, ep_addr);
+	return usbd_pcd_ep_get_rx_data_size(dev->pcd, ep_num);
 }
 
 /**
@@ -686,12 +688,6 @@ USB_TEXT_SECTION
 u8 usbd_core_setup_stage(usb_dev_t *dev, u8 *setup)
 {
 	usb_setup_req_t setup_req;
-
-	u32 dma = ((usbd_pcd_t *)dev->pcd)->config.dma_enable;
-
-	if (dma == 1) {
-		DCache_Invalidate((u32) setup, USBD_SETUP_PACKET_BUF_LEN);
-	}
 
 	usbd_core_parse_setup_request(&setup_req, setup);
 
@@ -713,8 +709,8 @@ u8 usbd_core_setup_stage(usb_dev_t *dev, u8 *setup)
 		break;
 
 	default:
-		DBG_PRINTF(MODULE_USB_OTG, LEVEL_TRACE, "EP0 unexpected request: 0x%08X\n", setup_req.bmRequestType);
-		usbd_core_ep_set_stall(dev, (setup_req.bmRequestType & 0x80U));
+		RTK_LOGD(TAG, "EP0 unexpected request: 0x%08X\n", setup_req.bmRequestType);
+		usbd_core_ep_set_stall(dev, setup_req.bmRequestType & 0x80U);
 		break;
 	}
 
@@ -734,44 +730,33 @@ u8 usbd_core_data_out_stage(usb_dev_t *dev, u8 ep_num, u8 *buf)
 	usbd_pcd_t *pcd = dev->pcd;
 	usbd_pcd_ep_t *pep;
 	u16 len;
-	u32 dma = pcd->config.dma_enable;
 
 	if (ep_num == 0U) {
 		pep = &pcd->out_ep[0];
 		if (dev->ep0_state == USBD_EP0_DATA_OUT) {
 			if (dev->ep0_recv_rem_len > pep->max_packet_len) {
 				dev->ep0_recv_rem_len -= pep->max_packet_len;
-
 				usbd_core_ep0_continue_receive_data(dev, buf, (u16)MIN(dev->ep0_recv_rem_len, pep->max_packet_len));
 			} else {
 				dev->ep0_recv_rem_len = 0;
 				if ((dev->driver->ep0_data_out != NULL) &&
 					(dev->dev_state == USBD_STATE_CONFIGURED)) {
-					if (dma == 1) {
-						DCache_Invalidate((u32) pep->dma_addr, pep->xfer_len);
-					}
 					dev->driver->ep0_data_out(dev);
 				}
 				usbd_core_ep0_transmit_status(dev);
 			}
 		} else {
 			if (dev->ep0_state == USBD_EP0_STATUS_OUT) {
-				/*
-				 * STATUS PHASE completed, update ep0_state to idle
-				 */
+				// STATUS PHASE completed
 				dev->ep0_state = USBD_EP0_IDLE;
-				//usbd_core_ep_set_stall(dev, 0U);  // FIXME
+				//usbd_core_ep_set_stall(dev, USB_EP0_OUT);  // FIXME
 			}
 		}
 	} else if ((dev->driver->ep_data_out != NULL) &&
 			   (dev->dev_state == USBD_STATE_CONFIGURED)) {
 		pep = &pcd->out_ep[ep_num];
 		len = usbd_core_get_rx_data_size(dev, ep_num);
-
-		if (dma == 1) {
-			DCache_Invalidate((u32) pep->dma_addr, pep->xfer_len);
-		}
-		dev->driver->ep_data_out(dev, ep_num, len);
+		dev->driver->ep_data_out(dev, pep->addr, len);
 	} else {
 		/* should never be in this condition */
 		return HAL_ERR_HW;
@@ -811,8 +796,8 @@ u8 usbd_core_data_in_stage(usb_dev_t *dev, u8 ep_num, u8 *buf, u8 status)
 					usbd_core_ep0_continue_transmit_data(dev, buf, (u16)dev->ep0_xfer_rem_len);
 
 					/* Prepare endpoint for premature end of transfer */
-					if (dma != 1) {
-						usbd_ep_receive(dev, 0U, NULL, 0U);
+					if (!dma) {
+						usbd_ep_receive(dev, USB_EP0_OUT, NULL, 0U);
 					}
 				} else {
 					dev->ep0_xfer_rem_len = 0;
@@ -824,22 +809,22 @@ u8 usbd_core_data_in_stage(usb_dev_t *dev, u8 ep_num, u8 *buf, u8 status)
 						dev->ep0_data_len = 0U;
 
 						/* Prepare endpoint for premature end of transfer */
-						if (dma != 1) {
-							usbd_ep_receive(dev, 0U, NULL, 0U);
+						if (!dma) {
+							usbd_ep_receive(dev, USB_EP0_OUT, NULL, 0U);
 						}
 					} else {
 						if ((dev->driver->ep0_data_in != NULL) &&
 							(dev->dev_state == USBD_STATE_CONFIGURED)) {
 							dev->driver->ep0_data_in(dev, HAL_OK);
 						}
-						//usbd_core_ep_set_stall(dev, 0x80U);  // FIXME
+						//usbd_core_ep_set_stall(dev, USB_EP0_IN);  // FIXME
 						usbd_core_ep0_receive_status(dev);
 					}
 				}
 			} else {
 				if ((dev->ep0_state == USBD_EP0_STATUS_IN) ||
 					(dev->ep0_state == USBD_EP0_IDLE)) {
-					//usbd_core_ep_set_stall(dev, 0x80U);
+					//usbd_core_ep_set_stall(dev, USB_EP0_IN);
 				}
 			}
 
@@ -849,7 +834,7 @@ u8 usbd_core_data_in_stage(usb_dev_t *dev, u8 ep_num, u8 *buf, u8 status)
 			}
 		} else if ((dev->driver->ep_data_in != NULL) &&
 				   (dev->dev_state == USBD_STATE_CONFIGURED)) {
-			dev->driver->ep_data_in(dev, ep_num, HAL_OK);
+			dev->driver->ep_data_in(dev, pep->addr, HAL_OK);
 		} else {
 			/* should never be in this condition */
 			return HAL_ERR_HW;
@@ -863,7 +848,7 @@ u8 usbd_core_data_in_stage(usb_dev_t *dev, u8 ep_num, u8 *buf, u8 status)
 		} else {
 			if ((dev->driver->ep_data_in != NULL) &&
 				(dev->dev_state == USBD_STATE_CONFIGURED)) {
-				dev->driver->ep_data_in(dev, ep_num, status);
+				dev->driver->ep_data_in(dev, pep->addr, status);
 			}
 		}
 	}
@@ -880,10 +865,10 @@ USB_TEXT_SECTION
 u8 usbd_core_reset(usb_dev_t  *dev)
 {
 	/* Open EP0 OUT */
-	usbd_ep_init(dev, 0x00U, USB_CH_EP_TYPE_CTRL, USB_MAX_EP0_SIZE);
+	usbd_ep_init(dev, USB_EP0_OUT, USB_CH_EP_TYPE_CTRL, USB_MAX_EP0_SIZE);
 
 	/* Open EP0 IN */
-	usbd_ep_init(dev, 0x80U, USB_CH_EP_TYPE_CTRL, USB_MAX_EP0_SIZE);
+	usbd_ep_init(dev, USB_EP0_IN, USB_CH_EP_TYPE_CTRL, USB_MAX_EP0_SIZE);
 
 	/* Upon Reset call user call back */
 	dev->dev_state = USBD_STATE_DEFAULT;
@@ -963,26 +948,19 @@ u8 usbd_core_sof(usb_dev_t  *dev)
 USB_TEXT_SECTION
 u8 usbd_core_eopf(usb_dev_t  *dev)
 {
+	u8 ep_num;
 	if (dev->dev_state == USBD_STATE_CONFIGURED) {
 		usbd_pcd_t *pcd = dev->pcd;
 		usbd_pcd_ep_t *ep;
-		u8 i;
 
-		for (i = 1U; i < USB_MAX_ENDPOINTS; i++) {
-			ep = &(pcd->out_ep[i]);  //out
-			if ((USB_CH_EP_TYPE_ISOC == ep->type) && (ep->is_in == 0) && ((USB_OUTEP(ep->num)->DOEPCTL & USB_OTG_DOEPCTL_EPENA) == USB_OTG_DOEPCTL_EPENA)) {
+		for (ep_num = 1U; ep_num < USB_MAX_ENDPOINTS; ep_num++) {
+			ep = &(pcd->out_ep[ep_num]);
+			if ((USB_CH_EP_TYPE_ISOC == ep->type) && USB_EP_IS_OUT(ep->addr) && ((USB_OUTEP(ep_num)->DOEPCTL & USB_OTG_DOEPCTL_EPENA) == USB_OTG_DOEPCTL_EPENA)) {
 				if ((USB_DEVICE->DSTS & BIT8) == 0U) { //work in next SOF
-					USB_OUTEP(ep->num)->DOEPCTL |= USB_OTG_DOEPCTL_SODDFRM;
+					USB_OUTEP(ep_num)->DOEPCTL |= USB_OTG_DOEPCTL_SODDFRM;
 				} else {
-					USB_OUTEP(ep->num)->DOEPCTL |= USB_OTG_DOEPCTL_SD0PID_SEVNFRM;
+					USB_OUTEP(ep_num)->DOEPCTL |= USB_OTG_DOEPCTL_SD0PID_SEVNFRM;
 				}
-			}
-
-			ep = &(pcd->in_ep[i]); //isoc in, write data to fifo
-			if ((1 == ep->data_to_fifo) && (ep->type == USB_CH_EP_TYPE_ISOC) && (ep->is_in == 1) &&
-				((USB_INEP(ep->num)->DIEPCTL & USB_OTG_DIEPCTL_EPENA) == USB_OTG_DIEPCTL_EPENA)) {
-				usb_hal_write_packet(ep->xfer_buff, ep->num, (u16)ep->xfer_len);
-				ep->data_to_fifo = 0;
 			}
 		}
 
@@ -1028,7 +1006,7 @@ u8 usbd_core_disconnected(usb_dev_t  *dev)
 USB_TEXT_SECTION
 u8 usbd_core_ep_set_stall(usb_dev_t *dev, u8 ep_addr)
 {
-	DBG_PRINTF(MODULE_USB_OTG, LEVEL_TRACE, "usbd_core_ep_set_stall %d\n", ep_addr);
+	RTK_LOGD(TAG, "usbd_core_ep_set_stall %d\n", ep_addr);
 	usbd_pcd_ep_set_stall(dev->pcd, ep_addr);
 	return HAL_OK;
 }
@@ -1056,11 +1034,12 @@ USB_TEXT_SECTION
 u8 usbd_core_ep_is_stall(usb_dev_t *dev, u8 ep_addr)
 {
 	usbd_pcd_t *pcd = dev->pcd;
+	u8 ep_num = USB_EP_NUM(ep_addr);
 
-	if ((ep_addr & 0x80) == 0x80) {
-		return pcd->in_ep[ep_addr & 0xF].is_stall;
+	if (USB_EP_IS_IN(ep_addr)) {
+		return pcd->in_ep[ep_num].is_stall;
 	} else {
-		return pcd->out_ep[ep_addr & 0xF].is_stall;
+		return pcd->out_ep[ep_num].is_stall;
 	}
 }
 
@@ -1073,8 +1052,8 @@ u8 usbd_core_ep_is_stall(usb_dev_t *dev, u8 ep_addr)
 USB_TEXT_SECTION
 u8 usbd_core_ep0_set_stall(usb_dev_t *dev)
 {
-	usbd_core_ep_set_stall(dev, 0x80U);
-	usbd_core_ep_set_stall(dev, 0U);
+	usbd_core_ep_set_stall(dev, USB_EP0_IN);
+	usbd_core_ep_set_stall(dev, USB_EP0_OUT);
 
 	return HAL_OK;
 }
@@ -1091,7 +1070,7 @@ u8 usbd_core_ep0_transmit_status(usb_dev_t *dev)
 	dev->ep0_state = USBD_EP0_STATUS_IN;
 
 	/* Start the transfer */
-	usbd_ep_transmit(dev, 0x00U, NULL, 0U);
+	usbd_ep_transmit(dev, USB_EP0_IN, NULL, 0U);
 
 	return HAL_OK;
 }
@@ -1108,7 +1087,7 @@ u8 usbd_core_ep0_receive_status(usb_dev_t *dev)
 	dev->ep0_state = USBD_EP0_STATUS_OUT;
 
 	/* Start the transfer */
-	usbd_ep_receive(dev, 0U, NULL, 0U);
+	usbd_ep_receive(dev, USB_EP0_OUT, NULL, 0U);
 
 	return HAL_OK;
 }

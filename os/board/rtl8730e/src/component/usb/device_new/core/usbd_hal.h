@@ -24,7 +24,6 @@
 #include "usbd.h"
 
 /* Exported defines ----------------------------------------------------------*/
-
 /* USB ISR thread stack size */
 #define USBD_ISR_THREAD_STACK_SIZE             4096U
 
@@ -82,13 +81,11 @@
 
 /* USB PCD endpoint structure */
 typedef struct {
-	u8   num;                  /*!< Endpoint number, 1~4 */
-	u8   is_in;                /*!< Endpoint direction */
+	u8   addr;                 /*!< Endpoint address */
 	u8   is_stall;             /*!< Endpoint stall condition */
 	u8   type;                 /*!< Endpoint type, USB_EP_Type_XXX */
 	u8   is_zlp;               /*!< ZLP packet */
 	u8   is_ptx;               /*!< Periodic TX Transfer 0~1 */
-	u8   data_to_fifo;         /*!< Data waiting to be written to fifo:ISOC in EOPF, others in InToken */
 	u8   data_pid_start;       /*!< Initial data PID, 0~1 */
 	u8   even_odd_frame;       /*!< IFrame parity, 0~1 */
 	u16  tx_fifo_num;          /*!< Transmission FIFO number, 0~max tx fifo num */
@@ -169,8 +166,6 @@ typedef struct {
 u8 usbd_hal_device_init(usbd_pcd_t *pcd);
 u8 usbd_hal_set_turnaround_time(usbd_pcd_t *pcd);
 u8 usbd_hal_set_device_speed(usbd_pcd_t *pcd, u8 speed);
-u8 usbd_hal_set_tx_fifo(usbd_pcd_t *pcd, u8 fifo, u16 size);
-u8 usbd_hal_set_rx_fifo(usbd_pcd_t *pcd, u16 size);
 u8 usbd_hal_ep_activate(usbd_pcd_t *pcd, usbd_pcd_ep_t *ep);
 u8 usbd_hal_ep_deactivate(usbd_pcd_t *pcd, usbd_pcd_ep_t *ep);
 u8 usbd_hal_ep_start_transfer(usbd_pcd_t *pcd, usbd_pcd_ep_t *ep);
@@ -181,16 +176,20 @@ u8 usbd_hal_set_device_address(usbd_pcd_t *pcd, u8 address);
 u8 usbd_hal_connect(usbd_pcd_t *pcd);
 u8 usbd_hal_disconnect(usbd_pcd_t *pcd);
 u8 usbd_hal_device_stop(usbd_pcd_t *pcd);
+u8 usbd_hal_config_dfifo(usbd_pcd_t *pcd);
 u8 usbd_hal_ep0_setup_activate(usbd_pcd_t *pcd);
 u8 usbd_hal_ep0_out_start(usbd_pcd_t *pcd);
 u8 usbd_hal_reset_in_token_queue(usbd_pcd_t *pcd);
 u8 usbd_hal_predict_next_ep(usbd_pcd_t *pcd, usbd_pcd_ep_t *ep);
 u8 usbd_hal_get_device_speed(usbd_pcd_t *pcd);
+u32 usbd_hal_get_tx_fifo_num(usbd_pcd_t *pcd, usbd_pcd_ep_t *ep);
 u32 usbd_hal_read_all_out_ep_interrupts(usbd_pcd_t *pcd);
 u32 usbd_hal_read_out_ep_interrupts(usbd_pcd_t *pcd, u8 ep_num);
 u32 usbd_hal_read_all_in_ep_interrupts(usbd_pcd_t *pcd);
 u32 usbd_hal_read_in_ep_interrupts(usbd_pcd_t *pcd, u8 ep_num);
 u8 usbd_hal_test_mode(u8 mode);
+u8 usbd_hal_get_bus_status(usbd_pcd_t *pcd, u32 *bus_status);
+u8 usbd_hal_wake_host(usbd_pcd_t *pcd);
 void usbd_hal_dump_registers(void);
 
 #endif /* USBD_HAL_H */

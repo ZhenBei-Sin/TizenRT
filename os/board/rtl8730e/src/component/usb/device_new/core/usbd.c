@@ -31,6 +31,9 @@
 
 /* Private variables ---------------------------------------------------------*/
 
+USB_DATA_SECTION
+static const char *const TAG = "USB";
+
 /* USB device handler */
 USB_BSS_SECTION
 static usb_dev_t usbd_dev;
@@ -50,8 +53,10 @@ u8 usbd_init(usbd_config_t *cfg)
 	usb_dev_t *dev = &usbd_dev;
 	u8 ret;
 
+	RTK_LOGI(TAG, "USB init\n");
+
 	dev->dev_state  = USBD_STATE_DEFAULT;
-	dev->ctrl_buf = (u8 *)rtw_zmalloc(USB_OTG_HS_MAX_PACKET_SIZE);
+	dev->ctrl_buf = (u8 *)usb_os_mem_alloc(USB_OTG_HS_MAX_PACKET_SIZE);
 	if (dev->ctrl_buf == NULL) {
 		return HAL_ERR_MEM;
 	}
@@ -73,6 +78,8 @@ u8 usbd_deinit(void)
 	u8 result = HAL_OK;
 	usb_dev_t *dev = &usbd_dev;
 
+	RTK_LOGI(TAG, "USB deinit\n");
+
 	dev->dev_state  = USBD_STATE_DEFAULT;
 
 	if (dev->driver != NULL) {
@@ -83,7 +90,7 @@ u8 usbd_deinit(void)
 	result = usbd_pcd_deinit(dev);
 
 	if (dev->ctrl_buf != NULL) {
-		rtw_free(dev->ctrl_buf);
+		usb_os_mem_free(dev->ctrl_buf);
 		dev->ctrl_buf = NULL;
 	}
 
@@ -100,6 +107,37 @@ u8 usbd_get_status(void)
 {
 	usb_dev_t *dev = &usbd_dev;
 	return dev->dev_attach_status;
+}
+
+/**
+  * @brief  Get the bus status
+  * @param  bus_status: physical bus status
+  * @retval status
+  */
+u8 usbd_get_bus_status(u32 *bus_status)
+{
+	usb_dev_t *dev = &usbd_dev;
+	if (dev->pcd && bus_status) {
+		return usbd_hal_get_bus_status(dev->pcd, bus_status);
+	} else {
+		RTK_LOGI(TAG, "USB device not ready\n");
+		return HAL_ERR_PARA;
+	}
+}
+/**
+  * @brief  Device send a remote wakeup signal to host
+  * @param  None
+  * @retval Status
+  */
+u8 usbd_wake_host(void)
+{
+	usb_dev_t *dev = &usbd_dev;
+	if (dev->pcd) {
+		return usbd_hal_wake_host(dev->pcd);
+	} else {
+		RTK_LOGI(TAG, "USB device not ready\n");
+		return HAL_ERR_PARA;
+	}
 }
 
 /**
@@ -210,7 +248,7 @@ u8 usbd_ep0_transmit(usb_dev_t *dev, u8 *buf, u16 len)
 	dev->ep0_xfer_rem_len = len;
 
 	/* Start the transfer */
-	usbd_ep_transmit(dev, 0x00U, buf, len);
+	usbd_ep_transmit(dev, USB_EP0_IN, buf, len);
 
 	return HAL_OK;
 }
@@ -230,7 +268,7 @@ u8 usbd_ep0_receive(usb_dev_t *dev, u8 *buf, u16 len)
 	dev->ep0_recv_rem_len = len;
 
 	/* Start the transfer */
-	usbd_ep_receive(dev, 0U, buf, len);
+	usbd_ep_receive(dev, USB_EP0_OUT, buf, len);
 
 	return HAL_OK;
 }
@@ -327,37 +365,5 @@ void usbd_get_str_desc(const char *str, u8 *desc, u16 *len)
 			desc[idx++] =  0U;
 		}
 	}
-}
-
-/**
-  * @brief  USB debug init
-  * @param  None
-  * @retval None
-  */
-USB_TEXT_SECTION
-void usbd_config_debug(u8 enable)
-{
-	if (enable) {
-		DBG_ERR_MSG_ON(MODULE_USB_OTG);
-		DBG_WARN_MSG_ON(MODULE_USB_OTG);
-		DBG_INFO_MSG_ON(MODULE_USB_OTG);
-		//ConfigDebug[LEVEL_TRACE] |= BIT(MODULE_USB_OTG);
-	} else {
-		DBG_ERR_MSG_ON(MODULE_USB_OTG);
-		DBG_WARN_MSG_OFF(MODULE_USB_OTG);
-		DBG_INFO_MSG_OFF(MODULE_USB_OTG);
-		ConfigDebug[LEVEL_TRACE] &= ~BIT(MODULE_USB_OTG);
-	}
-}
-
-/**
-  * @brief  Dump USB global and device registers
-  * @param  None
-  * @retval None
-  */
-USB_TEXT_SECTION
-void usbd_dump_registers(void)
-{
-	usbd_hal_dump_registers();
 }
 

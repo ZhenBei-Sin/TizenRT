@@ -33,6 +33,7 @@
 #define USBD_IDX_MFC_STR				0x01U
 #define USBD_IDX_PRODUCT_STR			0x02U
 #define USBD_IDX_SERIAL_STR				0x03U
+#define USBD_IDX_MS_OS_STR				0xEEU
 
 /* USB device interrupt enable flag*/
 /* GINTSTS */
@@ -40,10 +41,14 @@
 #define USBD_EOPF_INTR                (BIT1) /* End of Periodic Frame Interrupt GINTSTS.bit15 */
 #define USBD_EPMIS_INTR               (BIT2) /* Endpoint Mismatch Interrupt GINTSTS.bit17*/
 #define USBD_ICII_INTR                (BIT3) /* Incomplete Isochronous IN Transfer GINTSTS.bit20*/
-/* DIEPINTn/DOEPINTn */
-#define USBD_ITTXFE_INTR              (BIT16) /* IN Token Received When TxFIFO is Empty(INTknTXFEmp) DIEPINTn.bit4*/
 
 /* Exported types ------------------------------------------------------------*/
+/* USB device bus state */
+typedef enum {
+	USBD_BUS_STATUS_DN       = BIT0,  // D-
+	USBD_BUS_STATUS_DP    	 = BIT1,  // D+
+	USBD_BUS_STATUS_SUSPEND  = BIT2,  // suspend indication
+} usbd_bus_state_t;
 
 /* USB device state */
 typedef enum {
@@ -70,6 +75,21 @@ typedef struct {
 	u8 dma_enable;			/* Enable USB internal DMA mode, 0-Disable, 1-Enable */
 	u8 isr_priority;		/* USB ISR thread priority */
 	u8 intr_use_ptx_fifo;	/* Use Periodic TX FIFO for INTR IN transfer, only for shared TxFIFO mode */
+
+	/* For shared FIFO mode, e.g. AmabeD, AmebaSmart and AmebaDplus, the DFIFO limitation:
+			RxFIFO <= 512, default 512 if set to 0 or no specified, for all the OUT transfers
+			NPTxFIFO <=256, default 256 if set to 0 or no specified, for all the non-periodic CTRL/BULK/INTR IN transfers
+			PTxFIFO <= 256, default 256 if set to 0 or no specified, for periodic ISOC/INTR IN transfers
+			Total DFIFO = RxFIFO + NPTxFIFO + PTxFIFO = 1016
+	   Specially, if rx_fifo_depth, nptx_fifo_depth and ptx_fifo_depth are all set to 0 or not specified:
+			RxFIFO = 512
+			NPTxFIFO = 256
+			PTxFIFO = 248   // Total DFIFO - RxFIFO - NPTxFIFO
+	*/
+	u32 rx_fifo_depth;		/* RX FIFO depth in dword, for shared FIFO mode */
+	u32 nptx_fifo_depth;	/* Non-Periodical TX FIFO depth in dword, for shared FIFO mode */
+	u32 ptx_fifo_depth;		/* Periodical TX FIFO depth in dword, for shared FIFO mode */
+
 	u32 ext_intr_en;		/* allow class to enable some interrupts*/
 	u32 nptx_max_epmis_cnt; /* Max Non-Periodical TX transfer epmis count allowed, if transfer
 							   epmis count is higher than this value,the EMIPS interrupt will be handled.
@@ -115,7 +135,7 @@ typedef struct _usbd_class_driver_t {
 
 	u8(*set_config)(usb_dev_t *dev, u8 config);
 	u8(*clear_config)(usb_dev_t *dev, u8 config);
-	u8(*setup)(usb_dev_t *dev, usb_setup_req_t  *req);
+	u8(*setup)(usb_dev_t *dev, usb_setup_req_t *req);
 
 	u8(*sof)(usb_dev_t *dev);
 	u8(*suspend)(usb_dev_t *dev);
@@ -124,8 +144,10 @@ typedef struct _usbd_class_driver_t {
 	u8(*ep0_data_in)(usb_dev_t *dev, u8 status);
 	u8(*ep0_data_out)(usb_dev_t *dev);
 
-	u8(*ep_data_in)(usb_dev_t *dev, u8 ep_num, u8 status);
-	u8(*ep_data_out)(usb_dev_t *dev, u8 ep_num, u16 len);
+	u8(*ep_data_in)(usb_dev_t *dev, u8 ep_addr, u8 status);
+	u8(*ep_data_out)(usb_dev_t *dev, u8 ep_addr, u16 len);
+
+	void (*status_changed)(usb_dev_t *dev, u8 status);
 } usbd_class_driver_t;
 
 /* Exported macros -----------------------------------------------------------*/
@@ -138,6 +160,8 @@ typedef struct _usbd_class_driver_t {
 u8 usbd_init(usbd_config_t *cfg);
 u8 usbd_deinit(void);
 u8 usbd_get_status(void);
+u8 usbd_get_bus_status(u32 *status);
+u8 usbd_wake_host(void);
 
 /* API for class */
 u8 usbd_register_class(usbd_class_driver_t *driver);

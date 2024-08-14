@@ -18,9 +18,16 @@
 #include "ameba_soc.h"
 #include "usb_os.h"
 #include "usb_hal.h"
+#ifndef CONFIG_FLOADER_USBD_EN
 #include "osdep_service.h"
+#endif
 
 /* Private defines -----------------------------------------------------------*/
+
+#ifndef CONFIG_FLOADER_USBD_EN
+USB_DATA_SECTION
+static const char *const TAG = "USB";
+#endif
 
 /* Private types -------------------------------------------------------------*/
 
@@ -35,66 +42,74 @@
 /* Exported defines ----------------------------------------------------------*/
 
 /**
-  * @brief  memory set
-  * @param  buf: buffer
-  * @param  val: value
-  * @param  size: size in byte
-  * @retval void
-  */
-USB_TEXT_SECTION
-void usb_os_memset(void *buf, u8 val, u32 size)
-{
-	rtw_memset(buf, val, size);
-}
-
-/**
-  * @brief  memory copy
-  * @param  dst: destination buffer
-  * @param  src: source buffer
-  * @param  size: size in byte
-  * @retval void
-  */
-USB_TEXT_SECTION
-void usb_os_memcpy(void *dst, const void *src, u32 size)
-{
-	rtw_memcpy(dst, src, size);
-}
-
-/**
-  * @brief  Delay ms
+  * @brief  sleep ms, will release CPU
   * @param  ms: time in ms
   * @retval void
   */
 USB_TEXT_SECTION
-void usb_os_delay_ms(u32 ms)
+void usb_os_sleep_ms(u32 ms)
 {
-#ifdef CONFIG_USB_OS
+#ifdef CONFIG_FLOADER_USBD_EN
+	DelayMs(ms);
+#else
 	rtw_msleep_os(ms);
 	//rtw_mdelay_os(ms);
 	//vtaskdelay
-#else
-	DelayMs(ms);
 #endif
 }
 
 /**
-  * @brief  Delay us
+  * @brief  Delay us, will hold CPU
   * @param  us: time in us
   * @retval void
   */
 USB_TEXT_SECTION
 void usb_os_delay_us(u32 us)
 {
-#ifdef CONFIG_USB_OS
+#ifdef CONFIG_FLOADER_USBD_EN
+	DelayUs(us);
+#else
 	rtw_usleep_os(us);
 	//rtw_udelay_os(us);
 	//vtaskdelay
-#else
-	DelayUs(us);
 #endif
 }
 
-#ifdef CONFIG_USB_OS
+#ifndef CONFIG_FLOADER_USBD_EN
+
+/**
+  * @brief  malloc for size
+  * @param  size: the request memory size
+  * @retval void* ：the malloc address
+  */
+USB_TEXT_SECTION
+void *usb_os_mem_alloc(u32 size)
+{
+	void *ret = NULL;
+	if (size == 0) {
+		return NULL;
+	}
+	ret = rtw_zmalloc(size);
+	if (NULL == ret) {
+		RTK_LOGE(TAG, "Fail to allocate %d memory\n", size);
+		return NULL;
+	}
+	RTK_LOGD(TAG, "Allocate memory %d(0x%08x) success\n", size, (u32)ret);
+	return ret;
+}
+/**
+  * @brief  free memory
+  * @param  handle: the memory handle to be freed
+  * @retval void
+  */
+USB_TEXT_SECTION
+void usb_os_mem_free(void *handle)
+{
+	if (handle) {
+		RTK_LOGD(TAG, "Free memory 0x%08x\n", (u32)handle);
+		rtw_free(handle);
+	}
+}
 
 /**
   * @brief  Alloc spinloc

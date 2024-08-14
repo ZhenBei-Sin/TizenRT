@@ -43,15 +43,16 @@
 #define CDC_ACM_CTRL_DCD                            (1 << 0)
 
 /* CDC ACM Device parameters */
-#define CDC_ACM_VID                                 0x0BDAU
-#define CDC_ACM_PID                                 0x4042U
+#define CDC_ACM_VID                                 USB_VID
+#define CDC_ACM_PID                                 USB_PID
 #define CDC_ACM_CONFIG_DESC_SIZE                    67U
-#define CDC_ACM_LANGID_STRING                       0x0409U
-#define CDC_ACM_MFG_STRING_DESC_SIZE                16U
-#define CDC_ACM_PRODUCT_STRING_DESC_SIZE            34U
-#define CDC_ACM_SN_STRING_DESC_SIZE                 26U
 #define CDC_ACM_SELF_POWERED                        1U
 #define CDC_ACM_REMOTE_WAKEUP_EN					1U
+#define CDC_ACM_LANGID_STRING                       0x0409U
+#define CDC_ACM_MFG_STRING							"Realtek"
+#define CDC_ACM_PROD_HS_STRING						"Realtek CDC ACM (HS)"
+#define CDC_ACM_PROD_FS_STRING						"Realtek CDC ACM (FS)"
+#define CDC_ACM_SN_STRING							"1234567890"
 
 /* CDC ACM Endpoint parameters */
 #define CDC_ACM_BULK_IN_EP                          0x81U  /* EP1 for BULK IN */
@@ -100,15 +101,14 @@ typedef struct {
 typedef struct {
 	u8(* init)(void);
 	u8(* deinit)(void);
-	u8(* setup)(u8 cmd, u8 *buf, u16 len, u16 value);
-	u8(* receive)(u8 *buf, u32 len);
-	void(* transmit_complete)(u8 status);
+	u8(* setup)(usb_setup_req_t *req, u8 *buf);
+	u8(* received)(u8 *buf, u32 len);
+	void (*status_changed)(u8 status);
 } usbd_cdc_acm_cb_t;
 
 typedef struct {
 	u8 *ctrl_buf;
-	u8  ctrl_req;
-	u8  ctrl_data_len;	/* TODO: Remove and get the data length via usbd_core_get_rx_data_size? */
+	usb_setup_req_t ctrl_req;
 
 	u8 *bulk_out_buf;
 	u32 bulk_out_buf_size;
@@ -116,12 +116,16 @@ typedef struct {
 
 	u8 *bulk_in_buf;
 	u32 bulk_in_buf_size;
-	__IO u32 bulk_in_state;
+	__IO u8 bulk_in_state;
+	__IO u8 is_bulk_in_busy;
 
 #if CONFIG_CDC_ACM_NOTIFY
 	usbd_cdc_acm_ntf_t *intr_in_buf;
-	__IO u32 intr_in_state;
+	__IO u8 intr_in_state;
+	__IO u8 is_intr_in_busy;
 #endif
+
+	__IO u8 is_ready;
 
 	usbd_cdc_acm_cb_t *cb;
 	usb_dev_t *dev;
@@ -136,7 +140,6 @@ typedef struct {
 u8 usbd_cdc_acm_init(u16 bulk_out_xfer_size, u16 bulk_in_xfer_size, usbd_cdc_acm_cb_t *cb);
 u8 usbd_cdc_acm_deinit(void);
 u8 usbd_cdc_acm_transmit(u8 *buf, u16 len);
-u8 usbd_cdc_acm_receive(void);
 #if CONFIG_CDC_ACM_NOTIFY
 u8 usbd_cdc_acm_notify_serial_state(u16 serial_state);
 #endif

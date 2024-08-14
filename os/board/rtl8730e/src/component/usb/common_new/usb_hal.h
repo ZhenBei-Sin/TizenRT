@@ -529,10 +529,15 @@
 #define USB_OTG_GUID_USER_ID_Msk                 (0xFFFFFFFFUL << USB_OTG_GUID_USER_ID_Pos) /*!< 0xFFFFFFFF */
 #define USB_OTG_GUID_USER_ID                     USB_OTG_GUID_USER_ID_Msk    /*!< User ID field */
 
+/********************  Bit definition for GHWCFG3 register  ********************/
+#define USB_OTG_GHWCFG3_DFIFODEP_Pos             (16U)
+#define USB_OTG_GHWCFG3_DFIFODEP_Msk             (0xFFFFUL << USB_OTG_GHWCFG3_DFIFODEP_Pos) /*!< 0xFFFF0000 */
+#define USB_OTG_GHWCFG3_DFIFODEP                 USB_OTG_GHWCFG3_DFIFODEP_Msk    /*!< DFIFO Depth */
+
 /********************  Bit definition for GHWCFG4 register  ********************/
-#define USB_OTG_GHWCFG4_DEDFIFO_Pos               (25U)
-#define USB_OTG_GHWCFG4_DEDFIFO_Msk               (0x1UL << USB_OTG_GHWCFG4_DEDFIFO_Pos) /*!< 0x02000000 */
-#define USB_OTG_GHWCFG4_DEDFIFO                   USB_OTG_GHWCFG4_DEDFIFO_Msk    /*!< Enable Dedicated Transmit FIFO For device IN Endpoints */
+#define USB_OTG_GHWCFG4_DEDFIFO_Pos              (25U)
+#define USB_OTG_GHWCFG4_DEDFIFO_Msk              (0x1UL << USB_OTG_GHWCFG4_DEDFIFO_Pos) /*!< 0x02000000 */
+#define USB_OTG_GHWCFG4_DEDFIFO                  USB_OTG_GHWCFG4_DEDFIFO_Msk    /*!< Enable Dedicated Transmit FIFO For device IN Endpoints */
 
 /********************  Bit definition for HPTXFSIZ register  ********************/
 #define USB_OTG_HPTXFSIZ_PTXSA_Pos               (0U)
@@ -947,6 +952,10 @@
 #define USB_OTG_DSTS_FNSOF_Pos                   (8U)
 #define USB_OTG_DSTS_FNSOF_Msk                   (0x3FFFUL << USB_OTG_DSTS_FNSOF_Pos) /*!< 0x003FFF00 */
 #define USB_OTG_DSTS_FNSOF                       (USB_OTG_DSTS_FNSOF_Msk)        /*!< Frame number of the received SOF */
+
+#define USB_OTG_DSTS_DEVLNSTS_Pos                (22U)
+#define USB_OTG_DSTS_DEVLNSTS_Msk                (0x3UL << USB_OTG_DSTS_DEVLNSTS_Pos) /*!< 0x00C00000 */
+#define USB_OTG_DSTS_DEVLNSTS                    (USB_OTG_DSTS_DEVLNSTS_Msk)        /*!< Device Line Status */
 
 /********************  Bit definition for DIEPMSK register  ********************/
 #define USB_OTG_DIEPMSK_XFRCM_Pos                (0U)
@@ -1414,6 +1423,7 @@ u8 usb_hal_flush_tx_fifo(u32 num);
 u8 usb_hal_flush_rx_fifo(void);
 u8 usb_hal_write_packet(u8 *src, u8 ep_ch_num, u16 len);
 u8 usb_hal_read_packet(u8 *dest, u8 ep_ch_num, u16 len);
+void usb_hal_dump_registers(void);
 
 #if CONFIG_USB_PHY
 u8 usb_hal_read_phy_register(u8 addr, u8 *value);

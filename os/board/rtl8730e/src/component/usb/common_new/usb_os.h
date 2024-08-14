@@ -24,7 +24,8 @@
 /* Exported defines ----------------------------------------------------------*/
 
 /* Exported types ------------------------------------------------------------*/
-#ifdef CONFIG_USB_OS
+
+#ifndef CONFIG_FLOADER_USBD_EN
 typedef _lock usb_spinlock_t;
 #endif
 
@@ -62,11 +63,15 @@ typedef _lock usb_spinlock_t;
 
 /* Exported functions --------------------------------------------------------*/
 
-void usb_os_delay_ms(u32 ms);
+void usb_os_sleep_ms(u32 ms);
 
 void usb_os_delay_us(u32 us);
 
-#ifdef CONFIG_USB_OS
+#ifndef CONFIG_FLOADER_USBD_EN
+
+void *usb_os_mem_alloc(u32 size);
+
+void usb_os_mem_free(void *handle);
 
 usb_spinlock_t *usb_os_spinlock_alloc(void);
 
