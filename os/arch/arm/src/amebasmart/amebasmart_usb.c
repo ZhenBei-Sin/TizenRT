@@ -185,6 +185,8 @@ static usbd_cdc_acm_cb_t amebasmart_cdc_acm_cb = {
 static struct amebasmart_usbdev_s g_usbdev;
 
 /*CDC ACM related*/
+/* zhenbei: This priority will affect when test USB print help menu not display
+ (Tested 200 or 9 not able to print help menu) */
 #define CONFIG_AMEBASMART_CDC_ACM_ISR_THREAD_PRIORITY 100
 static usbd_config_t amebasmart_cdc_acm_cfg = {
 	.speed = USB_SPEED_FULL,
@@ -439,8 +441,8 @@ int amebasmart_up_usbinitialize(struct amebasmart_usbdev_s *priv)
 		return ret;
 	}
 
-	//Error without delay or delay 100-200 can't: EP81 TX 26 not ready
-	rtw_mdelay_os(250);
+	//zhenbei:set_config cdev->is_delay [Error]EP81 TX 26 not ready
+	//rtw_mdelay_os(250);
 
 	return ret;
 }

@@ -113,10 +113,23 @@ int printf(FAR const char *fmt, ...)
 	int ret;
 	va_start(ap, fmt);
 
+	lldbg("zhenbei: Format string: %s  len: %d\n", fmt, (u16)strlen(fmt));
+	//zhenbei: the initial buffer size limited so need to modify
+	char tmp_buffer[1024] = {0, };
+	u32 param_buf[2];
+
 #if defined(CONFIG_LOGM) && defined(CONFIG_PRINTF2LOGM)
 	ret = logm_internal(LOGM_NORMAL, LOGM_UNKNOWN, LOGM_DEF_PRIORITY, fmt, ap);
 #elif CONFIG_NFILE_STREAMS > 0
+
+#if defined(CONFIG_AMEBASMART_USBDEVICE)
+	ret = vsnprintf(tmp_buffer, sizeof(tmp_buffer), fmt, ap);
+	lldbg("zhenbei: tmp_buffer %s len: %d\n", tmp_buffer, (u16)strlen(tmp_buffer));
+	usb_printf(tmp_buffer, (u16)strlen(tmp_buffer));
+#else
 	ret = vfprintf(stdout, fmt, ap);
+#endif
+
 #elif CONFIG_NFILE_DESCRIPTORS > 0
 	ret = vsyslog(LOG_INFO, fmt, ap);
 #elif defined(CONFIG_ARCH_LOWPUTC)

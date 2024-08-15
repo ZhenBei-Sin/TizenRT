@@ -453,7 +453,7 @@ void automount_fs_partition(partition_info_t *partinfo)
 			if (ret != OK) {
 				printf("ERROR: mounting '%s' failed, errno %d\n", fs_devname, get_errno());
 			} else {
-				printf("%s is mounted successfully @ %s \n", fs_devname, mountpath);
+				lldbg("%s is mounted successfully @ %s \n", fs_devname, mountpath);
 			}
 		}
 	}
@@ -466,7 +466,7 @@ void automount_fs_partition(partition_info_t *partinfo)
 		if (ret != OK) {
 			printf("ERROR: mounting '%s'(ROMFS) failed, errno %d\n", fs_devname, get_errno());
 		} else {
-			printf("%s is mounted successfully @ %s \n", fs_devname, "/rom");
+			lldbg("%s is mounted successfully @ %s \n", fs_devname, "/rom");
 		}
 	}
 #endif /* CONFIG_AUTOMOUNT_ROMFS */
@@ -478,7 +478,7 @@ void automount_fs_partition(partition_info_t *partinfo)
 		if (ret != OK) {
 			printf("ROMFS ERROR: timezone mount failed, errno %d\n", get_errno());
 		} else {
-			printf("%s is mounted successfully @ %s \n", fs_devname, CONFIG_LIBC_TZDIR);
+			lldbg("%s is mounted successfully @ %s \n", fs_devname, CONFIG_LIBC_TZDIR);
 		}
 	}
 #endif	/* CONFIG_LIBC_ZONEINFO_ROMFS */

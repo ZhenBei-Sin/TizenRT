@@ -71,10 +71,20 @@ int main(int argc, FAR char *argv[])
 int hello_main(int argc, char *argv[])
 #endif
 {
-	printf("Hello, World!!\n");
+	lldbg("Hello, World!!\n");
 
 	if (cnt >= 1) {
-		example_usbd_cdc_acm();
+		printf("ABCD\n");
+		printf("Pass in cnt %d", cnt);
+		//example_usbd_cdc_acm();
+
+#if 0
+		uint8_t buf[26];
+		for (int i = 0; i < 26; i ++){
+			buf[i] = 0x41 + i;
+		}
+		usb_printf(buf,26);
+#endif
 	}
 	cnt ++;
 

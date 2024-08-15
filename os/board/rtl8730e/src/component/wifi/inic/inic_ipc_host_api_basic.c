@@ -214,7 +214,7 @@ int wifi_connect(rtw_network_info_t *connect_param, unsigned char block)
 				if (reason.reason_code) {
 					nvdbg("reason.reason_code=%d\n", reason.reason_code);
 				}
-				printf("RTK_API %s() send link_up\n", __func__);
+				nvdbg("RTK_API %s() send link_up\n", __func__);
 				g_link_up(&reason);
 			}
 #endif
@@ -277,10 +277,10 @@ int wifi_on(rtw_mode_t mode)
 #if defined(CONFIG_PLATFORM_TIZENRT_OS)
 	ret = WiFiRegisterLinkCallback(&linkup_handler, &linkdown_handler);
 	if (ret != RTK_STATUS_SUCCESS) {
-		printf("[RTK] Link callback handles: register failed !\n");
+		lldbg("[RTK] Link callback handles: register failed !\n");
 		return -1;
 	} else {
-		printf("[RTK] Link callback handles: registered\n");
+		lldbg("[RTK] Link callback handles: registered\n");
 	}
 #endif
 

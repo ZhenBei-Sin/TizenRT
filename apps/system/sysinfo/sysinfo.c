@@ -75,18 +75,18 @@ void sysinfo(void)
 	struct tm *ptm;
 	char sysinfo_str[MAX_BUF_SIZE + 1];
 
-	printf("System Information:\n");
+	lldbg("System Information:\n");
 
 	/* Print OS version and Build information */
 	/* just get values defined in version.h */
 #ifdef CONFIG_BOARD_BUILD_DATE
-	printf("\tVersion:\n");
-	printf("\t\tPlatform: " CONFIG_VERSION_STRING "\tBinary: %s\n", CONFIG_BOARD_BUILD_DATE);
-	printf("\tCommit Hash: %s\n", CONFIG_VERSION_BUILD);
+	lldbg("\tVersion:\n");
+	lldbg("\t\tPlatform: " CONFIG_VERSION_STRING "\tBinary: %s\n", CONFIG_BOARD_BUILD_DATE);
+	lldbg("\tCommit Hash: %s\n", CONFIG_VERSION_BUILD);
 #else
-	printf("\tVersion: " CONFIG_VERSION_STRING "\n\tCommit Hash: %s\n", CONFIG_VERSION_BUILD);
+	lldbg("\tVersion: " CONFIG_VERSION_STRING "\n\tCommit Hash: %s\n", CONFIG_VERSION_BUILD);
 #endif
-	printf("\tBuild User: " CONFIG_VERSION_BUILD_USER "\n\tBuild Time: %s\n", CONFIG_VERSION_BUILD_TIME);
+	lldbg("\tBuild User: " CONFIG_VERSION_BUILD_USER "\n\tBuild Time: %s\n", CONFIG_VERSION_BUILD_TIME);
 
 	/* Get the current time as specific format in the buffer */
 	now = time(NULL);
@@ -94,7 +94,7 @@ void sysinfo(void)
 	(void)strftime(sysinfo_str, MAX_BUF_SIZE, "%d %b %Y, %H:%M:%S", ptm);
 
 	/* Print System Time information */
-	printf("\tSystem Time: %s [s] UTC "
+	lldbg("\tSystem Time: %s [s] UTC "
 #ifdef CONFIG_RTC
 		   "Hardware RTC Support"
 #endif

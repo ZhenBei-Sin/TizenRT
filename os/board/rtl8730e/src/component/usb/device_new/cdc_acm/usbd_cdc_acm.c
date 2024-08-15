@@ -323,7 +323,7 @@ static u8 cdc_acm_set_config(usb_dev_t *dev, u8 config)
 	usbd_ep_receive(dev, CDC_ACM_BULK_OUT_EP, cdev->bulk_out_buf, cdev->bulk_out_buf_size);
 
 	cdev->is_ready = 1U;
-
+	lldbg("zhenbei: cdc_acm_set_config is_ready\n");
 	return ret;
 }
 
@@ -834,7 +834,7 @@ u8 usbd_cdc_acm_deinit(void)
   * @param  len: data length
   * @retval Status
   */
-u8 usbd_cdc_acm_transmit(u8       *buf, u16 len)
+u8 usbd_cdc_acm_transmit(u8 *buf, u16 len)
 {
 	u8 ret = HAL_ERR_HW;
 	usbd_cdc_acm_dev_t *cdev = &usbd_cdc_acm_dev;
