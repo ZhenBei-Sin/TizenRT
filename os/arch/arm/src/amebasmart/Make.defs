@@ -227,6 +227,12 @@ CFLAGS += -I$(TOPDIR)/board/$(CONFIG_ARCH_BOARD)/src/component/os/tizenrt
 
 CFLAGS += -I$(TOPDIR)/board/$(CONFIG_ARCH_BOARD)/src/component/usrcfg/rtl8730e/include
 
+ifeq ($(CONFIG_AMEBASMART_USBDEVICE),y)
+CFLAGS += -I$(TOPDIR)/board/$(CONFIG_ARCH_BOARD)/src/component/usb/common_new
+CFLAGS += -I$(TOPDIR)/board/$(CONFIG_ARCH_BOARD)/src/component/usb/device_new/core
+CFLAGS += -I$(TOPDIR)/board/$(CONFIG_ARCH_BOARD)/src/component/usb/device_new/cdc_acm
+endif
+
 CHIP_ASRCS  =
 CHIP_CSRCS = amebasmart_boot.c
 ifeq ($(CONFIG_PM), y)
@@ -280,6 +286,10 @@ endif
 
 ifeq ($(CONFIG_AMEBASMART_MIPI),y)
 CHIP_CSRCS += amebasmart_mipi.c
+endif
+
+ifeq ($(CONFIG_AMEBASMART_USBDEVICE),y)
+CHIP_CSRCS += amebasmart_usb.c
 endif
 
 ifeq ($(CONFIG_AMEBASMART_TRUSTZONE),y)
