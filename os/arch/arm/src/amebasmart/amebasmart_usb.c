@@ -40,7 +40,7 @@
 #include <tinyara/usb/usbdev_trace.h>
 
 #include <arch/irq.h>
-
+#include <tinyara/semaphore.h>
 #if defined(CONFIG_AMEBASMART_USBDEVICE)
 #include "usbd.h"
 #include "usb_os.h"
@@ -123,6 +123,7 @@ struct amebasmart_usbdev_s {
 	u8 self_powered : 1;			/* Self powered or not, 0-bus powered, 1-self powered */
 	u8 remote_wakeup_en : 1;		/* Remote wakeup enable or not, 0-disabled, 1-enabled */
 	u8 remote_wakeup : 1;			/* Remote wakeup */
+	sem_t txsem;
 };
 
 
@@ -168,7 +169,7 @@ static int amebasmart_cdc_acm_cb_received(struct amebasmart_usbdev_s *priv, u8 *
 static void amebasmart_cdc_acm_cb_status_changed(struct amebasmart_usbdev_s *priv, u8 status);
 static int amebasmart_usbd_cdc_acm_init(struct amebasmart_usbdev_s *priv, usbd_cdc_acm_cb_t *cb);
 static amebasmart_usbd_cdc_acm_deinit(struct amebasmart_usbdev_s *priv);
-
+static void amebasmart_cdc_acm_cb_transmitted(struct amebasmart_usbdev_s *priv, u8 status);
 
 /****************************************************************************
  * Private Data
@@ -179,6 +180,7 @@ static usbd_cdc_acm_cb_t amebasmart_cdc_acm_cb = {
 	.deinit 	= amebasmart_cdc_acm_cb_deinit,
 	.setup 		= amebasmart_cdc_acm_cb_setup,
 	.received 	= amebasmart_cdc_acm_cb_received,
+	.transmitted = amebasmart_cdc_acm_cb_transmitted,
 	.status_changed = amebasmart_cdc_acm_cb_status_changed
 };
 
@@ -187,7 +189,7 @@ static struct amebasmart_usbdev_s g_usbdev;
 /*CDC ACM related*/
 /* zhenbei: This priority will affect when test USB print help menu not display
  (Tested 200 or 9 not able to print help menu) */
-#define CONFIG_AMEBASMART_CDC_ACM_ISR_THREAD_PRIORITY 100
+#define CONFIG_AMEBASMART_CDC_ACM_ISR_THREAD_PRIORITY 25
 static usbd_config_t amebasmart_cdc_acm_cfg = {
 	.speed = USB_SPEED_FULL,
 	.dma_enable   = 1U,
@@ -213,7 +215,7 @@ static int amebasmart_cdc_acm_cb_init(struct amebasmart_usbdev_s *priv) {
 
 	usbd_cdc_acm_line_coding_t *lc = &amebasmart_cdc_acm_line_coding;
 
-	lc->bitrate = 150000;
+	lc->bitrate = 1500000;
 	lc->format = 0x00;
 	lc->parity_type = 0x00;
 	lc->data_type = 0x08;
@@ -285,16 +287,15 @@ static int amebasmart_cdc_acm_cb_received(struct amebasmart_usbdev_s *priv, u8 *
 
 	return ret;
 #else
-	//printf("\n [CDC] Rx Success, data0=0x%02x,len=%d bytes\n", buf[0], len);
 	int ret = -1;
-	//zhenbei: Issue on buf not a valid address
-	//printf("Address of buf: %p\n", (void *)buf); //0x1
-	//printf("data0=0x%02x ret = %d\n", buf[0], ret);
-	//ret = usbd_cdc_acm_transmit(buf, len);
 	return HAL_OK;
 #endif
 }
 
+static void amebasmart_cdc_acm_cb_transmitted(struct amebasmart_usbdev_s *priv, u8 status)
+{
+	(void)sem_post(&g_usbdev.txsem);
+}
 /**
   * @brief  Handle the CDC class control requests
   * @param  cmd: Command code
@@ -312,22 +313,27 @@ static int amebasmart_cdc_acm_cb_setup(struct amebasmart_usbdev_s *priv, usb_set
 	switch (req->bRequest) {
 	case CDC_SEND_ENCAPSULATED_COMMAND:
 		/* Do nothing */
+		lldbg("%d\n",__LINE__);
 		break;
 
 	case CDC_GET_ENCAPSULATED_RESPONSE:
 		/* Do nothing */
+		lldbg("%d\n",__LINE__);
 		break;
 
 	case CDC_SET_COMM_FEATURE:
 		/* Do nothing */
+		lldbg("%d\n",__LINE__);
 		break;
 
 	case CDC_GET_COMM_FEATURE:
 		/* Do nothing */
+		lldbg("%d\n",__LINE__);
 		break;
 
 	case CDC_CLEAR_COMM_FEATURE:
 		/* Do nothing */
+		lldbg("%d\n",__LINE__);
 		break;
 
 	case CDC_SET_LINE_CODING:
@@ -337,6 +343,8 @@ static int amebasmart_cdc_acm_cb_setup(struct amebasmart_usbdev_s *priv, usb_set
 			lc->parity_type = buf[5];
 			lc->data_type = buf[6];
 		}
+		lldbg("%d bitrate = %d\n",__LINE__,lc->bitrate);
+
 		break;
 
 	case CDC_GET_LINE_CODING:
@@ -347,6 +355,7 @@ static int amebasmart_cdc_acm_cb_setup(struct amebasmart_usbdev_s *priv, usb_set
 		buf[4] = lc->format;
 		buf[5] = lc->parity_type;
 		buf[6] = lc->data_type;
+		lldbg("%d bitrate = %d\n",__LINE__,lc->bitrate);
 		break;
 
 	case CDC_SET_CONTROL_LINE_STATE:
@@ -440,10 +449,7 @@ int amebasmart_up_usbinitialize(struct amebasmart_usbdev_s *priv)
 		dbg("usbd acm init fail\n");
 		return ret;
 	}
-
-	//zhenbei:set_config cdev->is_delay [Error]EP81 TX 26 not ready
-	//rtw_mdelay_os(250);
-
+	sem_init(&g_usbdev.txsem, 0, 0);
 	return ret;
 }
 
@@ -460,9 +466,38 @@ void usb_initialize(void)
 	}
 }
 
-//zhenbei: For testing purpose
-void usb_printf(uint8_t *buf, u16 len)
+int usb_printf(uint8_t *buf, u16 len)
 {
-	usbd_cdc_acm_transmit(buf, len);
+	int new_len = 0;
+	int ret = -1;
+	for(int i = 0; i < len; i++){
+		if(buf[i] == '\n'){
+			new_len++;
+		}
+	}
+	len += new_len;
+	uint8_t *transfer = (uint8_t *)rtw_zmalloc(len);
+	if (transfer == NULL){
+		lldbg("malloc fail\n");
+		return ret;
+	}
+	int j = 0;
+	for (int i = 0; i < len; i++) {
+		if(buf[i] == '\n') {
+			transfer[j++] = '\r'; 
+		}
+		transfer[j++] = buf[i];
+	}
+	transfer[j] = '\0';
+
+	ret = usbd_cdc_acm_transmit(transfer,len);
+	while (sem_wait(&g_usbdev.txsem) != 0) {
+		/* The only case that an error should occur here is if the wait was awakened
+		 * by a signal.
+		 */
+		ASSERT(errno == EINTR);
+	}
+	rtw_mfree(transfer, 0);
+	return ret;
 }
 
