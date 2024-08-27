@@ -21,7 +21,8 @@
  ****************************************************************************/
 
 #include <tinyara/config.h>
-
+#include <fcntl.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -40,6 +41,7 @@
 #include <tinyara/usb/usbdev_trace.h>
 
 #include <arch/irq.h>
+#include <tinyara/serial/serial.h>
 #include <tinyara/semaphore.h>
 #if defined(CONFIG_AMEBASMART_USBDEVICE)
 #include "usbd.h"
@@ -55,7 +57,6 @@
 
 /* Configuration ************************************************************/
 
-//zhenbei: need to put in defconfig
 #define CONFIG_AMEBASMART_USBD_CDC_ACM_ASYNC_XFER	0
 #define CONFIG_AMEBASMART_CDC_ACM_NOTIFY		0
 #define CONFIG_AMEBASMART_USBD_CDC_ACM_HOTPLUG		0
@@ -83,6 +84,9 @@ static _sema cdc_acm_attach_status_changed_sema;
 
 #endif /* CONFIG_AMEBASMART_USBDEVICE */
 
+extern int cdc_acm_ready_flag;
+static uint8_t receive_data;
+static int received_flag = 0;
 /****************************************************************************
  * Private Type Definitions
  ****************************************************************************/
@@ -98,8 +102,23 @@ static _sema cdc_acm_attach_status_changed_sema;
 #define USBD_EP0_STATUS_OUT                            0x05U    /* Waiting for device to send status handshake (OUT transfer) */
 #define USBD_EP0_STALL                                 0x06U    /* Endpoint stalled due to error or unsupported request */
 
+static char g_usbrxbuffer[CONFIG_CDC_ACM_BULK_OUT_XFER_SIZE];
+static char g_usbtxbuffer[CONFIG_CDC_ACM_BULK_IN_XFER_SIZE];
 
-/* zhenbei: refer to the usbd.h  USB device: usb_dev_t */
+static void rtl8730e_log_usb_shutdown(struct uart_dev_s *dev);
+static int rtl8730e_log_usb_attach(struct uart_dev_s *dev);
+static void rtl8730e_log_usb_detach(struct uart_dev_s *dev);
+static int rtl8730e_log_usb_ioctl(FAR struct uart_dev_s *dev, int cmd, unsigned long arg);
+static int rtl8730e_log_usb_receive(struct uart_dev_s *dev, unsigned int *status);
+static void rtl8730e_log_usb_rxint(struct uart_dev_s *dev, bool enable);
+static bool rtl8730e_log_usb_rxavailable(struct uart_dev_s *dev);
+static void rtl8730e_log_usb_send(struct uart_dev_s *dev, int ch);
+static void rtl8730e_log_usb_txint(struct uart_dev_s *dev, bool enable);
+static bool rtl8730e_log_usb_txready(struct uart_dev_s *dev);
+static bool rtl8730e_log_usb_txempty(struct uart_dev_s *dev);
+
+static int rtl8730e_usb_setup(struct uart_dev_s *dev);
+#define USB_DEV g_usbport
 struct amebasmart_usbdev_s {
 	/* Common device fields.  This must be the first thing defined in the
 	 * structure so that it is possible to simply cast from struct usbdev_s
@@ -125,7 +144,246 @@ struct amebasmart_usbdev_s {
 	u8 remote_wakeup : 1;			/* Remote wakeup */
 	sem_t txsem;
 };
+static struct amebasmart_usbdev_s g_usbdev;
+/* Serial driver UART operations */
+static const struct uart_ops_s log_g_usb_ops = {
+	.setup = rtl8730e_usb_setup,
+	.shutdown = rtl8730e_log_usb_shutdown,
+	.attach = rtl8730e_log_usb_attach,
+	.detach = rtl8730e_log_usb_detach,
+	.ioctl = rtl8730e_log_usb_ioctl,
+	.receive = rtl8730e_log_usb_receive,
+	.rxint = rtl8730e_log_usb_rxint,
+	.rxavailable = rtl8730e_log_usb_rxavailable,
+#ifdef CONFIG_SERIAL_IFLOWCONTROL //Flowcontrol
+	.rxflowcontrol = NULL,
+#endif
+	.send = rtl8730e_log_usb_send,
+	.txint = rtl8730e_log_usb_txint,
+	.txready = rtl8730e_log_usb_txready,
+	.txempty = rtl8730e_log_usb_txempty,
+};
 
+struct rtl8730e_up_dev_s {
+	uint8_t parity;				/* 0=none, 1=odd, 2=even */
+	uint8_t bits;				/* Number of bits (7 or 8) */
+	uint8_t stopbit;			/* Number of StopBit (1 or 2) */
+	uint32_t baud;				/* Configured baud rate */
+	uint32_t irq;				/* IRQ associated with this UART */
+	uint8_t FlowControl;
+	bool txint_enable;
+	bool rxint_enable;
+#ifdef CONFIG_SERIAL_IFLOWCONTROL
+	uint8_t iflow:1;			/* input flow control (RTS) enabled */
+#endif
+#ifdef CONFIG_SERIAL_OFLOWCONTROL
+	uint8_t oflow:1;			/* output flow control (CTS) enabled */
+#endif
+	uint8_t tx_level;
+};
+static struct rtl8730e_up_dev_s g_uart4priv = {
+	.irq = AMEBASMART_IRQ_USB_OTG,
+
+};
+
+static uart_dev_t g_usbport = {
+	.isconsole = false,
+	.recv = {
+		.size = CONFIG_CDC_ACM_BULK_OUT_XFER_SIZE,
+		.buffer = g_usbrxbuffer,
+	},
+	.xmit = {
+		.size = CONFIG_CDC_ACM_BULK_IN_XFER_SIZE,
+		.buffer = g_usbtxbuffer,
+	},
+	.ops = &log_g_usb_ops,
+	.priv = &g_uart4priv,
+};
+
+static int rtl8730e_usb_setup(struct uart_dev_s *dev)
+{
+
+	return OK;
+}
+
+static void rtl8730e_log_usb_shutdown(struct uart_dev_s *dev)
+{
+	/*Do not shut down usb console*/
+}
+
+
+/****************************************************************************
+ * Name: usb_attach
+ *
+ * Related IRQ is done in bsp layer, ignore here
+ *
+ ****************************************************************************/
+
+static int rtl8730e_log_usb_attach(struct uart_dev_s *dev)
+{
+	return 0;
+}
+
+/****************************************************************************
+ * Name: usb_detach
+ *
+ * Description:
+ *   Detach USB interrupts.  This method is called when the serial port is
+ *   closed normally just before the shutdown method is called.  The exception is
+ *   the serial console which is never shutdown.
+ *
+ ****************************************************************************/
+
+static void rtl8730e_log_usb_detach(struct uart_dev_s *dev)
+{
+
+}
+
+/****************************************************************************
+ * Name: usb_ioctl
+ *
+ * Description:
+ *   All ioctl calls will be routed through this method
+ *
+ ****************************************************************************/
+
+static int rtl8730e_log_usb_ioctl(FAR struct uart_dev_s *dev, int cmd, unsigned long arg)
+{
+	int ret = OK;
+	return ret;
+}
+
+/****************************************************************************
+ * Name: usb_receive
+ *
+ * Description:
+ *   Called (usually) from the interrupt level to receive one
+ *   character from the UART.  Error bits associated with the
+ *   receipt are provided in the return 'status'.
+ *
+ ****************************************************************************/
+
+static int rtl8730e_log_usb_receive(struct uart_dev_s *dev, unsigned int *status)
+{
+	struct rtl8730e_up_dev_s *priv = (struct rtl8730e_up_dev_s *)dev->priv;
+	uint8_t rxd;
+	
+	DEBUGASSERT(priv);
+	while(!received_flag){
+		// usleep(1);
+	}
+	rxd = receive_data;
+	*status = rxd;
+	received_flag = 0;
+	return rxd & 0xff;
+}
+
+
+/****************************************************************************
+ * Name: usb_rxint
+ *
+ * Description:
+ *   Call to enable or disable RX interrupts
+ *
+ ****************************************************************************/
+static void rtl8730e_log_usb_rxint(struct uart_dev_s *dev, bool enable)
+{
+
+}
+
+/****************************************************************************
+ * Name: usb_rxavailable
+ *
+ * Description:
+ *   Return true if the receive fifo is not empty
+ *
+ ****************************************************************************/
+
+static bool rtl8730e_log_usb_rxavailable(struct uart_dev_s *dev)
+{
+	if(received_flag) {
+		return TRUE;
+	} else {
+		return FALSE;
+	}
+}
+
+/****************************************************************************
+ * Name: usb_send
+ *
+ * Description:
+ *   This method will send one byte on the USB
+ *
+ ****************************************************************************/
+static void rtl8730e_log_usb_send(struct uart_dev_s *dev, int ch)
+{
+	struct rtl8730e_up_dev_s *priv = (struct rtl8730e_up_dev_s *)dev->priv;
+	DEBUGASSERT(priv);
+	int fd;
+	/*send one byte to tx fifo*/
+	// uint8_t *buffer = (uint8_t *)rtw_zmalloc(1);
+	// buffer[0] = ch;
+	usbd_cdc_acm_transmit(&ch, 1);
+	while (sem_wait(&g_usbdev.txsem) != 0) {
+		/* The only case that an error should occur here is if the wait was awakened
+		 * by a signal.
+		 */
+		ASSERT(errno == EINTR);
+	}
+	priv->tx_level--;
+	// rtw_mfree(buffer,0);
+}
+
+/****************************************************************************
+ * Name: usb_txint
+ *
+ * Description:
+ *   Call to enable or disable TX interrupts
+ *
+ ****************************************************************************/
+
+static void rtl8730e_log_usb_txint(struct uart_dev_s *dev, bool enable)
+{
+	struct rtl8730e_up_dev_s *priv = (struct rtl8730e_up_dev_s *)dev->priv;
+	DEBUGASSERT(priv);
+	priv->txint_enable = enable;
+	if (enable) {
+		uart_xmitchars(dev);
+	}
+}
+
+/****************************************************************************
+ * Name: usb_txready
+ *
+ * Description:
+ *   Return true if the tranmsit fifo is not full
+ *
+ ****************************************************************************/
+
+static bool rtl8730e_log_usb_txready(struct uart_dev_s *dev)
+{
+	struct rtl8730e_up_dev_s *priv = (struct rtl8730e_up_dev_s *)dev->priv;
+	DEBUGASSERT(priv);
+
+	return 1;
+
+}
+
+/****************************************************************************
+ * Name: usb_txempty
+ *
+ * Description:
+ *   Return true if the transmit fifo is empty
+ *
+ ****************************************************************************/
+
+static bool rtl8730e_log_usb_txempty(struct uart_dev_s *dev)
+{
+	struct rtl8730e_up_dev_s *priv = (struct rtl8730e_up_dev_s *)dev->priv;
+	DEBUGASSERT(priv);
+
+	return 1;
+}
 
 /****************************************************************************
  * Private Function Prototypes
@@ -133,8 +391,6 @@ struct amebasmart_usbdev_s {
 
 /* Register operations ******************************************************/
 
-//zhenbei: can add the dump_register API & need add the config
-//may refer the usb_hal.c usb_hal_dump_registers
 #if defined(CONFIG_DEBUG_USBDEVICE)
 static void amebasmart_usb_hal_dump_registers(void);
 #endif
@@ -158,18 +414,15 @@ static void amebasmart_usb_hal_dump_registers(void);
 /*usbd related APIs*/
 static int amebasmart_usbd_init(struct amebasmart_usbdev_s *priv, usbd_config_t *cfg);
 static int amebasmart_usbd_cdc_acm_init(struct amebasmart_usbdev_s *priv, usbd_cdc_acm_cb_t *cb);
-
-/*CDC ACM related*/
-static int amebasmart_up_setup(struct amebasmart_usbdev_s *priv);
-
-static int amebasmart_cdc_acm_cb_init(struct amebasmart_usbdev_s *priv);
-static int amebasmart_cdc_acm_cb_deinit(struct amebasmart_usbdev_s *priv);
-static int amebasmart_cdc_acm_cb_setup(struct amebasmart_usbdev_s *priv, usb_setup_req_t *req, u8 *buf);
-static int amebasmart_cdc_acm_cb_received(struct amebasmart_usbdev_s *priv, u8 *buf, u16 len);
-static void amebasmart_cdc_acm_cb_status_changed(struct amebasmart_usbdev_s *priv, u8 status);
-static int amebasmart_usbd_cdc_acm_init(struct amebasmart_usbdev_s *priv, usbd_cdc_acm_cb_t *cb);
 static amebasmart_usbd_cdc_acm_deinit(struct amebasmart_usbdev_s *priv);
-static void amebasmart_cdc_acm_cb_transmitted(struct amebasmart_usbdev_s *priv, u8 status);
+
+/*CDC ACM CALLBACK related*/
+static int amebasmart_cdc_acm_cb_init(void);
+static int amebasmart_cdc_acm_cb_deinit(void);
+static int amebasmart_cdc_acm_cb_setup(usb_setup_req_t *req, u8 *buf);
+static int amebasmart_cdc_acm_cb_received(u8 *buf, u16 len);
+static void amebasmart_cdc_acm_cb_status_changed(u8 status);
+static void amebasmart_cdc_acm_cb_transmitted(u8 status);
 
 /****************************************************************************
  * Private Data
@@ -184,16 +437,12 @@ static usbd_cdc_acm_cb_t amebasmart_cdc_acm_cb = {
 	.status_changed = amebasmart_cdc_acm_cb_status_changed
 };
 
-static struct amebasmart_usbdev_s g_usbdev;
 
 /*CDC ACM related*/
-/* zhenbei: This priority will affect when test USB print help menu not display
- (Tested 200 or 9 not able to print help menu) */
-#define CONFIG_AMEBASMART_CDC_ACM_ISR_THREAD_PRIORITY 25
 static usbd_config_t amebasmart_cdc_acm_cfg = {
 	.speed = USB_SPEED_FULL,
 	.dma_enable   = 1U,
-	.isr_priority = CONFIG_AMEBASMART_CDC_ACM_ISR_THREAD_PRIORITY,
+	.isr_priority = 25U,
 	.intr_use_ptx_fifo  = 0U,
 	.nptx_max_epmis_cnt = 10U,
 	.ext_intr_en        = USBD_EPMIS_INTR,
@@ -209,9 +458,10 @@ static uint16_t cdc_acm_ctrl_line_state;
   * @param  None
   * @retval Status
   */
-static int amebasmart_cdc_acm_cb_init(struct amebasmart_usbdev_s *priv) {
-	struct amebasmart_usbdev_s *dev = (struct amebasmart_usbdev_s *)priv;
-	DEBUGASSERT(dev);
+static int amebasmart_cdc_acm_cb_init(void)
+{
+	// struct amebasmart_usbdev_s *dev = (struct amebasmart_usbdev_s *)priv;
+	// DEBUGASSERT(dev);
 
 	usbd_cdc_acm_line_coding_t *lc = &amebasmart_cdc_acm_line_coding;
 
@@ -232,10 +482,11 @@ static int amebasmart_cdc_acm_cb_init(struct amebasmart_usbdev_s *priv) {
   * @param  None
   * @retval Status
   */
-static int amebasmart_cdc_acm_cb_deinit(struct amebasmart_usbdev_s *priv) {
+static int amebasmart_cdc_acm_cb_deinit(void)
+{
 
-	struct amebasmart_usbdev_s *dev = (struct amebasmart_usbdev_s *)priv;
-	DEBUGASSERT(dev);
+	// struct amebasmart_usbdev_s *dev = (struct amebasmart_usbdev_s *)priv;
+	// DEBUGASSERT(dev);
 
 #if CONFIG_AMEBASMART_USBD_CDC_ACM_ASYNC_XFER
 	cdc_acm_async_xfer_buf_pos = 0;
@@ -250,22 +501,8 @@ static int amebasmart_cdc_acm_cb_deinit(struct amebasmart_usbdev_s *priv) {
   * @param  Len: RX data length (in bytes)
   * @retval Status
   */
-static int amebasmart_cdc_acm_cb_received(struct amebasmart_usbdev_s *priv, u8 *buf, u16 len) {
-	struct amebasmart_usbdev_s *dev = (struct amebasmart_usbdev_s *)priv;
-	DEBUGASSERT(dev);
-
-#if CONFIG_TEST_TRANSMIT
-	int res = 0;
-	int length = 26;
-	uint8_t buffer[length];
-	for (int i = 0; i < length; i ++){
-		buffer[i] = 0x61 + i;
-	}
-	res = usbd_cdc_acm_transmit(buffer, length);
-	dbg("\n[CDC] CONFIG_TEST_TRANSMIT res=%d length=%d\n", res, length);
-	dbg("\n[CDC] Transmit Success, data0=0x%02x,len=%d bytes\n", buffer[0], length);
-	return HAL_OK;
-#endif
+static int amebasmart_cdc_acm_cb_received(u8 *buf, u16 len)
+{
 
 #if CONFIG_AMEBASMART_USBD_CDC_ACM_ASYNC_XFER
 	u8 ret = HAL_OK;
@@ -287,12 +524,14 @@ static int amebasmart_cdc_acm_cb_received(struct amebasmart_usbdev_s *priv, u8 *
 
 	return ret;
 #else
-	int ret = -1;
-	return HAL_OK;
+	receive_data = (uint8_t)*buf;
+	received_flag = 1;
+	uart_recvchars(&USB_DEV);
+	return receive_data;
 #endif
 }
 
-static void amebasmart_cdc_acm_cb_transmitted(struct amebasmart_usbdev_s *priv, u8 status)
+static void amebasmart_cdc_acm_cb_transmitted(u8 status)
 {
 	(void)sem_post(&g_usbdev.txsem);
 }
@@ -303,37 +542,32 @@ static void amebasmart_cdc_acm_cb_transmitted(struct amebasmart_usbdev_s *priv, 
   * @param  len: Number of data to be sent (in bytes)
   * @retval Status
   */
-static int amebasmart_cdc_acm_cb_setup(struct amebasmart_usbdev_s *priv, usb_setup_req_t *req, u8 *buf)
+static int amebasmart_cdc_acm_cb_setup(usb_setup_req_t *req, u8 *buf)
 {
-	struct amebasmart_usbdev_s *dev = (struct amebasmart_usbdev_s *)priv;
-	DEBUGASSERT(dev);
+	// struct amebasmart_usbdev_s *dev = (struct amebasmart_usbdev_s *)priv;
+	// DEBUGASSERT(dev);
 
 	usbd_cdc_acm_line_coding_t *lc = &amebasmart_cdc_acm_line_coding;
 
 	switch (req->bRequest) {
 	case CDC_SEND_ENCAPSULATED_COMMAND:
 		/* Do nothing */
-		lldbg("%d\n",__LINE__);
 		break;
 
 	case CDC_GET_ENCAPSULATED_RESPONSE:
 		/* Do nothing */
-		lldbg("%d\n",__LINE__);
 		break;
 
 	case CDC_SET_COMM_FEATURE:
 		/* Do nothing */
-		lldbg("%d\n",__LINE__);
 		break;
 
 	case CDC_GET_COMM_FEATURE:
 		/* Do nothing */
-		lldbg("%d\n",__LINE__);
 		break;
 
 	case CDC_CLEAR_COMM_FEATURE:
 		/* Do nothing */
-		lldbg("%d\n",__LINE__);
 		break;
 
 	case CDC_SET_LINE_CODING:
@@ -343,7 +577,6 @@ static int amebasmart_cdc_acm_cb_setup(struct amebasmart_usbdev_s *priv, usb_set
 			lc->parity_type = buf[5];
 			lc->data_type = buf[6];
 		}
-		lldbg("%d bitrate = %d\n",__LINE__,lc->bitrate);
 
 		break;
 
@@ -355,7 +588,6 @@ static int amebasmart_cdc_acm_cb_setup(struct amebasmart_usbdev_s *priv, usb_set
 		buf[4] = lc->format;
 		buf[5] = lc->parity_type;
 		buf[6] = lc->data_type;
-		lldbg("%d bitrate = %d\n",__LINE__,lc->bitrate);
 		break;
 
 	case CDC_SET_CONTROL_LINE_STATE:
@@ -367,7 +599,7 @@ static int amebasmart_cdc_acm_cb_setup(struct amebasmart_usbdev_s *priv, usb_set
 		*/
 		cdc_acm_ctrl_line_state = req->wValue;
 		if (cdc_acm_ctrl_line_state & 0x01) {
-			lldbg("\n[CDC] VCOM port activated\n");
+			dbg("\n[CDC] VCOM port activated\n");
 #if CONFIG_AMEBASMART_CDC_ACM_NOTIFY
 			usbd_cdc_acm_notify_serial_state(CDC_ACM_CTRL_DSR | CDC_ACM_CTRL_DCD);
 #endif
@@ -385,9 +617,10 @@ static int amebasmart_cdc_acm_cb_setup(struct amebasmart_usbdev_s *priv, usb_set
 	return HAL_OK;
 }
 
-static void amebasmart_cdc_acm_cb_status_changed(struct amebasmart_usbdev_s *priv, uint8_t status) {
-	struct amebasmart_usbdev_s *dev = (struct amebasmart_usbdev_s *)priv;
-	DEBUGASSERT(dev);
+static void amebasmart_cdc_acm_cb_status_changed(uint8_t status)
+{
+	// struct amebasmart_usbdev_s *dev = (struct amebasmart_usbdev_s *)priv;
+	// DEBUGASSERT(dev);
 
 #if CONFIG_AMEBASMART_USBD_CDC_ACM_HOTPLUG
 	cdc_acm_attach_status = status;
@@ -396,7 +629,8 @@ static void amebasmart_cdc_acm_cb_status_changed(struct amebasmart_usbdev_s *pri
 }
 
 
-static int amebasmart_usbd_cdc_acm_init(struct amebasmart_usbdev_s *priv, usbd_cdc_acm_cb_t *cb) {
+static int amebasmart_usbd_cdc_acm_init(struct amebasmart_usbdev_s *priv, usbd_cdc_acm_cb_t *cb)
+{
 	struct amebasmart_usbdev_s *dev = (struct amebasmart_usbdev_s *)priv;
 	int ret = -1;
 
@@ -416,14 +650,15 @@ static amebasmart_usbd_cdc_acm_deinit(struct amebasmart_usbdev_s *priv)
 	usbd_cdc_acm_deinit();
 }
 
-static int amebasmart_usbd_init(struct amebasmart_usbdev_s *priv, usbd_config_t *cfg) {
+static int amebasmart_usbd_init(struct amebasmart_usbdev_s *priv, usbd_config_t *cfg)
+{
 	struct amebasmart_usbdev_s *dev = (struct amebasmart_usbdev_s *)priv;
 
 	int ret = -1;
 	ret = usbd_init(cfg);
 
 	return ret;
-};
+}
 
 /****************************************************************************
  * Name: amebasmart_up_usbuninitialize
@@ -450,7 +685,32 @@ int amebasmart_up_usbinitialize(struct amebasmart_usbdev_s *priv)
 		return ret;
 	}
 	sem_init(&g_usbdev.txsem, 0, 0);
+
 	return ret;
+}
+
+/*It takes sometime for USB initialization to complete, so during boot up stage, it /dev/console will be
+ register with serial first to prevent opening an empty path, then once usb is ready, re-register it to usb and
+ open the fd*/
+static int register_usb(void)
+{
+	while(!cdc_acm_ready_flag){
+		usleep(1000);
+	}
+	USB_DEV.isconsole = true;
+	uart_register("/dev/ttyACM0", &USB_DEV);
+	unregister_driver("/dev/console");
+	uart_register("/dev/console", &USB_DEV);
+	int fd;
+	fd = open("/dev/console", O_RDWR);
+	if(fd >= 0) {
+		dup2(fd, 1);
+    	dup2(fd, 2);
+		return OK;
+	} else {
+		return -1;
+	}
+
 }
 
 void usb_initialize(void)
@@ -464,40 +724,10 @@ void usb_initialize(void)
 	if (ret != 0) {
 		dbg("amebasmart usb init fail\n");
 	}
+	ret = register_usb();
+	if (ret != OK) {
+		dbg("usb register failed");
+	}
 }
 
-int usb_printf(uint8_t *buf, u16 len)
-{
-	int new_len = 0;
-	int ret = -1;
-	for(int i = 0; i < len; i++){
-		if(buf[i] == '\n'){
-			new_len++;
-		}
-	}
-	len += new_len;
-	uint8_t *transfer = (uint8_t *)rtw_zmalloc(len);
-	if (transfer == NULL){
-		lldbg("malloc fail\n");
-		return ret;
-	}
-	int j = 0;
-	for (int i = 0; i < len; i++) {
-		if(buf[i] == '\n') {
-			transfer[j++] = '\r'; 
-		}
-		transfer[j++] = buf[i];
-	}
-	transfer[j] = '\0';
-
-	ret = usbd_cdc_acm_transmit(transfer,len);
-	while (sem_wait(&g_usbdev.txsem) != 0) {
-		/* The only case that an error should occur here is if the wait was awakened
-		 * by a signal.
-		 */
-		ASSERT(errno == EINTR);
-	}
-	rtw_mfree(transfer, 0);
-	return ret;
-}
 

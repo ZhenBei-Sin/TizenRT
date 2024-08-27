@@ -121,7 +121,8 @@ int printf(FAR const char *fmt, ...)
 	ret = logm_internal(LOGM_NORMAL, LOGM_UNKNOWN, LOGM_DEF_PRIORITY, fmt, ap);
 #elif CONFIG_NFILE_STREAMS > 0
 
-#if defined(CONFIG_AMEBASMART_USBDEVICE)
+// #if defined(CONFIG_AMEBASMART_USBDEVICE)
+#if 0
 	len = vsnprintf(tmp_buffer, sizeof(tmp_buffer), fmt, ap);
 	if(len > 0) {
 		usb_printf(tmp_buffer, len);

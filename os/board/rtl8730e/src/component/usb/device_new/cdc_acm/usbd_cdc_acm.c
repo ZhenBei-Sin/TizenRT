@@ -294,6 +294,7 @@ static usbd_cdc_acm_dev_t usbd_cdc_acm_dev;
   * @param  config: USB configuration index
   * @retval Status
   */
+int cdc_acm_ready_flag = 0;
 static u8 cdc_acm_set_config(usb_dev_t *dev, u8 config)
 {
 	u16 ep_mps;
@@ -323,9 +324,10 @@ static u8 cdc_acm_set_config(usb_dev_t *dev, u8 config)
 	usbd_ep_receive(dev, CDC_ACM_BULK_OUT_EP, cdev->bulk_out_buf, cdev->bulk_out_buf_size);
 
 	cdev->is_ready = 1U;
-	lldbg("zhenbei: cdc_acm_set_config is_ready\n");
+	cdc_acm_ready_flag = 1;
 	return ret;
 }
+
 
 /**
   * @brief  Clear CDC ACM configuration
@@ -503,7 +505,6 @@ static u8 cdc_acm_handle_ep_data_out(usb_dev_t *dev, u8 ep_addr, u16 len)
 	}
 
 	usbd_ep_receive(cdev->dev, CDC_ACM_BULK_OUT_EP, cdev->bulk_out_buf, cdev->bulk_out_buf_size);
-
 	return HAL_OK;
 }
 
@@ -839,12 +840,10 @@ u8 usbd_cdc_acm_transmit(u8 *buf, u16 len)
 	u8 ret = HAL_ERR_HW;
 	usbd_cdc_acm_dev_t *cdev = &usbd_cdc_acm_dev;
 	usb_dev_t *dev = cdev->dev;
-
 	if (!cdev->is_ready) {
 		RTK_LOGI(TAG, "EP%02X TX %d not ready\n", CDC_ACM_BULK_IN_EP, len);
 		return ret;
 	}
-
 	if (len > cdev->bulk_in_buf_size) {
 		len = cdev->bulk_in_buf_size;
 	}
