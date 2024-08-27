@@ -334,6 +334,81 @@ static void rtl8730e_log_usb_send(struct uart_dev_s *dev, int ch)
 	// rtw_mfree(buffer,0);
 }
 
+
+static void usb_xmitchars(FAR uart_dev_t *dev)
+{
+	struct rtl8730e_up_dev_s *priv = (struct rtl8730e_up_dev_s *)dev->priv;
+	DEBUGASSERT(priv);
+	uint16_t nbytes = 0;
+	uint8_t *buffer = NULL;
+	buffer = (uint8_t *)rtw_zmalloc(CONFIG_CDC_ACM_BULK_IN_XFER_SIZE);
+	if (buffer == NULL) {
+		dbg("malloc failed\n");
+	}
+#ifdef CONFIG_SMP
+	irqstate_t flags = enter_critical_section();
+#endif
+
+	/* Send while we still have data in the TX buffer & room in the fifo */
+
+	while (dev->xmit.head != dev->xmit.tail && uart_txready(dev)) {
+		/* Send the next byte */
+		buffer[nbytes] = dev->xmit.buffer[dev->xmit.tail];
+		// uart_send(dev, dev->xmit.buffer[dev->xmit.tail]);
+		nbytes++;
+
+		/* Increment the tail index */
+
+		if (++(dev->xmit.tail) >= dev->xmit.size) {
+			dev->xmit.tail = 0;
+		}
+		if (nbytes == CONFIG_CDC_ACM_BULK_IN_XFER_SIZE) {
+			nbytes = 0;
+			usbd_cdc_acm_transmit(buffer, CONFIG_CDC_ACM_BULK_IN_XFER_SIZE);
+			while (sem_wait(&g_usbdev.txsem) != 0) {
+				/* The only case that an error should occur here is if the wait was awakened
+				* by a signal.
+				*/
+				ASSERT(errno == EINTR);
+			}
+			priv->tx_level-=CONFIG_CDC_ACM_BULK_IN_XFER_SIZE;
+		}
+	}
+	usbd_cdc_acm_transmit(buffer, nbytes);
+	while (sem_wait(&g_usbdev.txsem) != 0) {
+		/* The only case that an error should occur here is if the wait was awakened
+		* by a signal.
+		*/
+		ASSERT(errno == EINTR);
+	}
+	priv->tx_level-=nbytes;
+	rtw_mfree(buffer,0);
+	/* When all of the characters have been sent from the buffer disable the TX
+	 * interrupt.
+	 *
+	 * Potential bug?  If nbytes == 0 && (dev->xmit.head == dev->xmit.tail) &&
+	 * dev->xmitwaiting == true, then disabling the TX interrupt will leave
+	 * the uart_write() logic waiting to TX to complete with no TX interrupts.
+	 * Can that happen?
+	 */
+
+	if (dev->xmit.head == dev->xmit.tail) {
+		uart_disabletxint(dev);
+	}
+
+	/* If any bytes were removed from the buffer, inform any waiters there there is
+	 * space available.
+	 */
+
+	if (nbytes) {
+		dev->sent(dev);
+	}
+#ifdef CONFIG_SMP
+	leave_critical_section(flags);
+#endif
+}
+
+
 /****************************************************************************
  * Name: usb_txint
  *
@@ -348,7 +423,8 @@ static void rtl8730e_log_usb_txint(struct uart_dev_s *dev, bool enable)
 	DEBUGASSERT(priv);
 	priv->txint_enable = enable;
 	if (enable) {
-		uart_xmitchars(dev);
+		// uart_xmitchars(dev);
+		usb_xmitchars(dev);
 	}
 }
 
