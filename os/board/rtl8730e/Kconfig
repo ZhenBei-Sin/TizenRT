@@ -150,11 +150,21 @@ config AMEBASMART_FLASH_BLOCK_SIZE
     help
         Setting this vaule to configure erase unit size of esp32 SPI flash.
 
-config AMEBASMART_SECURE_WORLD_ADDRESS
-     hex "Secure address to read/write"
-     default 0x70383020
+config AMEBASMART_EXT_FLASH_CHUNK_SIZE
+     hex "Chunk size to read external flash"
+     default 0x20000 if BOARD_FLASH_8M
+     default 0x100000 if BOARD_FLASH_16M
+     default 0x200000 if BOARD_FLASH_32M
      help
-         Setting this value to a secure address to check whether it can be accessed from non-secure zone.
+        Setting this value sets the chunk size for external flash user image verification.
+        Ensure that the available heap size can accommodate the chunk size.
+
+config AMEBASMART_SECURE_WORLD_ADDRESS
+         hex "Secure address to read/write"
+         default 0x70383020
+         help
+            Setting this value to a secure address to check whether it can be accessed from non-secure zone.
+    
 
 endmenu
 endif
