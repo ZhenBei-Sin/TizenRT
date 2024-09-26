@@ -133,7 +133,7 @@ typedef struct {
 #include "hal_platform.h"
 
 #define IMAGE_HEADER_LEN		0x20
-#define Cert_PKHash_OTP_ADDR		0x0320
+#define Cert_PKHash_OTP_ADDR	0x0320
 #define OTPC_REG_BASE			0x42000000
 
 typedef struct {
@@ -161,4 +161,14 @@ typedef struct {
 	uint32_t sb_header;
 	uint32_t reserved[3];
 } IMAGE_HEADER;
-#endif
+
+#ifdef CONFIG_SECOND_FLASH_PARTITION
+typedef enum {
+    INIT_STATE = 0,
+    PROCESS_STATE,
+    LAST_STATE,
+	INIT_LAST_STATE
+} State;
+#endif /* CONFIG_SECOND_FLASH_PARTITION */
+
+#endif /* CONFIG_AMEBASMART_TRUSTZONE */

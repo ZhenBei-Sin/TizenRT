@@ -18,21 +18,57 @@
 
 #include "rtl_se_crypto_function.h"
 #include "bootloader_hp.h"
-#define TIZENRT_KERNEL_HEADER_LEN 0x10
+
+#define TIZENRT_KERNEL_HEADER_LEN		0x10
+
+#ifdef CONFIG_SECOND_FLASH_PARTITION
+#include <tinyara/spi/spi.h>
+#define EXTERNAL_FLASH_READ_CMD_SIZE	5
+#define EXTERNAL_FLASH_OFFSET			(CONFIG_SECOND_FLASH_START_ADDR - CONFIG_FLASH_START_ADDR)
+#define SPI_FREQUENCY					25000000
+
+struct spi_dev_s *spi_param;
+
+static void external_flash_read_stream(struct spi_dev_s *spi, char *rx_buffer, u32 length, u32 offset)
+{
+	SPI_LOCK(spi, true);
+	SPI_SETBITS(spi, 8);
+	SPI_SETFREQUENCY(spi, SPI_FREQUENCY);
+	SPI_SELECT(spi, 1, true);
+
+	char cmd[EXTERNAL_FLASH_READ_CMD_SIZE] = {0};
+	/* Transmit read cmd */
+	cmd[0] = 0x13;
+	cmd[1] = (offset >> 24) & 0xFF;
+	cmd[2] = (offset >> 16) & 0xFF;
+	cmd[3] = (offset >> 8) & 0xFF;
+	cmd[4] = offset & 0xFF;
+
+	SPI_EXCHANGE(spi, (char *)cmd, (char *)rx_buffer, length + EXTERNAL_FLASH_READ_CMD_SIZE);
+	memmove(rx_buffer, rx_buffer + EXTERNAL_FLASH_READ_CMD_SIZE, length);
+
+	SPI_SELECT(spi, 1, false);
+	SPI_LOCK(spi, false);
+}
+#endif /* CONFIG_SECOND_FLASH_PARTITION */
+
 static int SBOOT_Validate_Algorithm_OTA(u8 *AuthAlg, u8 *HashAlg, u8 ManiAuth, u8 ManiHash)
 {
 	int ret;
+
 	OTA_SIG_CHECK_ADAPTER algo_info;
 	(&algo_info)->AuthAlg = AuthAlg;
 	(&algo_info)->HashAlg = HashAlg;
 	(&algo_info)->ManiAuth = ManiAuth;
 	(&algo_info)->ManiHash = ManiHash;
 	ret = ameba_SBOOT_Validate_Algorithm(&algo_info);
+
 	return ret;
 }
 static int SBOOT_Validate_Signature_OTA(u8 *AuthAlg, u8 *HashAlg, u8 *Pk, u8 *Msg, u32 Len, u8 *Sig)
 {
 	int ret;
+
 	OTA_SIG_CHECK_ADAPTER sig_info;
 	(&sig_info)->AuthAlg = AuthAlg;
 	(&sig_info)->HashAlg = HashAlg;
@@ -41,36 +77,51 @@ static int SBOOT_Validate_Signature_OTA(u8 *AuthAlg, u8 *HashAlg, u8 *Pk, u8 *Ms
 	(&sig_info)->Len = Len;
 	(&sig_info)->Sig = Sig;
 	ret = ameba_SBOOT_Validate_Signature(&sig_info);
-	
+ 
 	return ret;
 }
 
 static int SBOOT_Validate_ImgHash_OTA(u8 *HashAlg, u8 *ImgHash, SubImgInfo_TypeDef *SubImgInfo, u8 Num)
 {
 	int ret;
+
 	OTA_SIG_CHECK_ADAPTER hash_info;
-	
 	(&hash_info)->HashAlg = HashAlg;
 	(&hash_info)->ImgHash = ImgHash;
 	(&hash_info)->SubImgInfo = SubImgInfo;
 	(&hash_info)->Num = Num;
 	ret = ameba_SBOOT_Validate_ImgHash(&hash_info);
-	
+
 	return ret;
 }
 
+#ifdef CONFIG_SECOND_FLASH_PARTITION
+static int SBOOT_Validate_ExtImgHash_OTA(u8 *HashAlg, u8 *ImgHash, SubImgInfo_TypeDef *SubImgInfo, u8 Num, char *extSubImgInfo, State currentState)
+{
+	int ret;
+
+	OTA_SIG_CHECK_ADAPTER hash_info;
+	(&hash_info)->HashAlg = HashAlg;
+	(&hash_info)->ImgHash = ImgHash;
+	(&hash_info)->SubImgInfo = SubImgInfo;
+	(&hash_info)->Num = Num;
+	ret = ameba_SBOOT_Validate_ExtImgHash(&hash_info, extSubImgInfo, currentState);
+
+	return ret;
+}
+#endif /* CONFIG_SECOND_FLASH_PARTITION */
+
 static int SBOOT_Validate_PubKey_OTA(u8 *AuthAlg, u8 *Pk, u8 *Hash)
 {
-
 	int ret;
+
 	OTA_SIG_CHECK_ADAPTER pkey_info;
 	(&pkey_info)->AuthAlg = AuthAlg;
 	(&pkey_info)->Pk = Pk;
 	(&pkey_info)->Hash = Hash;
 	ret = ameba_SBOOT_Validate_PubKey(&pkey_info);
-	
-	return ret;
 
+	return ret;
 }
 
 static void BOOT_ImgCopy_OTA(void *__restrict dst0, const void *__restrict src0, size_t len0)
@@ -78,48 +129,116 @@ static void BOOT_ImgCopy_OTA(void *__restrict dst0, const void *__restrict src0,
 	_memcpy(dst0, src0, len0);
 }
 
-
 /* User image verification*/
 static int User_SignatureCheck_OTA(Manifest_TypeDef *Manifest, SubImgInfo_TypeDef *SubImgInfo, u8 SubImgNum)
 {
 	int ret;
 	u8 AuthAlg = 0, HashAlg = 0;
-	
+	char *extSubImgInfo = NULL;
+
 	/*1. verify signature*/
 	/*1.1 Initialize hash engine*/
-	
-	
-	/* 1.2 Check algorithm from manifest against OTP configuration if need. */
 
+	/* 1.2 Check algorithm from manifest against OTP configuration if need. */
 	ret = SBOOT_Validate_Algorithm_OTA(&AuthAlg, &HashAlg, Manifest->AuthAlg, Manifest->HashAlg);
-	
+
 	if (ret != 0) {
 		goto SBOOT_FAIL;
 	}
-	
-	
-	/* 1.3 validate signature */
 
+	/* 1.3 validate signature */
 	ret = SBOOT_Validate_Signature_OTA(&AuthAlg, &HashAlg, Manifest->SBPubKey, (u8 *)Manifest, sizeof(Manifest_TypeDef) - SIGN_MAX_LEN, (u8 *)Manifest->Signature);
 
 	if (ret != 0) {
-		printf ("%s User image validate Signature failed\n", __func__);
+		printf("%s User image validate Signature failed\n", __func__);
 		goto SBOOT_FAIL;
 	}
 
-	/* 1.4 calculate and validate image hash */
+	/* 1.4 calculate and validate internal or external image hash */
+#ifdef CONFIG_SECOND_FLASH_PARTITION
+	u32 extFlashAddr = 0;
+	u32 totalChunkSize = (SubImgInfo->Len / CONFIG_AMEBASMART_EXT_FLASH_CHUNK_SIZE);
+	u32 lastChunkSize = SubImgInfo->Len - (totalChunkSize * CONFIG_AMEBASMART_EXT_FLASH_CHUNK_SIZE);
+	State currentState;
+	int i = 0;
 
+	extSubImgInfo = (char *)malloc(CONFIG_AMEBASMART_EXT_FLASH_CHUNK_SIZE + EXTERNAL_FLASH_READ_CMD_SIZE);
+	if (extSubImgInfo == NULL) {
+		printf("Err: Malloc failed.\n");
+		return FALSE;
+	}
+
+	if (SubImgInfo->Addr >= CONFIG_SECOND_FLASH_START_ADDR) {
+		/* The image size is less than or equal to the fixed chunk size. */
+		if (SubImgInfo->Len <= CONFIG_AMEBASMART_EXT_FLASH_CHUNK_SIZE) {
+			currentState = INIT_LAST_STATE;
+			extFlashAddr = (SubImgInfo->Addr - EXTERNAL_FLASH_OFFSET);
+			external_flash_read_stream(spi_param, extSubImgInfo, CONFIG_AMEBASMART_EXT_FLASH_CHUNK_SIZE, extFlashAddr);
+
+			printf("\r[%d] Processing extFlashAddr [0x%x]", currentState, extFlashAddr + EXTERNAL_FLASH_OFFSET);
+			ret = SBOOT_Validate_ExtImgHash_OTA(&HashAlg, (u8 *)Manifest->ImgHash, SubImgInfo, SubImgNum, extSubImgInfo, currentState);
+			memset(extSubImgInfo, 0, CONFIG_AMEBASMART_EXT_FLASH_CHUNK_SIZE);
+		} else {
+			/* The image size is larger than the fixed chunk size. */
+			for (i = 0; i < totalChunkSize; i++) {
+				SubImgInfo->Len = CONFIG_AMEBASMART_EXT_FLASH_CHUNK_SIZE;
+				extFlashAddr = (SubImgInfo->Addr - EXTERNAL_FLASH_OFFSET) + (i * CONFIG_AMEBASMART_EXT_FLASH_CHUNK_SIZE);
+				external_flash_read_stream(spi_param, extSubImgInfo, CONFIG_AMEBASMART_EXT_FLASH_CHUNK_SIZE, extFlashAddr);
+
+				if (i == 0) {
+					currentState = INIT_STATE;
+				} else if ((i == totalChunkSize - 1) && (lastChunkSize == 0)) {
+					/* The last image size can be divided equally by the fixed chunk size. */
+					currentState = LAST_STATE;
+				} else {
+					currentState = PROCESS_STATE;
+				}
+
+				printf("\r[%d] Processing extFlashAddr [0x%x]", currentState, extFlashAddr + EXTERNAL_FLASH_OFFSET);
+				ret = SBOOT_Validate_ExtImgHash_OTA(&HashAlg, (u8 *)Manifest->ImgHash, SubImgInfo, SubImgNum, extSubImgInfo, currentState);
+				memset(extSubImgInfo, 0, CONFIG_AMEBASMART_EXT_FLASH_CHUNK_SIZE);
+			}
+			/* The last image size cannot be divided equally by the fixed chunk size. */
+			if (lastChunkSize > 0) {
+				currentState = LAST_STATE;
+				extFlashAddr = extFlashAddr + CONFIG_AMEBASMART_EXT_FLASH_CHUNK_SIZE;
+				SubImgInfo->Len = lastChunkSize;
+				external_flash_read_stream(spi_param, extSubImgInfo, lastChunkSize, extFlashAddr);
+
+				printf("\r[%d] Processing extFlashAddr [0x%x]", currentState, extFlashAddr + EXTERNAL_FLASH_OFFSET);
+				ret = SBOOT_Validate_ExtImgHash_OTA(&HashAlg, (u8 *)Manifest->ImgHash, SubImgInfo, SubImgNum, extSubImgInfo, currentState);
+				memset(extSubImgInfo, 0, CONFIG_AMEBASMART_EXT_FLASH_CHUNK_SIZE);
+			}
+		}
+	} else {
+		ret = SBOOT_Validate_ImgHash_OTA(&HashAlg, (u8 *)Manifest->ImgHash, SubImgInfo, SubImgNum);
+	}
+#else
 	ret = SBOOT_Validate_ImgHash_OTA(&HashAlg, (u8 *)Manifest->ImgHash, SubImgInfo, SubImgNum);
+#endif /* CONFIG_SECOND_FLASH_PARTITION */
 
+	printf("\n");
 	if (ret != 0) {
-		printf ("%s User image validate ImgHash failed\n",__func__);
+		printf("%s User image validate ImgHash failed\n",__func__);
 		goto SBOOT_FAIL;
 	}
 	printf("USER IMAGE VERIFY PASS\n");
+
+	if (extSubImgInfo) {
+		free(extSubImgInfo);
+		extSubImgInfo = NULL;
+	}
+
 	return TRUE;
 	
 SBOOT_FAIL:
 	printf("USER IMAGE VERIFY FAIL, ret = %d\n", ret);
+
+	if (extSubImgInfo) {
+		free(extSubImgInfo);
+		extSubImgInfo = NULL;
+	}
+
 	return FALSE;	
 
 }
@@ -155,9 +274,6 @@ static int BOOT_LoadSubImage_OTA(SubImgInfo_TypeDef *SubImgInfo, u32 StartAddr, 
 	return TRUE;
 }
 
-
-
-
 /* Kernel image verification*/
 
 static int Kernel_SignatureCheck_OTA(Manifest_TypeDef *Manifest, SubImgInfo_TypeDef *SubImgInfo, u8 SubImgNum, Certificate_TypeDef *Cert, u32 KeyID)
@@ -168,17 +284,14 @@ static int Kernel_SignatureCheck_OTA(Manifest_TypeDef *Manifest, SubImgInfo_Type
 	u8 AuthAlg = 0, HashAlg = 0;
 	
 	if (SYSCFG_OTP_SBootEn() == FALSE) {
-	
 		return FALSE;
 	}
-
 
 	/* 2.2 Check algorithm from manifest against OTP configuration if need. */
 	ret = SBOOT_Validate_Algorithm_OTA(&AuthAlg, &HashAlg, Manifest->AuthAlg, Manifest->HashAlg);
 
 	if (ret != 0) {
-		
-		printf ("%s Kernel image validate Algorithm failed\n",__func__);
+		printf("%s Kernel image validate Algorithm failed\n",__func__);
 		goto SBOOT_FAIL;
 	}
 
@@ -191,26 +304,23 @@ static int Kernel_SignatureCheck_OTA(Manifest_TypeDef *Manifest, SubImgInfo_Type
 	ret = SBOOT_Validate_PubKey_OTA(&AuthAlg, Manifest->SBPubKey, Cert->PKInfo[i].Hash);
 
 	if (ret != 0) {
-		printf ("%s Kernel image validate PubKey failed\n",__func__);
+		printf("%s Kernel image validate PubKey failed\n",__func__);
 		goto SBOOT_FAIL;
 	}
 
 	/* 2.4 validate signature */
-
-	
 	ret = SBOOT_Validate_Signature_OTA(&AuthAlg, &HashAlg, Manifest->SBPubKey, (u8 *)Manifest, sizeof(Manifest_TypeDef) - SIGN_MAX_LEN, Manifest->Signature);
 
 	if (ret != 0) {
-		printf ("%s Kernel image validate Signature failed\n",__func__);
+		printf("%s Kernel image validate Signature failed\n",__func__);
 		goto SBOOT_FAIL;
 	}
 
 	/* 2.5 calculate and validate image hash */
-		
 	ret = SBOOT_Validate_ImgHash_OTA(&HashAlg, Manifest->ImgHash, SubImgInfo, SubImgNum);
 
 	if (ret != 0) {
-		printf ("%s Kernel image validate ImgHash failed\n",__func__);
+		printf("%s Kernel image validate ImgHash failed\n",__func__);
 		goto SBOOT_FAIL;
 	}
 
@@ -222,6 +332,7 @@ SBOOT_FAIL:
 	for (i = 0; i < 32; i ++){
 		printf("%02x",*(Manifest->SBPubKey + i));
 	}
+
 	return FALSE;
 }
 
@@ -235,26 +346,22 @@ static int Kernel_CertificateCheck_OTA(Certificate_TypeDef *Cert, u32 Addr)
 
 	/* 1. check if secure boot enable. */
 	if (SYSCFG_OTP_SBootEn() == FALSE) {
-	
 		return FALSE;
 	}
 
 	BOOT_ImgCopy_OTA(&Signature, (void *)(Addr + Cert->TableSize), SIGN_MAX_LEN);
 
 	/* 2. read public key hash from OTP.*/
-	
 	for (i = 0; i < 32; i++) {
-	
 		PubKeyHash[i] = HAL_READ8(OTPC_REG_BASE, Cert_PKHash_OTP_ADDR + i);
 	}
 
 	/* 3. verify signature */
 
-
 	/* 3.2 Check algorithm from flash against OTP configuration if need. */
 	ret = SBOOT_Validate_Algorithm_OTA(&AuthAlg, &HashAlg, Cert->AuthAlg, Cert->HashAlg);
 	if (ret != 0) {
-		printf ("%s Kernel image validate Algorithm failed\n",__func__);
+		printf("%s Kernel image validate Algorithm failed\n",__func__);
 		goto SBOOT_FAIL;
 	}
 
@@ -262,14 +369,14 @@ static int Kernel_CertificateCheck_OTA(Certificate_TypeDef *Cert, u32 Addr)
 	ret = SBOOT_Validate_PubKey_OTA(&AuthAlg, Cert->SBPubKey, PubKeyHash);
 
 	if (ret != 0) {
-		printf ("%s Kernel image validate PubKey failed\n",__func__);
+		printf("%s Kernel image validate PubKey failed\n",__func__);
 		goto SBOOT_FAIL;
 	}
 
 	/* 3.4 validate signature */
 	ret = SBOOT_Validate_Signature_OTA(&AuthAlg, &HashAlg, Cert->SBPubKey, (u8 *)Cert, Cert->TableSize, Signature);
 	if (ret != 0) {
-		printf ("%s Kernel image validate Signature failed\n",__func__);
+		printf("%s Kernel image validate Signature failed\n",__func__);
 		goto SBOOT_FAIL;
 	}
 
@@ -277,39 +384,62 @@ static int Kernel_CertificateCheck_OTA(Certificate_TypeDef *Cert, u32 Addr)
 
 SBOOT_FAIL:
 	printf("Certificate VERIFY FAIL, ret = %d\n", ret);
-	
-	
+
 	return FALSE;
 }
 
-
 int OTA_UserImageSignatureCheck(uint32_t input_addr)
 {
-	
 	SubImgInfo_TypeDef SubImgInfo;
 	Manifest_TypeDef Manifest;
 
 	u32 PhyAddr;
 	u8 Index;
-	
+	int ret = 0;
 	PhyAddr = (u32)input_addr;
-	
-	/*load manifest to SRAM*/
-	BOOT_ImgCopy_OTA((void *)&Manifest, (void *)PhyAddr, sizeof(Manifest_TypeDef));
-	
-	PhyAddr += MANIFEST_SIZE_4K_ALIGN;
-	
-	SubImgInfo.Addr = PhyAddr;
-	
-	SubImgInfo.Len = Manifest.ImgSize;
-	
-	Index = 1;
-	
-	if (User_SignatureCheck_OTA(&Manifest, &SubImgInfo, Index) == FALSE)
-		return FALSE;
-		
-	return TRUE;
+	char *extManifest = NULL;
 
+#ifdef CONFIG_SECOND_FLASH_PARTITION
+	extManifest = (char *)malloc(sizeof(Manifest_TypeDef) + EXTERNAL_FLASH_READ_CMD_SIZE);
+	if (extManifest == NULL) {
+		printf("Err: Malloc failed.\n");
+		return FALSE;
+	}
+
+	if (input_addr >= CONFIG_FLASH_START_ADDR && input_addr < CONFIG_SECOND_FLASH_START_ADDR) {
+		BOOT_ImgCopy_OTA((void *)&Manifest, (void *)PhyAddr, sizeof(Manifest_TypeDef));
+	}
+	else if (input_addr >= CONFIG_SECOND_FLASH_START_ADDR) {
+		/* SPI Initialize */
+		spi_param = up_spiinitialize(1);
+		external_flash_read_stream(spi_param, extManifest, sizeof(Manifest_TypeDef), input_addr - EXTERNAL_FLASH_OFFSET);
+		BOOT_ImgCopy_OTA((void *)&Manifest, (void *)extManifest, sizeof(Manifest_TypeDef));
+	}
+	else {
+		printf("Invalid address\n");
+	}
+#else
+		/*load manifest to SRAM*/
+		BOOT_ImgCopy_OTA((void *)&Manifest, (void *)PhyAddr, sizeof(Manifest_TypeDef));
+#endif
+
+	PhyAddr += MANIFEST_SIZE_4K_ALIGN;
+	SubImgInfo.Addr = PhyAddr;
+	SubImgInfo.Len = Manifest.ImgSize;
+	Index = 1;
+
+	if (User_SignatureCheck_OTA(&Manifest, &SubImgInfo, Index) == FALSE) {
+		ret = FALSE;
+	} else {
+		ret = TRUE;
+	}
+
+	if (extManifest) {
+		free(extManifest);
+		extManifest = NULL;
+	}
+
+	return ret;
 }
 
 static int BOOT_OTA_AP (u32 addr, Certificate_TypeDef *Cert)
@@ -317,15 +447,15 @@ static int BOOT_OTA_AP (u32 addr, Certificate_TypeDef *Cert)
 	u8 Cnt;
 	SubImgInfo_TypeDef SubImgInfo;
 	Manifest_TypeDef Manifest;
-	
+
 	char *APLabel[] = {"AP XIP IMG", "AP BL1 SRAM", "AP BL1 DRAM", "AP FIP"};
 	u32 PhyAddr = (u32) addr;
 	BOOT_ImgCopy_OTA((void *)&Manifest, (void *)PhyAddr, sizeof(Manifest_TypeDef));
 	Cnt = sizeof(APLabel) / sizeof(char *);
 	PhyAddr += MANIFEST_SIZE_4K_ALIGN;
-	
+
 	if (BOOT_LoadSubImage_OTA(&SubImgInfo, PhyAddr, Cnt, APLabel, TRUE) == TRUE) {
-				/* AP ECC verify if need */
+		/* AP ECC verify if need */
 		if (Kernel_SignatureCheck_OTA(&Manifest, &SubImgInfo, Cnt, Cert, KEYID_AP) == FALSE){
 			return FALSE;
 		}
@@ -335,7 +465,6 @@ static int BOOT_OTA_AP (u32 addr, Certificate_TypeDef *Cert)
 		}
 
 	return TRUE;
-
 }
 
 int OTA_KernelImageSignatureCheck(uint32_t input_addr)
@@ -364,12 +493,8 @@ int OTA_KernelImageSignatureCheck(uint32_t input_addr)
 	PhyAddr += CERT_SIZE_4K_ALIGN - TIZENRT_KERNEL_HEADER_LEN;
 	BOOT_ImgCopy_OTA((void *)&Manifest, (void *)PhyAddr, sizeof(Manifest_TypeDef));
 
-
-
 	/* remap KM0 XIP image */
 	PhyAddr += MANIFEST_SIZE_4K_ALIGN;
-
-
 
 	/* KM0 XIP & SRAM, read with virtual addr in case of encryption */
 	Cnt = sizeof(Km0Label) / sizeof(char *);
@@ -412,13 +537,11 @@ int OTA_KernelImageSignatureCheck(uint32_t input_addr)
 
 	SubImgInfo[Index].Len = ((((TotalLen_KM4 - 1) >> 12) + 1) << 12) - TotalLen_KM4;
 
-
 	TotalLen_KM4 += SubImgInfo[Index].Len;
 	Index++;
 	/*remap image3 */
 	PhyAddr += TotalLen_KM4;
-	
-	
+
 	/* IMG2 ECC verify if need */
 	if (Kernel_SignatureCheck_OTA(&Manifest, SubImgInfo, Index, &Cert, KEYID_NSPE) == FALSE) {
 	

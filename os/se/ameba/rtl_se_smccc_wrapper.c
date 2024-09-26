@@ -347,6 +347,15 @@ int ameba_hal_SignatureVerify(uint32_t *imagehdr_addr)
 	return ret;
 }
 
+#ifdef CONFIG_SECOND_FLASH_PARTITION
+int ameba_SBOOT_Validate_ExtImgHash(OTA_SIG_CHECK_ADAPTER *OTA_adapter, char *extSubImgInfo, State currentState)
+{
+	int ret = 0;
+	ret = invoke_securetest(0x82000033, (uint32_t)OTA_adapter, (uint32_t)extSubImgInfo, (uint32_t)currentState, 0);
+	return ret;
+}
+#endif
+
 /* Kernel Image Verification */
 int ameba_SBOOT_Validate_Algorithm(OTA_SIG_CHECK_ADAPTER *OTA_adapter)
 {
