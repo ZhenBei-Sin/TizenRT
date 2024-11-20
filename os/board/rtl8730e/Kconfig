@@ -101,6 +101,12 @@ choice
             Board with PSRAM Memory
 endchoice
 
+config RUNFROMDDRRAM
+    bool "Run From DDR RAM"
+    depends on RAM_DDR
+    ---help---
+        Enable Run From DDR RAM, available only when DDR_RAM is enabled.
+
 config FLASH_SIZE
     int
     default 16777216 if BOARD_FLASH_16M

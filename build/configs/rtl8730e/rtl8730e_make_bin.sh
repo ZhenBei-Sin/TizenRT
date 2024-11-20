@@ -39,11 +39,17 @@ cp $BINDIR/target_img2.axf $BINDIR/target_pure_img2.axf
 
 arm-none-eabi-strip $BINDIR/target_pure_img2.axf
 
+if [ "${CONFIG_RUNFROMDDRRAM}" == "n" ];then
 arm-none-eabi-objcopy -j .code -j .data \
 -Obinary $BINDIR/target_pure_img2.axf $BINDIR/ram_2.bin
-
 arm-none-eabi-objcopy -j .xip_image2.text -j .ARM.extab -j .ARM.exidx -j .ctors -j .dtors -j .preinit_array -j .init_array -j .fini_array \
 -Obinary $BINDIR/target_pure_img2.axf $BINDIR/xip_image2.bin
+echo "========== zhenbei: OBJ XIP =========="
+else
+arm-none-eabi-objcopy -j .text -j .ARM.extab -j .ARM.exidx -j .ctors -j .dtors -j .preinit_array -j .init_array -j .fini_array -j .data \
+-Obinary $BINDIR/target_pure_img2.axf $BINDIR/ram_2.bin
+echo "========== zhenbei: OBJ RAM =========="
+fi
 
 echo "========== Image Info HEX =========="
 arm-none-eabi-size -A --radix=16 $BINDIR/target_img2.axf
@@ -68,7 +74,11 @@ echo "========== Image manipulating end =========="
 cp $GNUUTL/bl1_sram.bin $BINDIR/bl1_sram.bin
 cp $GNUUTL/bl1.bin $BINDIR/bl1.bin
 
+if [ "${CONFIG_RUNFROMDDRRAM}" == "n" ];then
 $GNUUTL/pad_align.sh $BINDIR/xip_image2.bin 32
+echo "========== zhenbei: XIP PAD =========="
+fi
+
 $GNUUTL/fiptool update $BINDIR/fip.bin --tb-fw $GNUUTL/bl2.bin --tos-fw $GNUUTL/bl32.bin --nt-fw $BINDIR/ca32_image2_all.bin
 
 if [ ! -f $BINDIR/fip.bin ] ; then
@@ -76,16 +86,24 @@ if [ ! -f $BINDIR/fip.bin ] ; then
 	exit 1
 fi
 
+if [ "${CONFIG_RUNFROMDDRRAM}" == "n" ];then
 $GNUUTL/prepend_header.sh $BINDIR/xip_image2.bin  __flash_text_start__  $BINDIR/target_img2.map
+echo "========== zhenbei: XIP header =========="
+fi
+
 $GNUUTL/prepend_header.sh $BINDIR/bl1_sram.bin  __ca32_bl1_sram_start__  $BINDIR/target_img2.map
 $GNUUTL/prepend_header.sh $BINDIR/bl1.bin  __ca32_bl1_dram_start__  $BINDIR/target_img2.map
 $GNUUTL/prepend_header.sh $BINDIR/fip.bin  __ca32_fip_dram_start__  $BINDIR/target_img2.map
 
+if [ "${CONFIG_RUNFROMDDRRAM}" == "n" ];then
 cat $BINDIR/xip_image2_prepend.bin $BINDIR/bl1_sram_prepend.bin $BINDIR/bl1_prepend.bin $BINDIR/fip_prepend.bin > $BINDIR/ap_image_all.bin
+echo "========== zhenbei: XIP ap =========="
+else
+cat $BINDIR/bl1_sram_prepend.bin $BINDIR/bl1_prepend.bin $BINDIR/fip_prepend.bin > $BINDIR/ap_image_all.bin
+echo "========== zhenbei: RAM ap =========="
+fi
 
 $GNUUTL/imagetool_hp.sh $BINDIR/ap_image_all.bin
-
-
 
 function copy_bootloader()
 {
