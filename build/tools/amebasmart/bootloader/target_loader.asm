@@ -1,5 +1,5 @@
 
-/home/ziyik/sambashare/tizenrt_8730e/sdk/project/realtek_amebaD2_va0_example/GCC-RELEASE/project_hp/asdk/image/target_loader.axf:     file format elf32-littlearm
+/home/sin/Desktop/Remote/tizenrt_8730e/project/realtek_amebaD2_va0_example/GCC-RELEASE/project_hp/asdk/image/target_loader.axf:     file format elf32-littlearm
 
 
 Disassembly of section .ram_image1.text:
@@ -633,7 +633,7 @@ Disassembly of section .ram_image1.text:
 30003680:	b00b      	add	sp, #44	; 0x2c
 30003682:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
 30003686:	bf00      	nop
-30003688:	3000d664 	.word	0x3000d664
+30003688:	3000d658 	.word	0x3000d658
 3000368c:	2001c01c 	.word	0x2001c01c
 30003690:	000129bd 	.word	0x000129bd
 30003694:	e000ed00 	.word	0xe000ed00
@@ -911,21 +911,21 @@ Disassembly of section .ram_image1.text:
 30003952:	4b17      	ldr	r3, [pc, #92]	; (300039b0 <flash_highspeed_setup+0x2f0>)
 30003954:	4798      	blx	r3
 30003956:	e7dd      	b.n	30003914 <flash_highspeed_setup+0x254>
-30003958:	3000d5d4 	.word	0x3000d5d4
-3000395c:	3000d5d6 	.word	0x3000d5d6
+30003958:	3000d5c8 	.word	0x3000d5c8
+3000395c:	3000d5ca 	.word	0x3000d5ca
 30003960:	2001c01c 	.word	0x2001c01c
 30003964:	00009db5 	.word	0x00009db5
 30003968:	3000c57c 	.word	0x3000c57c
 3000396c:	3000c628 	.word	0x3000c628
-30003970:	3000d4d0 	.word	0x3000d4d0
-30003974:	3000d5d8 	.word	0x3000d5d8
+30003970:	3000d4c4 	.word	0x3000d4c4
+30003974:	3000d5cc 	.word	0x3000d5cc
 30003978:	3000c644 	.word	0x3000c644
-3000397c:	3000d688 	.word	0x3000d688
+3000397c:	3000d67c 	.word	0x3000d67c
 30003980:	0000b8c1 	.word	0x0000b8c1
 30003984:	3000c670 	.word	0x3000c670
-30003988:	3000d678 	.word	0x3000d678
+30003988:	3000d66c 	.word	0x3000d66c
 3000398c:	0000c1d9 	.word	0x0000c1d9
-30003990:	3000fc51 	.word	0x3000fc51
+30003990:	3000fc41 	.word	0x3000fc41
 30003994:	000129bd 	.word	0x000129bd
 30003998:	0000a149 	.word	0x0000a149
 3000399c:	0000c0f9 	.word	0x0000c0f9
@@ -935,7 +935,7 @@ Disassembly of section .ram_image1.text:
 300039ac:	0000bee9 	.word	0x0000bee9
 300039b0:	0000bf59 	.word	0x0000bf59
 300039b4:	30009bb5 	.word	0x30009bb5
-300039b8:	3000fc54 	.word	0x3000fc54
+300039b8:	3000fc44 	.word	0x3000fc44
 300039bc:	4b27      	ldr	r3, [pc, #156]	; (30003a5c <flash_highspeed_setup+0x39c>)
 300039be:	4798      	blx	r3
 300039c0:	4b27      	ldr	r3, [pc, #156]	; (30003a60 <flash_highspeed_setup+0x3a0>)
@@ -1003,13 +1003,13 @@ Disassembly of section .ram_image1.text:
 30003a58:	e703      	b.n	30003862 <flash_highspeed_setup+0x1a2>
 30003a5a:	bf00      	nop
 30003a5c:	0000a3c5 	.word	0x0000a3c5
-30003a60:	3000fc51 	.word	0x3000fc51
+30003a60:	3000fc41 	.word	0x3000fc41
 30003a64:	0000a345 	.word	0x0000a345
 30003a68:	0000a441 	.word	0x0000a441
 30003a6c:	0000b991 	.word	0x0000b991
 30003a70:	0000bd0d 	.word	0x0000bd0d
-30003a74:	3000d678 	.word	0x3000d678
-30003a78:	3000d688 	.word	0x3000d688
+30003a74:	3000d66c 	.word	0x3000d66c
+30003a78:	3000d67c 	.word	0x3000d67c
 30003a7c:	0000a4c1 	.word	0x0000a4c1
 
 30003a80 <BOOT_INT_SecureFault>:
@@ -1443,7 +1443,7 @@ Disassembly of section .ram_image1.text:
 30003ec2:	2001      	movs	r0, #1
 30003ec4:	6013      	str	r3, [r2, #0]
 30003ec6:	bd10      	pop	{r4, pc}
-30003ec8:	3000e89c 	.word	0x3000e89c
+30003ec8:	3000e88c 	.word	0x3000e88c
 
 30003ecc <rewrite_bp>:
 30003ecc:	e92d 43f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, lr}
@@ -1595,7 +1595,7 @@ Disassembly of section .ram_image1.text:
 30004068:	b023      	add	sp, #140	; 0x8c
 3000406a:	e8bd 83f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, pc}
 3000406e:	bf00      	nop
-30004070:	3000e89c 	.word	0x3000e89c
+30004070:	3000e88c 	.word	0x3000e88c
 30004074:	2001c01c 	.word	0x2001c01c
 30004078:	00009db5 	.word	0x00009db5
 3000407c:	3000c7a8 	.word	0x3000c7a8
@@ -1735,8 +1735,8 @@ Disassembly of section .ram_image1.text:
 300041ee:	4623      	mov	r3, r4
 300041f0:	e7da      	b.n	300041a8 <BOOT_RccConfig+0x78>
 300041f2:	bf00      	nop
-300041f4:	3000e37c 	.word	0x3000e37c
-300041f8:	3000e6e0 	.word	0x3000e6e0
+300041f4:	3000e370 	.word	0x3000e370
+300041f8:	3000e6d0 	.word	0x3000e6d0
 300041fc:	42008000 	.word	0x42008000
 30004200:	00009b2d 	.word	0x00009b2d
 30004204:	30007e55 	.word	0x30007e55
@@ -1773,7 +1773,7 @@ Disassembly of section .ram_image1.text:
 30004254:	f8c2 00ac 	str.w	r0, [r2, #172]	; 0xac
 30004258:	bc30      	pop	{r4, r5}
 3000425a:	4770      	bx	lr
-3000425c:	3000ef04 	.word	0x3000ef04
+3000425c:	3000eef4 	.word	0x3000eef4
 30004260:	e0042000 	.word	0xe0042000
 
 30004264 <BOOT_TCMSet>:
@@ -2012,7 +2012,7 @@ Disassembly of section .ram_image1.text:
 30004530:	2b01      	cmp	r3, #1
 30004532:	f47f aedc 	bne.w	300042ee <BOOT_TCMSet+0x8a>
 30004536:	e78a      	b.n	3000444e <BOOT_TCMSet+0x1ea>
-30004538:	3000ee40 	.word	0x3000ee40
+30004538:	3000ee30 	.word	0x3000ee30
 3000453c:	e002ed00 	.word	0xe002ed00
 30004540:	e000ed00 	.word	0xe000ed00
 30004544:	e0042000 	.word	0xe0042000
@@ -2158,9 +2158,9 @@ Disassembly of section .ram_image1.text:
 30004698:	3000c7c8 	.word	0x3000c7c8
 3000469c:	30009035 	.word	0x30009035
 300046a0:	42008000 	.word	0x42008000
-300046a4:	3000fd68 	.word	0x3000fd68
+300046a4:	3000fd58 	.word	0x3000fd58
 300046a8:	41002000 	.word	0x41002000
-300046ac:	3000fc60 	.word	0x3000fc60
+300046ac:	3000fc50 	.word	0x3000fc50
 300046b0:	30009315 	.word	0x30009315
 300046b4:	30008f5d 	.word	0x30008f5d
 300046b8:	30009071 	.word	0x30009071
@@ -2267,13 +2267,13 @@ Disassembly of section .ram_image1.text:
 300047d0:	f8c2 3290 	str.w	r3, [r2, #656]	; 0x290
 300047d4:	e7d4      	b.n	30004780 <BOOT_WakeFromPG+0xc4>
 300047d6:	bf00      	nop
-300047d8:	3000fcfc 	.word	0x3000fcfc
+300047d8:	3000fcec 	.word	0x3000fcec
 300047dc:	e000ed00 	.word	0xe000ed00
-300047e0:	3000fd17 	.word	0x3000fd17
+300047e0:	3000fd07 	.word	0x3000fd07
 300047e4:	e000e100 	.word	0xe000e100
 300047e8:	e002ed00 	.word	0xe002ed00
 300047ec:	0000b479 	.word	0x0000b479
-300047f0:	3000e6d8 	.word	0x3000e6d8
+300047f0:	3000e6c8 	.word	0x3000e6c8
 300047f4:	40001000 	.word	0x40001000
 300047f8:	0000d835 	.word	0x0000d835
 300047fc:	30007d31 	.word	0x30007d31
@@ -2317,7 +2317,7 @@ Disassembly of section .ram_image1.text:
 3000486c:	4770      	bx	lr
 3000486e:	bf00      	nop
 30004870:	e000ed00 	.word	0xe000ed00
-30004874:	3000fcfc 	.word	0x3000fcfc
+30004874:	3000fcec 	.word	0x3000fcec
 
 30004878 <BOOT_SCBVTORReFill_HP>:
 30004878:	4a02      	ldr	r2, [pc, #8]	; (30004884 <BOOT_SCBVTORReFill_HP+0xc>)
@@ -2326,7 +2326,7 @@ Disassembly of section .ram_image1.text:
 3000487e:	609a      	str	r2, [r3, #8]
 30004880:	4770      	bx	lr
 30004882:	bf00      	nop
-30004884:	3000fcfc 	.word	0x3000fcfc
+30004884:	3000fcec 	.word	0x3000fcec
 30004888:	e000ed00 	.word	0xe000ed00
 
 3000488c <BOOT_NVICBackup_HP>:
@@ -2373,7 +2373,7 @@ Disassembly of section .ram_image1.text:
 300048f4:	316c      	adds	r1, #108	; 0x6c
 300048f6:	e7ea      	b.n	300048ce <BOOT_NVICBackup_HP+0x42>
 300048f8:	e000e100 	.word	0xe000e100
-300048fc:	3000fcfc 	.word	0x3000fcfc
+300048fc:	3000fcec 	.word	0x3000fcec
 30004900:	e000ed00 	.word	0xe000ed00
 
 30004904 <BOOT_NVICReFill_HP>:
@@ -2398,7 +2398,7 @@ Disassembly of section .ram_image1.text:
 3000493a:	6082      	str	r2, [r0, #8]
 3000493c:	bd10      	pop	{r4, pc}
 3000493e:	bf00      	nop
-30004940:	3000fcfc 	.word	0x3000fcfc
+30004940:	3000fcec 	.word	0x3000fcec
 30004944:	e000e100 	.word	0xe000e100
 
 30004948 <BOOT_ImgCopy>:
@@ -2557,7 +2557,7 @@ Disassembly of section .ram_image1.text:
 30004aec:	00009db5 	.word	0x00009db5
 30004af0:	07ffe000 	.word	0x07ffe000
 30004af4:	07fff000 	.word	0x07fff000
-30004af8:	3000e89c 	.word	0x3000e89c
+30004af8:	3000e88c 	.word	0x3000e88c
 30004afc:	3000c840 	.word	0x3000c840
 30004b00:	3000cc28 	.word	0x3000cc28
 30004b04:	3000c944 	.word	0x3000c944
@@ -2851,9 +2851,9 @@ Disassembly of section .ram_image1.text:
 30004e34:	3000c9e0 	.word	0x3000c9e0
 30004e38:	3000ca14 	.word	0x3000ca14
 30004e3c:	0000c149 	.word	0x0000c149
-30004e40:	3000e6d7 	.word	0x3000e6d7
+30004e40:	3000e6c7 	.word	0x3000e6c7
 30004e44:	3000ca84 	.word	0x3000ca84
-30004e48:	3000e89c 	.word	0x3000e89c
+30004e48:	3000e88c 	.word	0x3000e88c
 30004e4c:	3000c778 	.word	0x3000c778
 30004e50:	3000cb58 	.word	0x3000cb58
 30004e54:	3000c790 	.word	0x3000c790
@@ -2862,7 +2862,7 @@ Disassembly of section .ram_image1.text:
 30004e60:	3000c9f0 	.word	0x3000c9f0
 30004e64:	3000ca04 	.word	0x3000ca04
 30004e68:	3000c7dc 	.word	0x3000c7dc
-30004e6c:	3000fcf8 	.word	0x3000fcf8
+30004e6c:	3000fce8 	.word	0x3000fce8
 30004e70:	30006c7d 	.word	0x30006c7d
 30004e74:	2e00      	cmp	r6, #0
 30004e76:	f000 8285 	beq.w	30005384 <BOOT_LoadImages+0xa08>
@@ -3125,7 +3125,7 @@ Disassembly of section .ram_image1.text:
 3000512a:	9304      	str	r3, [sp, #16]
 3000512c:	e582      	b.n	30004c34 <BOOT_LoadImages+0x2b8>
 3000512e:	bf00      	nop
-30005130:	3000e6d7 	.word	0x3000e6d7
+30005130:	3000e6c7 	.word	0x3000e6c7
 30005134:	3000c9a0 	.word	0x3000c9a0
 30005138:	3000cbbc 	.word	0x3000cbbc
 3000513c:	3000c790 	.word	0x3000c790
@@ -3137,7 +3137,7 @@ Disassembly of section .ram_image1.text:
 30005154:	3000c85c 	.word	0x3000c85c
 30005158:	3000cbd8 	.word	0x3000cbd8
 3000515c:	07ffe004 	.word	0x07ffe004
-30005160:	3000e89c 	.word	0x3000e89c
+30005160:	3000e88c 	.word	0x3000e88c
 30005164:	3000c8c8 	.word	0x3000c8c8
 30005168:	3000c908 	.word	0x3000c908
 3000516c:	3000c88c 	.word	0x3000c88c
@@ -3147,7 +3147,7 @@ Disassembly of section .ram_image1.text:
 3000517c:	3000cc0c 	.word	0x3000cc0c
 30005180:	30006c81 	.word	0x30006c81
 30005184:	3000ca38 	.word	0x3000ca38
-30005188:	3000fcf8 	.word	0x3000fcf8
+30005188:	3000fce8 	.word	0x3000fce8
 3000518c:	30006c7d 	.word	0x30006c7d
 30005190:	f8d4 6400 	ldr.w	r6, [r4, #1024]	; 0x400
 30005194:	9b0d      	ldr	r3, [sp, #52]	; 0x34
@@ -3421,16 +3421,16 @@ Disassembly of section .ram_image1.text:
 30005458:	3000ca28 	.word	0x3000ca28
 3000545c:	3000c778 	.word	0x3000c778
 30005460:	3000ca38 	.word	0x3000ca38
-30005464:	3000e6d7 	.word	0x3000e6d7
+30005464:	3000e6c7 	.word	0x3000e6c7
 30005468:	3000cad0 	.word	0x3000cad0
 3000546c:	3000c790 	.word	0x3000c790
 30005470:	3000ca48 	.word	0x3000ca48
 30005474:	3000cb90 	.word	0x3000cb90
 30005478:	3000cbf0 	.word	0x3000cbf0
-3000547c:	3000e89c 	.word	0x3000e89c
+3000547c:	3000e88c 	.word	0x3000e88c
 30005480:	3000c878 	.word	0x3000c878
 30005484:	3000cc28 	.word	0x3000cc28
-30005488:	3000fcf8 	.word	0x3000fcf8
+30005488:	3000fce8 	.word	0x3000fce8
 3000548c:	30006c7d 	.word	0x30006c7d
 
 30005490 <BOOT_ReasonSet>:
@@ -3496,7 +3496,7 @@ Disassembly of section .ram_image1.text:
 30005520:	6850      	ldr	r0, [r2, #4]
 30005522:	fbb0 f0f3 	udiv	r0, r0, r3
 30005526:	4770      	bx	lr
-30005528:	3000ef24 	.word	0x3000ef24
+30005528:	3000ef14 	.word	0x3000ef14
 
 3000552c <BOOT_SOC_ClkSet>:
 3000552c:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
@@ -3596,7 +3596,7 @@ Disassembly of section .ram_image1.text:
 30005636:	6863      	ldr	r3, [r4, #4]
 30005638:	fbb3 f6f6 	udiv	r6, r3, r6
 3000563c:	e780      	b.n	30005540 <BOOT_SOC_ClkSet+0x14>
-3000563e:	f240 61bd 	movw	r1, #1725	; 0x6bd
+3000563e:	f240 61bc 	movw	r1, #1724	; 0x6bc
 30005642:	4823      	ldr	r0, [pc, #140]	; (300056d0 <BOOT_SOC_ClkSet+0x1a4>)
 30005644:	f006 ff48 	bl	3000c4d8 <__io_assert_failed_veneer>
 30005648:	e795      	b.n	30005576 <BOOT_SOC_ClkSet+0x4a>
@@ -3613,7 +3613,7 @@ Disassembly of section .ram_image1.text:
 30005662:	d190      	bne.n	30005586 <BOOT_SOC_ClkSet+0x5a>
 30005664:	f5b6 6f96 	cmp.w	r6, #1200	; 0x4b0
 30005668:	d98d      	bls.n	30005586 <BOOT_SOC_ClkSet+0x5a>
-3000566a:	f240 61b9 	movw	r1, #1721	; 0x6b9
+3000566a:	f44f 61d7 	mov.w	r1, #1720	; 0x6b8
 3000566e:	4818      	ldr	r0, [pc, #96]	; (300056d0 <BOOT_SOC_ClkSet+0x1a4>)
 30005670:	f006 ff32 	bl	3000c4d8 <__io_assert_failed_veneer>
 30005674:	e787      	b.n	30005586 <BOOT_SOC_ClkSet+0x5a>
@@ -3628,25 +3628,25 @@ Disassembly of section .ram_image1.text:
 30005688:	2201      	movs	r2, #1
 3000568a:	f883 210d 	strb.w	r2, [r3, #269]	; 0x10d
 3000568e:	e7bb      	b.n	30005608 <BOOT_SOC_ClkSet+0xdc>
-30005690:	f240 61bf 	movw	r1, #1727	; 0x6bf
+30005690:	f240 61be 	movw	r1, #1726	; 0x6be
 30005694:	480e      	ldr	r0, [pc, #56]	; (300056d0 <BOOT_SOC_ClkSet+0x1a4>)
 30005696:	f006 ff1f 	bl	3000c4d8 <__io_assert_failed_veneer>
 3000569a:	e774      	b.n	30005586 <BOOT_SOC_ClkSet+0x5a>
-3000569c:	f240 61b7 	movw	r1, #1719	; 0x6b7
+3000569c:	f240 61b6 	movw	r1, #1718	; 0x6b6
 300056a0:	480b      	ldr	r0, [pc, #44]	; (300056d0 <BOOT_SOC_ClkSet+0x1a4>)
 300056a2:	f006 ff19 	bl	3000c4d8 <__io_assert_failed_veneer>
 300056a6:	e7d9      	b.n	3000565c <BOOT_SOC_ClkSet+0x130>
-300056a8:	3000ef24 	.word	0x3000ef24
+300056a8:	3000ef14 	.word	0x3000ef14
 300056ac:	51eb851f 	.word	0x51eb851f
 300056b0:	23020000 	.word	0x23020000
-300056b4:	3000e6d7 	.word	0x3000e6d7
+300056b4:	3000e6c7 	.word	0x3000e6c7
 300056b8:	30008a91 	.word	0x30008a91
 300056bc:	42008000 	.word	0x42008000
 300056c0:	ff8f08f8 	.word	0xff8f08f8
 300056c4:	3000c6b0 	.word	0x3000c6b0
 300056c8:	3000cc8c 	.word	0x3000cc8c
 300056cc:	3000cca4 	.word	0x3000cca4
-300056d0:	3000e39c 	.word	0x3000e39c
+300056d0:	3000e390 	.word	0x3000e390
 300056d4:	3000b86d 	.word	0x3000b86d
 300056d8:	30008b11 	.word	0x30008b11
 300056dc:	30008b51 	.word	0x30008b51
@@ -4068,7 +4068,7 @@ Disassembly of section .ram_image1.text:
 30005af0:	e7cf      	b.n	30005a92 <password_hash_check+0xda>
 30005af2:	bf00      	nop
 30005af4:	00012be5 	.word	0x00012be5
-30005af8:	3000eca4 	.word	0x3000eca4
+30005af8:	3000ec94 	.word	0x3000ec94
 30005afc:	3000ccd4 	.word	0x3000ccd4
 30005b00:	3000ccbc 	.word	0x3000ccbc
 
@@ -4391,14 +4391,14 @@ Disassembly of section .ram_image1.text:
 30005e2e:	bf00      	nop
 30005e30:	0000c149 	.word	0x0000c149
 30005e34:	3000ccf0 	.word	0x3000ccf0
-30005e38:	3000e3ec 	.word	0x3000e3ec
+30005e38:	3000e3dc 	.word	0x3000e3dc
 30005e3c:	3000cd14 	.word	0x3000cd14
-30005e40:	3000fc50 	.word	0x3000fc50
-30005e44:	300100f4 	.word	0x300100f4
+30005e40:	3000fc40 	.word	0x3000fc40
+30005e44:	300100e4 	.word	0x300100e4
 30005e48:	00012be5 	.word	0x00012be5
 30005e4c:	42008000 	.word	0x42008000
 30005e50:	42008200 	.word	0x42008200
-30005e54:	3000e6d6 	.word	0x3000e6d6
+30005e54:	3000e6c6 	.word	0x3000e6c6
 30005e58:	3000b345 	.word	0x3000b345
 30005e5c:	3000b6fd 	.word	0x3000b6fd
 30005e60:	3000b61d 	.word	0x3000b61d
@@ -4409,14 +4409,14 @@ Disassembly of section .ram_image1.text:
 30005e74:	0000b479 	.word	0x0000b479
 30005e78:	40040000 	.word	0x40040000
 30005e7c:	30009bfd 	.word	0x30009bfd
-30005e80:	3000e6d5 	.word	0x3000e6d5
+30005e80:	3000e6c5 	.word	0x3000e6c5
 30005e84:	0000aab9 	.word	0x0000aab9
 30005e88:	4200c000 	.word	0x4200c000
 30005e8c:	2001c00c 	.word	0x2001c00c
 30005e90:	30005b81 	.word	0x30005b81
 30005e94:	00033000 	.word	0x00033000
 30005e98:	2001c01c 	.word	0x2001c01c
-30005e9c:	3000e6d8 	.word	0x3000e6d8
+30005e9c:	3000e6c8 	.word	0x3000e6c8
 30005ea0:	e000ed00 	.word	0xe000ed00
 30005ea4:	00009be5 	.word	0x00009be5
 30005ea8:	3000c6b0 	.word	0x3000c6b0
@@ -4430,11 +4430,11 @@ Disassembly of section .ram_image1.text:
 30005ec8:	0000aaa5 	.word	0x0000aaa5
 30005ecc:	3000cd5c 	.word	0x3000cd5c
 30005ed0:	3000cdf8 	.word	0x3000cdf8
-30005ed4:	3000e6d4 	.word	0x3000e6d4
+30005ed4:	3000e6c4 	.word	0x3000e6c4
 30005ed8:	0000c169 	.word	0x0000c169
 30005edc:	0016e360 	.word	0x0016e360
 30005ee0:	3000ce0c 	.word	0x3000ce0c
-30005ee4:	3000ecc4 	.word	0x3000ecc4
+30005ee4:	3000ecb4 	.word	0x3000ecb4
 30005ee8:	3d01      	subs	r5, #1
 30005eea:	f000 8239 	beq.w	30006360 <BOOT_Image1+0x7e0>
 30005eee:	2001      	movs	r0, #1
@@ -4726,25 +4726,25 @@ Disassembly of section .ram_image1.text:
 30006216:	47a0      	blx	r4
 30006218:	e7f8      	b.n	3000620c <BOOT_Image1+0x68c>
 3000621a:	bf00      	nop
-3000621c:	3000ece4 	.word	0x3000ece4
+3000621c:	3000ecd4 	.word	0x3000ecd4
 30006220:	000129bd 	.word	0x000129bd
-30006224:	3000ecec 	.word	0x3000ecec
-30006228:	3000e89c 	.word	0x3000e89c
-3000622c:	3000ed78 	.word	0x3000ed78
-30006230:	3000ed7c 	.word	0x3000ed7c
-30006234:	3000edb8 	.word	0x3000edb8
+30006224:	3000ecdc 	.word	0x3000ecdc
+30006228:	3000e88c 	.word	0x3000e88c
+3000622c:	3000ed68 	.word	0x3000ed68
+30006230:	3000ed6c 	.word	0x3000ed6c
+30006234:	3000eda8 	.word	0x3000eda8
 30006238:	0000ac6d 	.word	0x0000ac6d
 3000623c:	4200c000 	.word	0x4200c000
 30006240:	0000e1d9 	.word	0x0000e1d9
-30006244:	3000e6d4 	.word	0x3000e6d4
-30006248:	3000e6d7 	.word	0x3000e6d7
+30006244:	3000e6c4 	.word	0x3000e6c4
+30006248:	3000e6c7 	.word	0x3000e6c7
 3000624c:	42008200 	.word	0x42008200
 30006250:	60000020 	.word	0x60000020
 30006254:	e002ed00 	.word	0xe002ed00
 30006258:	30000000 	.word	0x30000000
 3000625c:	30003a81 	.word	0x30003a81
 30006260:	e000ed00 	.word	0xe000ed00
-30006264:	3000fcfc 	.word	0x3000fcfc
+30006264:	3000fcec 	.word	0x3000fcec
 30006268:	2001bffc 	.word	0x2001bffc
 3000626c:	0016e360 	.word	0x0016e360
 30006270:	3000ce0c 	.word	0x3000ce0c
@@ -4950,17 +4950,17 @@ Disassembly of section .ram_image1.text:
 30006486:	360a      	adds	r6, #10
 30006488:	44c8      	add	r8, r9
 3000648a:	e778      	b.n	3000637e <BOOT_Image1+0x7fe>
-3000648c:	3000edbc 	.word	0x3000edbc
-30006490:	3000ede4 	.word	0x3000ede4
+3000648c:	3000edac 	.word	0x3000edac
+30006490:	3000edd4 	.word	0x3000edd4
 30006494:	000129bd 	.word	0x000129bd
-30006498:	3000ede8 	.word	0x3000ede8
-3000649c:	3000ee10 	.word	0x3000ee10
+30006498:	3000edd8 	.word	0x3000edd8
+3000649c:	3000ee00 	.word	0x3000ee00
 300064a0:	3000ce3c 	.word	0x3000ce3c
 300064a4:	0000c179 	.word	0x0000c179
 300064a8:	41000200 	.word	0x41000200
-300064ac:	3000e89c 	.word	0x3000e89c
-300064b0:	3000f69c 	.word	0x3000f69c
-300064b4:	3000ed7c 	.word	0x3000ed7c
+300064ac:	3000e88c 	.word	0x3000e88c
+300064b0:	3000f68c 	.word	0x3000f68c
+300064b4:	3000ed6c 	.word	0x3000ed6c
 300064b8:	3000ce74 	.word	0x3000ce74
 300064bc:	0000d3f9 	.word	0x0000d3f9
 300064c0:	41000440 	.word	0x41000440
@@ -5096,11 +5096,11 @@ Disassembly of section .ram_image1.text:
 30006624:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
 30006628:	35393138 	.word	0x35393138
 3000662c:	f7ffffe0 	.word	0xf7ffffe0
-30006630:	3000cf1c 	.word	0x3000cf1c
+30006630:	3000cf10 	.word	0x3000cf10
 30006634:	3000c6b0 	.word	0x3000c6b0
-30006638:	3000ee14 	.word	0x3000ee14
+30006638:	3000ee04 	.word	0x3000ee04
 3000663c:	e000ed00 	.word	0xe000ed00
-30006640:	3000cf08 	.word	0x3000cf08
+30006640:	3000cefc 	.word	0x3000cefc
 
 30006644 <BOOT_LoadAPSubImage>:
 30006644:	4bb5      	ldr	r3, [pc, #724]	; (3000691c <BOOT_LoadAPSubImage+0x2d8>)
@@ -5365,17 +5365,17 @@ Disassembly of section .ram_image1.text:
 30006916:	462a      	mov	r2, r5
 30006918:	e78b      	b.n	30006832 <BOOT_LoadAPSubImage+0x1ee>
 3000691a:	bf00      	nop
-3000691c:	3000cf00 	.word	0x3000cf00
+3000691c:	3000cef4 	.word	0x3000cef4
 30006920:	35393138 	.word	0x35393138
 30006924:	f7ffffe0 	.word	0xf7ffffe0
 30006928:	0000c109 	.word	0x0000c109
 3000692c:	3000c6b0 	.word	0x3000c6b0
-30006930:	3000cf60 	.word	0x3000cf60
-30006934:	3000cf1c 	.word	0x3000cf1c
-30006938:	3000cf30 	.word	0x3000cf30
-3000693c:	3000cf40 	.word	0x3000cf40
+30006930:	3000cf54 	.word	0x3000cf54
+30006934:	3000cf10 	.word	0x3000cf10
+30006938:	3000cf24 	.word	0x3000cf24
+3000693c:	3000cf34 	.word	0x3000cf34
 30006940:	e000ed00 	.word	0xe000ed00
-30006944:	3000cf08 	.word	0x3000cf08
+30006944:	3000cefc 	.word	0x3000cefc
 
 30006948 <BOOT_RSIPIvSet>:
 30006948:	b530      	push	{r4, r5, lr}
@@ -5456,9 +5456,9 @@ Disassembly of section .ram_image1.text:
 300069f6:	bf00      	nop
 300069f8:	0000c129 	.word	0x0000c129
 300069fc:	3000c6b0 	.word	0x3000c6b0
-30006a00:	3000cf70 	.word	0x3000cf70
+30006a00:	3000cf64 	.word	0x3000cf64
 30006a04:	0000c245 	.word	0x0000c245
-30006a08:	3000cf84 	.word	0x3000cf84
+30006a08:	3000cf78 	.word	0x3000cf78
 30006a0c:	300098d9 	.word	0x300098d9
 30006a10:	300098c1 	.word	0x300098c1
 
@@ -5648,27 +5648,27 @@ Disassembly of section .ram_image1.text:
 30006bcc:	4620      	mov	r0, r4
 30006bce:	b00d      	add	sp, #52	; 0x34
 30006bd0:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
-30006bd4:	3000e3ac 	.word	0x3000e3ac
-30006bd8:	3000fcf8 	.word	0x3000fcf8
-30006bdc:	3000fd6c 	.word	0x3000fd6c
-30006be0:	3000fed0 	.word	0x3000fed0
+30006bd4:	3000e3a0 	.word	0x3000e3a0
+30006bd8:	3000fce8 	.word	0x3000fce8
+30006bdc:	3000fd5c 	.word	0x3000fd5c
+30006be0:	3000fec0 	.word	0x3000fec0
 30006be4:	0000c129 	.word	0x0000c129
 30006be8:	0cffffe0 	.word	0x0cffffe0
 30006bec:	30009955 	.word	0x30009955
 30006bf0:	30009995 	.word	0x30009995
-30006bf4:	30010078 	.word	0x30010078
+30006bf4:	30010068 	.word	0x30010068
 30006bf8:	fffff000 	.word	0xfffff000
 30006bfc:	0dffffe0 	.word	0x0dffffe0
-30006c00:	3000ee14 	.word	0x3000ee14
+30006c00:	3000ee04 	.word	0x3000ee04
 30006c04:	2001c00c 	.word	0x2001c00c
-30006c08:	3000cfa4 	.word	0x3000cfa4
-30006c0c:	3000cf9c 	.word	0x3000cf9c
-30006c10:	3000cfd4 	.word	0x3000cfd4
-30006c14:	3000d008 	.word	0x3000d008
-30006c18:	3000fef0 	.word	0x3000fef0
+30006c08:	3000cf98 	.word	0x3000cf98
+30006c0c:	3000cf90 	.word	0x3000cf90
+30006c10:	3000cfc8 	.word	0x3000cfc8
+30006c14:	3000cffc 	.word	0x3000cffc
+30006c18:	3000fee0 	.word	0x3000fee0
 30006c1c:	00012a1d 	.word	0x00012a1d
 30006c20:	300098a5 	.word	0x300098a5
-30006c24:	3000cfac 	.word	0x3000cfac
+30006c24:	3000cfa0 	.word	0x3000cfa0
 30006c28:	0c000000 	.word	0x0c000000
 30006c2c:	30009bb5 	.word	0x30009bb5
 30006c30:	0d000000 	.word	0x0d000000
@@ -5698,115 +5698,114 @@ Disassembly of section .ram_image1.text:
 30006c70:	e9c4 2302 	strd	r2, r3, [r4, #8]
 30006c74:	bd10      	pop	{r4, pc}
 30006c76:	bf00      	nop
-30006c78:	30010060 	.word	0x30010060
+30006c78:	30010050 	.word	0x30010050
 
 30006c7c <BOOT_OTA_IMG2>:
 30006c7c:	f7ff beca 	b.w	30006a14 <BOOT_OTA_LoadIMG2>
 
 30006c80 <BOOT_OTA_AP>:
 30006c80:	b5f0      	push	{r4, r5, r6, r7, lr}
-30006c82:	4a32      	ldr	r2, [pc, #200]	; (30006d4c <BOOT_OTA_AP+0xcc>)
+30006c82:	4b32      	ldr	r3, [pc, #200]	; (30006d4c <BOOT_OTA_AP+0xcc>)
 30006c84:	b0eb      	sub	sp, #428	; 0x1ac
-30006c86:	4b32      	ldr	r3, [pc, #200]	; (30006d50 <BOOT_OTA_AP+0xd0>)
-30006c88:	6815      	ldr	r5, [r2, #0]
-30006c8a:	ac02      	add	r4, sp, #8
-30006c8c:	4e31      	ldr	r6, [pc, #196]	; (30006d54 <BOOT_OTA_AP+0xd4>)
-30006c8e:	f505 5780 	add.w	r7, r5, #4096	; 0x1000
-30006c92:	cb0f      	ldmia	r3, {r0, r1, r2, r3}
-30006c94:	e884 000f 	stmia.w	r4, {r0, r1, r2, r3}
-30006c98:	4629      	mov	r1, r5
-30006c9a:	4d2f      	ldr	r5, [pc, #188]	; (30006d58 <BOOT_OTA_AP+0xd8>)
-30006c9c:	f44f 72c8 	mov.w	r2, #400	; 0x190
-30006ca0:	a806      	add	r0, sp, #24
-30006ca2:	f7fd fe51 	bl	30004948 <BOOT_ImgCopy>
-30006ca6:	4a2d      	ldr	r2, [pc, #180]	; (30006d5c <BOOT_OTA_AP+0xdc>)
-30006ca8:	463b      	mov	r3, r7
-30006caa:	4629      	mov	r1, r5
-30006cac:	2003      	movs	r0, #3
-30006cae:	47b0      	blx	r6
-30006cb0:	2101      	movs	r1, #1
-30006cb2:	4b2b      	ldr	r3, [pc, #172]	; (30006d60 <BOOT_OTA_AP+0xe0>)
-30006cb4:	2003      	movs	r0, #3
-30006cb6:	4798      	blx	r3
-30006cb8:	2201      	movs	r2, #1
-30006cba:	4928      	ldr	r1, [pc, #160]	; (30006d5c <BOOT_OTA_AP+0xdc>)
-30006cbc:	2303      	movs	r3, #3
+30006c86:	4a32      	ldr	r2, [pc, #200]	; (30006d50 <BOOT_OTA_AP+0xd0>)
+30006c88:	ac03      	add	r4, sp, #12
+30006c8a:	4e32      	ldr	r6, [pc, #200]	; (30006d54 <BOOT_OTA_AP+0xd4>)
+30006c8c:	6815      	ldr	r5, [r2, #0]
+30006c8e:	e893 0007 	ldmia.w	r3, {r0, r1, r2}
+30006c92:	f505 5780 	add.w	r7, r5, #4096	; 0x1000
+30006c96:	e884 0007 	stmia.w	r4, {r0, r1, r2}
+30006c9a:	4629      	mov	r1, r5
+30006c9c:	4d2e      	ldr	r5, [pc, #184]	; (30006d58 <BOOT_OTA_AP+0xd8>)
+30006c9e:	f44f 72c8 	mov.w	r2, #400	; 0x190
+30006ca2:	a806      	add	r0, sp, #24
+30006ca4:	f7fd fe50 	bl	30004948 <BOOT_ImgCopy>
+30006ca8:	4629      	mov	r1, r5
+30006caa:	4a2c      	ldr	r2, [pc, #176]	; (30006d5c <BOOT_OTA_AP+0xdc>)
+30006cac:	463b      	mov	r3, r7
+30006cae:	2003      	movs	r0, #3
+30006cb0:	47b0      	blx	r6
+30006cb2:	2101      	movs	r1, #1
+30006cb4:	4b2a      	ldr	r3, [pc, #168]	; (30006d60 <BOOT_OTA_AP+0xe0>)
+30006cb6:	2003      	movs	r0, #3
+30006cb8:	4798      	blx	r3
+30006cba:	2201      	movs	r2, #1
+30006cbc:	4927      	ldr	r1, [pc, #156]	; (30006d5c <BOOT_OTA_AP+0xdc>)
 30006cbe:	4628      	mov	r0, r5
-30006cc0:	f7ff fe5e 	bl	30006980 <BOOT_OTFCheck>
-30006cc4:	4b27      	ldr	r3, [pc, #156]	; (30006d64 <BOOT_OTA_AP+0xe4>)
-30006cc6:	4798      	blx	r3
-30006cc8:	4623      	mov	r3, r4
+30006cc0:	2303      	movs	r3, #3
+30006cc2:	f7ff fe5d 	bl	30006980 <BOOT_OTFCheck>
+30006cc6:	4b27      	ldr	r3, [pc, #156]	; (30006d64 <BOOT_OTA_AP+0xe4>)
+30006cc8:	4798      	blx	r3
 30006cca:	2201      	movs	r2, #1
-30006ccc:	4c26      	ldr	r4, [pc, #152]	; (30006d68 <BOOT_OTA_AP+0xe8>)
-30006cce:	2800      	cmp	r0, #0
-30006cd0:	bf14      	ite	ne
-30006cd2:	4629      	movne	r1, r5
-30006cd4:	4639      	moveq	r1, r7
+30006ccc:	2800      	cmp	r0, #0
+30006cce:	bf14      	ite	ne
+30006cd0:	4629      	movne	r1, r5
+30006cd2:	4639      	moveq	r1, r7
+30006cd4:	4d24      	ldr	r5, [pc, #144]	; (30006d68 <BOOT_OTA_AP+0xe8>)
 30006cd6:	9200      	str	r2, [sp, #0]
-30006cd8:	4620      	mov	r0, r4
-30006cda:	2204      	movs	r2, #4
-30006cdc:	f7ff fbfe 	bl	300064dc <BOOT_LoadSubImage>
-30006ce0:	2801      	cmp	r0, #1
-30006ce2:	d122      	bne.n	30006d2a <BOOT_OTA_AP+0xaa>
-30006ce4:	2302      	movs	r3, #2
-30006ce6:	4605      	mov	r5, r0
-30006ce8:	2204      	movs	r2, #4
-30006cea:	a806      	add	r0, sp, #24
-30006cec:	9300      	str	r3, [sp, #0]
-30006cee:	4621      	mov	r1, r4
-30006cf0:	4b1e      	ldr	r3, [pc, #120]	; (30006d6c <BOOT_OTA_AP+0xec>)
-30006cf2:	f000 facd 	bl	30007290 <BOOT_SignatureCheck>
-30006cf6:	4606      	mov	r6, r0
-30006cf8:	bb18      	cbnz	r0, 30006d42 <BOOT_OTA_AP+0xc2>
-30006cfa:	68e3      	ldr	r3, [r4, #12]
-30006cfc:	462a      	mov	r2, r5
-30006cfe:	6861      	ldr	r1, [r4, #4]
-30006d00:	f104 0018 	add.w	r0, r4, #24
-30006d04:	4419      	add	r1, r3
-30006d06:	6963      	ldr	r3, [r4, #20]
-30006d08:	4419      	add	r1, r3
-30006d0a:	4439      	add	r1, r7
-30006d0c:	f7ff fc9a 	bl	30006644 <BOOT_LoadAPSubImage>
-30006d10:	2801      	cmp	r0, #1
-30006d12:	d102      	bne.n	30006d1a <BOOT_OTA_AP+0x9a>
-30006d14:	4630      	mov	r0, r6
-30006d16:	b06b      	add	sp, #428	; 0x1ac
-30006d18:	bdf0      	pop	{r4, r5, r6, r7, pc}
-30006d1a:	4b15      	ldr	r3, [pc, #84]	; (30006d70 <BOOT_OTA_AP+0xf0>)
-30006d1c:	681b      	ldr	r3, [r3, #0]
-30006d1e:	079b      	lsls	r3, r3, #30
-30006d20:	d40a      	bmi.n	30006d38 <BOOT_OTA_AP+0xb8>
-30006d22:	26ff      	movs	r6, #255	; 0xff
-30006d24:	4630      	mov	r0, r6
-30006d26:	b06b      	add	sp, #428	; 0x1ac
-30006d28:	bdf0      	pop	{r4, r5, r6, r7, pc}
-30006d2a:	26ff      	movs	r6, #255	; 0xff
-30006d2c:	4811      	ldr	r0, [pc, #68]	; (30006d74 <BOOT_OTA_AP+0xf4>)
-30006d2e:	f005 fb53 	bl	3000c3d8 <__DiagPrintf_veneer>
-30006d32:	4630      	mov	r0, r6
-30006d34:	b06b      	add	sp, #428	; 0x1ac
-30006d36:	bdf0      	pop	{r4, r5, r6, r7, pc}
-30006d38:	480f      	ldr	r0, [pc, #60]	; (30006d78 <BOOT_OTA_AP+0xf8>)
-30006d3a:	26ff      	movs	r6, #255	; 0xff
-30006d3c:	f005 fb4c 	bl	3000c3d8 <__DiagPrintf_veneer>
-30006d40:	e7e8      	b.n	30006d14 <BOOT_OTA_AP+0x94>
-30006d42:	480e      	ldr	r0, [pc, #56]	; (30006d7c <BOOT_OTA_AP+0xfc>)
-30006d44:	26ff      	movs	r6, #255	; 0xff
-30006d46:	f005 fb47 	bl	3000c3d8 <__DiagPrintf_veneer>
-30006d4a:	e7e3      	b.n	30006d14 <BOOT_OTA_AP+0x94>
-30006d4c:	3000ee14 	.word	0x3000ee14
-30006d50:	3000e3c4 	.word	0x3000e3c4
+30006cd8:	4623      	mov	r3, r4
+30006cda:	2203      	movs	r2, #3
+30006cdc:	4628      	mov	r0, r5
+30006cde:	f7ff fbfd 	bl	300064dc <BOOT_LoadSubImage>
+30006ce2:	2801      	cmp	r0, #1
+30006ce4:	d120      	bne.n	30006d28 <BOOT_OTA_AP+0xa8>
+30006ce6:	2302      	movs	r3, #2
+30006ce8:	4604      	mov	r4, r0
+30006cea:	2203      	movs	r2, #3
+30006cec:	a806      	add	r0, sp, #24
+30006cee:	9300      	str	r3, [sp, #0]
+30006cf0:	4629      	mov	r1, r5
+30006cf2:	4b1e      	ldr	r3, [pc, #120]	; (30006d6c <BOOT_OTA_AP+0xec>)
+30006cf4:	f000 facc 	bl	30007290 <BOOT_SignatureCheck>
+30006cf8:	4606      	mov	r6, r0
+30006cfa:	bb08      	cbnz	r0, 30006d40 <BOOT_OTA_AP+0xc0>
+30006cfc:	6869      	ldr	r1, [r5, #4]
+30006cfe:	4622      	mov	r2, r4
+30006d00:	68eb      	ldr	r3, [r5, #12]
+30006d02:	f105 0010 	add.w	r0, r5, #16
+30006d06:	4419      	add	r1, r3
+30006d08:	4439      	add	r1, r7
+30006d0a:	f7ff fc9b 	bl	30006644 <BOOT_LoadAPSubImage>
+30006d0e:	2801      	cmp	r0, #1
+30006d10:	d102      	bne.n	30006d18 <BOOT_OTA_AP+0x98>
+30006d12:	4630      	mov	r0, r6
+30006d14:	b06b      	add	sp, #428	; 0x1ac
+30006d16:	bdf0      	pop	{r4, r5, r6, r7, pc}
+30006d18:	4b15      	ldr	r3, [pc, #84]	; (30006d70 <BOOT_OTA_AP+0xf0>)
+30006d1a:	681b      	ldr	r3, [r3, #0]
+30006d1c:	079b      	lsls	r3, r3, #30
+30006d1e:	d40a      	bmi.n	30006d36 <BOOT_OTA_AP+0xb6>
+30006d20:	26ff      	movs	r6, #255	; 0xff
+30006d22:	4630      	mov	r0, r6
+30006d24:	b06b      	add	sp, #428	; 0x1ac
+30006d26:	bdf0      	pop	{r4, r5, r6, r7, pc}
+30006d28:	26ff      	movs	r6, #255	; 0xff
+30006d2a:	4812      	ldr	r0, [pc, #72]	; (30006d74 <BOOT_OTA_AP+0xf4>)
+30006d2c:	f005 fb54 	bl	3000c3d8 <__DiagPrintf_veneer>
+30006d30:	4630      	mov	r0, r6
+30006d32:	b06b      	add	sp, #428	; 0x1ac
+30006d34:	bdf0      	pop	{r4, r5, r6, r7, pc}
+30006d36:	4810      	ldr	r0, [pc, #64]	; (30006d78 <BOOT_OTA_AP+0xf8>)
+30006d38:	26ff      	movs	r6, #255	; 0xff
+30006d3a:	f005 fb4d 	bl	3000c3d8 <__DiagPrintf_veneer>
+30006d3e:	e7e8      	b.n	30006d12 <BOOT_OTA_AP+0x92>
+30006d40:	480e      	ldr	r0, [pc, #56]	; (30006d7c <BOOT_OTA_AP+0xfc>)
+30006d42:	26ff      	movs	r6, #255	; 0xff
+30006d44:	f005 fb48 	bl	3000c3d8 <__DiagPrintf_veneer>
+30006d48:	e7e3      	b.n	30006d12 <BOOT_OTA_AP+0x92>
+30006d4a:	bf00      	nop
+30006d4c:	3000e3b8 	.word	0x3000e3b8
+30006d50:	3000ee04 	.word	0x3000ee04
 30006d54:	30009955 	.word	0x30009955
 30006d58:	0e000000 	.word	0x0e000000
 30006d5c:	0fffffe0 	.word	0x0fffffe0
 30006d60:	30009995 	.word	0x30009995
 30006d64:	30009bb5 	.word	0x30009bb5
-30006d68:	30010078 	.word	0x30010078
-30006d6c:	3000fd6c 	.word	0x3000fd6c
+30006d68:	30010068 	.word	0x30010068
+30006d6c:	3000fd5c 	.word	0x3000fd5c
 30006d70:	2001c00c 	.word	0x2001c00c
-30006d74:	3000d050 	.word	0x3000d050
-30006d78:	3000d074 	.word	0x3000d074
-30006d7c:	3000d02c 	.word	0x3000d02c
+30006d74:	3000d044 	.word	0x3000d044
+30006d78:	3000d068 	.word	0x3000d068
+30006d7c:	3000d020 	.word	0x3000d020
 
 30006d80 <BOOT_LoadRDPImg>:
 30006d80:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
@@ -5944,15 +5943,15 @@ Disassembly of section .ram_image1.text:
 30006eba:	2000      	movs	r0, #0
 30006ebc:	e7e8      	b.n	30006e90 <BOOT_LoadRDPImg+0x110>
 30006ebe:	bf00      	nop
-30006ec0:	3000e3d4 	.word	0x3000e3d4
+30006ec0:	3000e3c4 	.word	0x3000e3c4
 30006ec4:	00002429 	.word	0x00002429
 30006ec8:	00002479 	.word	0x00002479
 30006ecc:	00004641 	.word	0x00004641
 30006ed0:	35393138 	.word	0x35393138
 30006ed4:	31313738 	.word	0x31313738
 30006ed8:	3000c6b0 	.word	0x3000c6b0
-30006edc:	3000cf1c 	.word	0x3000cf1c
-30006ee0:	3000cf08 	.word	0x3000cf08
+30006edc:	3000cf10 	.word	0x3000cf10
+30006ee0:	3000cefc 	.word	0x3000cefc
 30006ee4:	00012a1d 	.word	0x00012a1d
 30006ee8:	000046f5 	.word	0x000046f5
 
@@ -6043,14 +6042,14 @@ Disassembly of section .ram_image1.text:
 30006fc0:	b051      	add	sp, #324	; 0x144
 30006fc2:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
 30006fc6:	bf00      	nop
-30006fc8:	3000d11c 	.word	0x3000d11c
+30006fc8:	3000d110 	.word	0x3000d110
 30006fcc:	00004641 	.word	0x00004641
 30006fd0:	2001c00c 	.word	0x2001c00c
 30006fd4:	35393138 	.word	0x35393138
-30006fd8:	3000d100 	.word	0x3000d100
-30006fdc:	3000d0d8 	.word	0x3000d0d8
-30006fe0:	3000d10c 	.word	0x3000d10c
-30006fe4:	3000d130 	.word	0x3000d130
+30006fd8:	3000d0f4 	.word	0x3000d0f4
+30006fdc:	3000d0cc 	.word	0x3000d0cc
+30006fe0:	3000d100 	.word	0x3000d100
+30006fe4:	3000d124 	.word	0x3000d124
 30006fe8:	00002429 	.word	0x00002429
 30006fec:	00002479 	.word	0x00002479
 30006ff0:	000046f5 	.word	0x000046f5
@@ -6493,15 +6492,15 @@ Disassembly of section .ram_image1.text:
 3000747a:	e7e5      	b.n	30007448 <BOOT_SignatureCheck+0x1b8>
 3000747c:	22b4      	movs	r2, #180	; 0xb4
 3000747e:	e73d      	b.n	300072fc <BOOT_SignatureCheck+0x6c>
-30007480:	3000e3dc 	.word	0x3000e3dc
+30007480:	3000e3cc 	.word	0x3000e3cc
 30007484:	0000c149 	.word	0x0000c149
 30007488:	30009e99 	.word	0x30009e99
 3000748c:	3000c6b0 	.word	0x3000c6b0
-30007490:	3000d150 	.word	0x3000d150
+30007490:	3000d144 	.word	0x3000d144
 30007494:	00012be5 	.word	0x00012be5
 30007498:	e000ed00 	.word	0xe000ed00
 3000749c:	30009bb5 	.word	0x30009bb5
-300074a0:	3000d138 	.word	0x3000d138
+300074a0:	3000d12c 	.word	0x3000d12c
 
 300074a4 <BOOT_CertificateCheck>:
 300074a4:	b570      	push	{r4, r5, r6, lr}
@@ -6575,10 +6574,10 @@ Disassembly of section .ram_image1.text:
 30007552:	bf00      	nop
 30007554:	0000c149 	.word	0x0000c149
 30007558:	0000ea4d 	.word	0x0000ea4d
-3000755c:	3000e6dc 	.word	0x3000e6dc
+3000755c:	3000e6cc 	.word	0x3000e6cc
 30007560:	30009e99 	.word	0x30009e99
 30007564:	3000c6b0 	.word	0x3000c6b0
-30007568:	3000d174 	.word	0x3000d174
+30007568:	3000d168 	.word	0x3000d168
 
 3000756c <BOOT_RAM_TZCfg>:
 3000756c:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
@@ -6707,16 +6706,16 @@ Disassembly of section .ram_image1.text:
 300076d2:	bf00      	nop
 300076d4:	51001a00 	.word	0x51001a00
 300076d8:	51001200 	.word	0x51001200
-300076dc:	3000e7dc 	.word	0x3000e7dc
-300076e0:	3000e77c 	.word	0x3000e77c
+300076dc:	3000e7cc 	.word	0x3000e7cc
+300076e0:	3000e76c 	.word	0x3000e76c
 300076e4:	51001b00 	.word	0x51001b00
 300076e8:	500e0000 	.word	0x500e0000
-300076ec:	3000e83c 	.word	0x3000e83c
+300076ec:	3000e82c 	.word	0x3000e82c
 300076f0:	e000ed00 	.word	0xe000ed00
 300076f4:	42008000 	.word	0x42008000
 300076f8:	05fa6000 	.word	0x05fa6000
 300076fc:	e000e100 	.word	0xe000e100
-30007700:	3000e6d7 	.word	0x3000e6d7
+30007700:	3000e6c7 	.word	0x3000e6c7
 30007704:	005fffff 	.word	0x005fffff
 
 30007708 <ymodem_inquiry>:
@@ -6964,7 +6963,7 @@ Disassembly of section .ram_image1.text:
 30007968:	000caa30 	.word	0x000caa30
 3000796c:	20016ffc 	.word	0x20016ffc
 30007970:	00009b2d 	.word	0x00009b2d
-30007974:	3000ee20 	.word	0x3000ee20
+30007974:	3000ee10 	.word	0x3000ee10
 
 30007978 <ymodem_rx_frame>:
 30007978:	2300      	movs	r3, #0
@@ -7052,9 +7051,9 @@ Disassembly of section .ram_image1.text:
 30007a4a:	b2db      	uxtb	r3, r3
 30007a4c:	60a3      	str	r3, [r4, #8]
 30007a4e:	e7c5      	b.n	300079dc <ymodem_img_rxbuffer+0x34>
-30007a50:	3000ee20 	.word	0x3000ee20
+30007a50:	3000ee10 	.word	0x3000ee10
 30007a54:	00009b2d 	.word	0x00009b2d
-30007a58:	3000ee28 	.word	0x3000ee28
+30007a58:	3000ee18 	.word	0x3000ee18
 
 30007a5c <ymodem_log_open>:
 30007a5c:	b510      	push	{r4, lr}
@@ -7125,7 +7124,7 @@ Disassembly of section .ram_image1.text:
 30007af0:	0000ed39 	.word	0x0000ed39
 30007af4:	30009b35 	.word	0x30009b35
 30007af8:	0000e1bd 	.word	0x0000e1bd
-30007afc:	3000d1a0 	.word	0x3000d1a0
+30007afc:	3000d194 	.word	0x3000d194
 
 30007b00 <ymodem_uart_readable>:
 30007b00:	4b00      	ldr	r3, [pc, #0]	; (30007b04 <ymodem_uart_readable+0x4>)
@@ -7141,7 +7140,7 @@ Disassembly of section .ram_image1.text:
 30007b12:	b2c0      	uxtb	r0, r0
 30007b14:	bd08      	pop	{r3, pc}
 30007b16:	bf00      	nop
-30007b18:	3000ee38 	.word	0x3000ee38
+30007b18:	3000ee28 	.word	0x3000ee28
 30007b1c:	0000d1a9 	.word	0x0000d1a9
 
 30007b20 <ymodem_uart_getc>:
@@ -7298,7 +7297,7 @@ Disassembly of section .ram_image1.text:
 30007c64:	f8000400 	.word	0xf8000400
 30007c68:	0000a04d 	.word	0x0000a04d
 30007c6c:	0000a16d 	.word	0x0000a16d
-30007c70:	3000ee3c 	.word	0x3000ee3c
+30007c70:	3000ee2c 	.word	0x3000ee2c
 
 30007c74 <ymodem_img_download>:
 30007c74:	e92d 41f0 	stmdb	sp!, {r4, r5, r6, r7, r8, lr}
@@ -7337,8 +7336,8 @@ Disassembly of section .ram_image1.text:
 30007cc4:	47b0      	blx	r6
 30007cc6:	e7f5      	b.n	30007cb4 <ChipInfo_Invalid+0x8>
 30007cc8:	00009be5 	.word	0x00009be5
-30007ccc:	3000d1c0 	.word	0x3000d1c0
-30007cd0:	3000d1cc 	.word	0x3000d1cc
+30007ccc:	3000d1b4 	.word	0x3000d1b4
+30007cd0:	3000d1c0 	.word	0x3000d1c0
 
 30007cd4 <ChipInfo_Get>:
 30007cd4:	b570      	push	{r4, r5, r6, lr}
@@ -7371,11 +7370,11 @@ Disassembly of section .ram_image1.text:
 30007d16:	47b0      	blx	r6
 30007d18:	e7f5      	b.n	30007d06 <ChipInfo_Get+0x32>
 30007d1a:	bf00      	nop
-30007d1c:	3000ef38 	.word	0x3000ef38
+30007d1c:	3000ef28 	.word	0x3000ef28
 30007d20:	23020000 	.word	0x23020000
 30007d24:	00009be5 	.word	0x00009be5
-30007d28:	3000d1c0 	.word	0x3000d1c0
-30007d2c:	3000d1f0 	.word	0x3000d1f0
+30007d28:	3000d1b4 	.word	0x3000d1b4
+30007d2c:	3000d1e4 	.word	0x3000d1e4
 
 30007d30 <ChipInfo_MemoryType>:
 30007d30:	b510      	push	{r4, lr}
@@ -7412,7 +7411,7 @@ Disassembly of section .ram_image1.text:
 30007d72:	f7ff ff9b 	bl	30007cac <ChipInfo_Invalid>
 30007d76:	bf00      	nop
 30007d78:	0000c0f9 	.word	0x0000c0f9
-30007d7c:	3000d21c 	.word	0x3000d21c
+30007d7c:	3000d210 	.word	0x3000d210
 30007d80:	30007cd5 	.word	0x30007cd5
 
 30007d84 <ChipInfo_DDRType>:
@@ -7447,7 +7446,7 @@ Disassembly of section .ram_image1.text:
 30007dc2:	bf00      	nop
 30007dc4:	30007cd5 	.word	0x30007cd5
 30007dc8:	30007d31 	.word	0x30007d31
-30007dcc:	3000d21c 	.word	0x3000d21c
+30007dcc:	3000d210 	.word	0x3000d210
 
 30007dd0 <ChipInfo_MemorySize>:
 30007dd0:	b510      	push	{r4, lr}
@@ -7471,7 +7470,7 @@ Disassembly of section .ram_image1.text:
 30007df8:	bd10      	pop	{r4, pc}
 30007dfa:	f7ff ff57 	bl	30007cac <ChipInfo_Invalid>
 30007dfe:	bf00      	nop
-30007e00:	3000d21c 	.word	0x3000d21c
+30007e00:	3000d210 	.word	0x3000d210
 30007e04:	30007cd5 	.word	0x30007cd5
 
 30007e08 <ChipInfo_MemoryVendor>:
@@ -7505,7 +7504,7 @@ Disassembly of section .ram_image1.text:
 30007e42:	bd10      	pop	{r4, pc}
 30007e44:	f7ff ff32 	bl	30007cac <ChipInfo_Invalid>
 30007e48:	0000c0f9 	.word	0x0000c0f9
-30007e4c:	3000d21c 	.word	0x3000d21c
+30007e4c:	3000d210 	.word	0x3000d210
 30007e50:	30007cd5 	.word	0x30007cd5
 
 30007e54 <SDM32K_Enable>:
@@ -7619,9 +7618,9 @@ Disassembly of section .ram_image1.text:
 30007f40:	7013      	strb	r3, [r2, #0]
 30007f42:	bd08      	pop	{r3, pc}
 30007f44:	30007cd5 	.word	0x30007cd5
-30007f48:	3000ef39 	.word	0x3000ef39
-30007f4c:	3000d2a0 	.word	0x3000d2a0
-30007f50:	3000d2a8 	.word	0x3000d2a8
+30007f48:	3000ef29 	.word	0x3000ef29
+30007f4c:	3000d294 	.word	0x3000d294
+30007f50:	3000d29c 	.word	0x3000d29c
 
 30007f54 <DDR_PHY_ChipInfo_ddrtype>:
 30007f54:	b510      	push	{r4, lr}
@@ -7634,7 +7633,7 @@ Disassembly of section .ram_image1.text:
 30007f62:	7020      	strb	r0, [r4, #0]
 30007f64:	bd10      	pop	{r4, pc}
 30007f66:	bf00      	nop
-30007f68:	3000fc50 	.word	0x3000fc50
+30007f68:	3000fc40 	.word	0x3000fc40
 30007f6c:	30007d85 	.word	0x30007d85
 
 30007f70 <DDR_PHY_StructInit>:
@@ -7820,9 +7819,9 @@ Disassembly of section .ram_image1.text:
 30008158:	fffff800 	.word	0xfffff800
 3000815c:	d1b71759 	.word	0xd1b71759
 30008160:	fff80000 	.word	0xfff80000
-30008164:	3000ef39 	.word	0x3000ef39
-30008168:	3000d2c8 	.word	0x3000d2c8
-3000816c:	3000fc50 	.word	0x3000fc50
+30008164:	3000ef29 	.word	0x3000ef29
+30008168:	3000d2bc 	.word	0x3000d2bc
+3000816c:	3000fc40 	.word	0x3000fc40
 30008170:	42008000 	.word	0x42008000
 30008174:	4c000821 	.word	0x4c000821
 30008178:	30007d85 	.word	0x30007d85
@@ -7940,8 +7939,8 @@ Disassembly of section .ram_image1.text:
 300082d8:	f7ff fdea 	bl	30007eb0 <DDR_PHY_ChipInfo.part.0>
 300082dc:	e7c7      	b.n	3000826e <DDR_PHY_R240_ZQ_CAL+0xa>
 300082de:	bf00      	nop
-300082e0:	3000ef39 	.word	0x3000ef39
-300082e4:	3000d408 	.word	0x3000d408
+300082e0:	3000ef29 	.word	0x3000ef29
+300082e4:	3000d3fc 	.word	0x3000d3fc
 300082e8:	41011000 	.word	0x41011000
 300082ec:	00262626 	.word	0x00262626
 
@@ -8027,7 +8026,7 @@ Disassembly of section .ram_image1.text:
 300083ee:	bf00      	nop
 300083f0:	41011000 	.word	0x41011000
 300083f4:	20888888 	.word	0x20888888
-300083f8:	3000fc50 	.word	0x3000fc50
+300083f8:	3000fc40 	.word	0x3000fc40
 300083fc:	7c033333 	.word	0x7c033333
 30008400:	7c011111 	.word	0x7c011111
 30008404:	30007d85 	.word	0x30007d85
@@ -8057,8 +8056,8 @@ Disassembly of section .ram_image1.text:
 30008444:	bd10      	pop	{r4, pc}
 30008446:	f7ff fd33 	bl	30007eb0 <DDR_PHY_ChipInfo.part.0>
 3000844a:	e7e2      	b.n	30008412 <DDR_PHY_READ_CTRL+0xa>
-3000844c:	3000ef39 	.word	0x3000ef39
-30008450:	3000d408 	.word	0x3000d408
+3000844c:	3000ef29 	.word	0x3000ef29
+30008450:	3000d3fc 	.word	0x3000d3fc
 30008454:	41011000 	.word	0x41011000
 
 30008458 <DDR_PHY_READ_LEVELING>:
@@ -8102,7 +8101,7 @@ Disassembly of section .ram_image1.text:
 300084d8:	bd08      	pop	{r3, pc}
 300084da:	f7ff fce9 	bl	30007eb0 <DDR_PHY_ChipInfo.part.0>
 300084de:	e7c0      	b.n	30008462 <DDR_PHY_READ_LEVELING+0xa>
-300084e0:	3000ef39 	.word	0x3000ef39
+300084e0:	3000ef29 	.word	0x3000ef29
 300084e4:	41011000 	.word	0x41011000
 
 300084e8 <DDR_PHY_Init>:
@@ -8302,8 +8301,8 @@ Disassembly of section .ram_image1.text:
 30008708:	602b      	str	r3, [r5, #0]
 3000870a:	bd70      	pop	{r4, r5, r6, pc}
 3000870c:	30009bb5 	.word	0x30009bb5
-30008710:	3000f014 	.word	0x3000f014
-30008714:	3000ef3c 	.word	0x3000ef3c
+30008710:	3000f004 	.word	0x3000f004
+30008714:	3000ef2c 	.word	0x3000ef2c
 
 30008718 <NAND_CHECK_IS_BAD_BLOCK>:
 30008718:	e92d 43f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, lr}
@@ -8361,10 +8360,10 @@ Disassembly of section .ram_image1.text:
 300087a8:	b005      	add	sp, #20
 300087aa:	e8bd 83f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, pc}
 300087ae:	bf00      	nop
-300087b0:	3000fc58 	.word	0x3000fc58
+300087b0:	3000fc48 	.word	0x3000fc48
 300087b4:	2001c01c 	.word	0x2001c01c
-300087b8:	3000d69c 	.word	0x3000d69c
-300087bc:	3000d6a8 	.word	0x3000d6a8
+300087b8:	3000d690 	.word	0x3000d690
+300087bc:	3000d69c 	.word	0x3000d69c
 300087c0:	30009b05 	.word	0x30009b05
 
 300087c4 <Nand_Get_NandAddr>:
@@ -8543,8 +8542,8 @@ Disassembly of section .ram_image1.text:
 30008982:	f003 fab3 	bl	3000beec <rtk_log_write>
 30008986:	e7be      	b.n	30008906 <NandImgCopy+0x7e>
 30008988:	30009b05 	.word	0x30009b05
-3000898c:	3000d69c 	.word	0x3000d69c
-30008990:	3000d6c0 	.word	0x3000d6c0
+3000898c:	3000d690 	.word	0x3000d690
+30008990:	3000d6b4 	.word	0x3000d6b4
 30008994:	2001c01c 	.word	0x2001c01c
 
 30008998 <OTP_Read8.part.0>:
@@ -8633,8 +8632,8 @@ Disassembly of section .ram_image1.text:
 30008a68:	42000008 	.word	0x42000008
 30008a6c:	00009b2d 	.word	0x00009b2d
 30008a70:	42008000 	.word	0x42008000
-30008a74:	3000d6fc 	.word	0x3000d6fc
-30008a78:	3000d700 	.word	0x3000d700
+30008a74:	3000d6f0 	.word	0x3000d6f0
+30008a78:	3000d6f4 	.word	0x3000d6f4
 
 30008a7c <OTP_Read8>:
 30008a7c:	f5b0 6f00 	cmp.w	r0, #2048	; 0x800
@@ -8718,7 +8717,7 @@ Disassembly of section .ram_image1.text:
 30008b42:	bf00      	nop
 30008b44:	000099f5 	.word	0x000099f5
 30008b48:	41000300 	.word	0x41000300
-30008b4c:	3000d71c 	.word	0x3000d71c
+30008b4c:	3000d710 	.word	0x3000d710
 
 30008b50 <PLL_AP>:
 30008b50:	2801      	cmp	r0, #1
@@ -8887,16 +8886,16 @@ Disassembly of section .ram_image1.text:
 30008cc6:	e9c4 3106 	strd	r3, r1, [r4, #24]
 30008cca:	e79f      	b.n	30008c0c <PSRAM_INFO_Update+0x5c>
 30008ccc:	42008000 	.word	0x42008000
-30008cd0:	3000ef24 	.word	0x3000ef24
+30008cd0:	3000ef14 	.word	0x3000ef14
 30008cd4:	000f4240 	.word	0x000f4240
-30008cd8:	3000fc60 	.word	0x3000fc60
+30008cd8:	3000fc50 	.word	0x3000fc50
 30008cdc:	30007e09 	.word	0x30007e09
 30008ce0:	30007dd1 	.word	0x30007dd1
 30008ce4:	3b9aca00 	.word	0x3b9aca00
 30008ce8:	0632ea00 	.word	0x0632ea00
 30008cec:	23020000 	.word	0x23020000
-30008cf0:	3000d72c 	.word	0x3000d72c
-30008cf4:	3000d734 	.word	0x3000d734
+30008cf0:	3000d720 	.word	0x3000d720
+30008cf4:	3000d728 	.word	0x3000d728
 30008cf8:	07ed6b40 	.word	0x07ed6b40
 30008cfc:	09e4f580 	.word	0x09e4f580
 30008d00:	0bebc200 	.word	0x0bebc200
@@ -9060,7 +9059,7 @@ Disassembly of section .ram_image1.text:
 30008ec2:	e7ba      	b.n	30008e3a <PSRAM_CTRL_Init+0xaa>
 30008ec4:	41012000 	.word	0x41012000
 30008ec8:	00bfe000 	.word	0x00bfe000
-30008ecc:	3000fc60 	.word	0x3000fc60
+30008ecc:	3000fc50 	.word	0x3000fc50
 30008ed0:	00107000 	.word	0x00107000
 
 30008ed4 <PSRAM_REG_Write>:
@@ -9145,8 +9144,8 @@ Disassembly of section .ram_image1.text:
 30008fa2:	47a0      	blx	r4
 30008fa4:	b003      	add	sp, #12
 30008fa6:	bd30      	pop	{r4, r5, pc}
-30008fa8:	3000fc60 	.word	0x3000fc60
-30008fac:	3000f0ec 	.word	0x3000f0ec
+30008fa8:	3000fc50 	.word	0x3000fc50
+30008fac:	3000f0dc 	.word	0x3000f0dc
 30008fb0:	30008ed5 	.word	0x30008ed5
 
 30008fb4 <PSRAM_WB_REG_Write>:
@@ -9221,8 +9220,8 @@ Disassembly of section .ram_image1.text:
 3000905e:	b002      	add	sp, #8
 30009060:	bd10      	pop	{r4, pc}
 30009062:	bf00      	nop
-30009064:	3000fc60 	.word	0x3000fc60
-30009068:	3000f10c 	.word	0x3000f10c
+30009064:	3000fc50 	.word	0x3000fc50
+30009068:	3000f0fc 	.word	0x3000f0fc
 3000906c:	30008fb5 	.word	0x30008fb5
 
 30009070 <PSRAM_calibration>:
@@ -9464,13 +9463,13 @@ Disassembly of section .ram_image1.text:
 300092e4:	41002000 	.word	0x41002000
 300092e8:	0fffffe0 	.word	0x0fffffe0
 300092ec:	e000ed00 	.word	0xe000ed00
-300092f0:	3000f0f4 	.word	0x3000f0f4
+300092f0:	3000f0e4 	.word	0x3000f0e4
 300092f4:	60200000 	.word	0x60200000
 300092f8:	60150000 	.word	0x60150000
 300092fc:	60250000 	.word	0x60250000
 30009300:	000129bd 	.word	0x000129bd
-30009304:	3000d754 	.word	0x3000d754
-30009308:	3000d72c 	.word	0x3000d72c
+30009304:	3000d748 	.word	0x3000d748
+30009308:	3000d720 	.word	0x3000d720
 3000930c:	60050000 	.word	0x60050000
 30009310:	60100000 	.word	0x60100000
 
@@ -9682,11 +9681,11 @@ Disassembly of section .ram_image1.text:
 30009500:	4801      	ldr	r0, [pc, #4]	; (30009508 <CRYPTO_SetSecurityModeAD+0x198>)
 30009502:	f002 ffe9 	bl	3000c4d8 <__io_assert_failed_veneer>
 30009506:	e79a      	b.n	3000943e <CRYPTO_SetSecurityModeAD+0xce>
-30009508:	3000d830 	.word	0x3000d830
+30009508:	3000d824 	.word	0x3000d824
 3000950c:	00012be5 	.word	0x00012be5
 30009510:	2001c200 	.word	0x2001c200
-30009514:	3000d794 	.word	0x3000d794
-30009518:	3000d7a0 	.word	0x3000d7a0
+30009514:	3000d788 	.word	0x3000d788
+30009518:	3000d794 	.word	0x3000d794
 
 3000951c <rtl_crypto_hmac_sha2_init>:
 3000951c:	e92d 43f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, lr}
@@ -9916,7 +9915,7 @@ Disassembly of section .ram_image1.text:
 30009780:	0000e5f9 	.word	0x0000e5f9
 30009784:	500c8000 	.word	0x500c8000
 30009788:	400c8000 	.word	0x400c8000
-3000978c:	3000d814 	.word	0x3000d814
+3000978c:	3000d808 	.word	0x3000d808
 30009790:	bb67ae85 	.word	0xbb67ae85
 30009794:	510e527f 	.word	0x510e527f
 30009798:	a54ff53a 	.word	0xa54ff53a
@@ -10078,7 +10077,7 @@ Disassembly of section .ram_image1.text:
 30009948:	d9d2      	bls.n	300098f0 <RSIP_OTF_Enable+0x18>
 3000994a:	e7ef      	b.n	3000992c <RSIP_OTF_Enable+0x54>
 3000994c:	42008c00 	.word	0x42008c00
-30009950:	3000d804 	.word	0x3000d804
+30009950:	3000d7f8 	.word	0x3000d7f8
 
 30009954 <RSIP_MMU_Config>:
 30009954:	eb00 0040 	add.w	r0, r0, r0, lsl #1
@@ -10309,9 +10308,9 @@ Disassembly of section .ram_image1.text:
 30009b9c:	300002c4 	.word	0x300002c4
 30009ba0:	e000e400 	.word	0xe000e400
 30009ba4:	e000ed14 	.word	0xe000ed14
-30009ba8:	3000d794 	.word	0x3000d794
-30009bac:	3000d7c8 	.word	0x3000d7c8
-30009bb0:	3000d7f0 	.word	0x3000d7f0
+30009ba8:	3000d788 	.word	0x3000d788
+30009bac:	3000d7bc 	.word	0x3000d7bc
+30009bb0:	3000d7e4 	.word	0x3000d7e4
 
 30009bb4 <SYSCFG_BootFromNor>:
 30009bb4:	4b0e      	ldr	r3, [pc, #56]	; (30009bf0 <SYSCFG_BootFromNor+0x3c>)
@@ -10375,7 +10374,7 @@ Disassembly of section .ram_image1.text:
 30009c4e:	f002 bc33 	b.w	3000c4b8 <__SBOOT_GetMdType_B_veneer>
 30009c52:	bf00      	nop
 30009c54:	42008000 	.word	0x42008000
-30009c58:	3000fc84 	.word	0x3000fc84
+30009c58:	3000fc74 	.word	0x3000fc74
 
 30009c5c <CRYPTO_OTPKey_SHA_Init>:
 30009c5c:	4a0d      	ldr	r2, [pc, #52]	; (30009c94 <CRYPTO_OTPKey_SHA_Init+0x38>)
@@ -10396,7 +10395,7 @@ Disassembly of section .ram_image1.text:
 30009c8e:	f002 bb6b 	b.w	3000c368 <__CRYPTO_OTPKey_SHA_Init_B_veneer>
 30009c92:	bf00      	nop
 30009c94:	42008000 	.word	0x42008000
-30009c98:	3000fc84 	.word	0x3000fc84
+30009c98:	3000fc74 	.word	0x3000fc74
 
 30009c9c <rtl_crypto_hmac_sha2_update>:
 30009c9c:	b470      	push	{r4, r5, r6}
@@ -10417,7 +10416,7 @@ Disassembly of section .ram_image1.text:
 30009cca:	f002 bb95 	b.w	3000c3f8 <__rtl_crypto_hmac_sha2_update_B_veneer>
 30009cce:	bf00      	nop
 30009cd0:	42008000 	.word	0x42008000
-30009cd4:	3000fc84 	.word	0x3000fc84
+30009cd4:	3000fc74 	.word	0x3000fc74
 
 30009cd8 <rtl_crypto_hmac_sha2_final>:
 30009cd8:	4a0d      	ldr	r2, [pc, #52]	; (30009d10 <rtl_crypto_hmac_sha2_final+0x38>)
@@ -10438,7 +10437,7 @@ Disassembly of section .ram_image1.text:
 30009d0a:	f002 bc15 	b.w	3000c538 <__rtl_crypto_hmac_sha2_final_B_veneer>
 30009d0e:	bf00      	nop
 30009d10:	42008000 	.word	0x42008000
-30009d14:	3000fc84 	.word	0x3000fc84
+30009d14:	3000fc74 	.word	0x3000fc74
 
 30009d18 <rtl_crypto_sha2_init>:
 30009d18:	4a0d      	ldr	r2, [pc, #52]	; (30009d50 <rtl_crypto_sha2_init+0x38>)
@@ -10459,7 +10458,7 @@ Disassembly of section .ram_image1.text:
 30009d4a:	f002 bbcd 	b.w	3000c4e8 <__rtl_crypto_sha2_init_B_veneer>
 30009d4e:	bf00      	nop
 30009d50:	42008000 	.word	0x42008000
-30009d54:	3000fc84 	.word	0x3000fc84
+30009d54:	3000fc74 	.word	0x3000fc74
 
 30009d58 <rtl_crypto_sha2_update>:
 30009d58:	b470      	push	{r4, r5, r6}
@@ -10480,7 +10479,7 @@ Disassembly of section .ram_image1.text:
 30009d86:	f002 bbdf 	b.w	3000c548 <__rtl_crypto_sha2_update_B_veneer>
 30009d8a:	bf00      	nop
 30009d8c:	42008000 	.word	0x42008000
-30009d90:	3000fc84 	.word	0x3000fc84
+30009d90:	3000fc74 	.word	0x3000fc74
 
 30009d94 <rtl_crypto_sha2_final>:
 30009d94:	4a0d      	ldr	r2, [pc, #52]	; (30009dcc <rtl_crypto_sha2_final+0x38>)
@@ -10501,7 +10500,7 @@ Disassembly of section .ram_image1.text:
 30009dc6:	f002 baff 	b.w	3000c3c8 <__rtl_crypto_sha2_final_B_veneer>
 30009dca:	bf00      	nop
 30009dcc:	42008000 	.word	0x42008000
-30009dd0:	3000fc84 	.word	0x3000fc84
+30009dd0:	3000fc74 	.word	0x3000fc74
 
 30009dd4 <SBOOT_Validate_PubKey>:
 30009dd4:	b470      	push	{r4, r5, r6}
@@ -10522,7 +10521,7 @@ Disassembly of section .ram_image1.text:
 30009e02:	f002 bb11 	b.w	3000c428 <__SBOOT_Validate_PubKey_B_veneer>
 30009e06:	bf00      	nop
 30009e08:	42008000 	.word	0x42008000
-30009e0c:	3000fc84 	.word	0x3000fc84
+30009e0c:	3000fc74 	.word	0x3000fc74
 
 30009e10 <SBOOT_Validate_Signature>:
 30009e10:	b5f0      	push	{r4, r5, r6, r7, lr}
@@ -10545,7 +10544,7 @@ Disassembly of section .ram_image1.text:
 30009e4c:	e8bd 40f0 	ldmia.w	sp!, {r4, r5, r6, r7, lr}
 30009e50:	f002 baf2 	b.w	3000c438 <__SBOOT_Validate_Signature_B_veneer>
 30009e54:	42008000 	.word	0x42008000
-30009e58:	3000fc84 	.word	0x3000fc84
+30009e58:	3000fc74 	.word	0x3000fc74
 
 30009e5c <SBOOT_Validate_ImgHash>:
 30009e5c:	b4f0      	push	{r4, r5, r6, r7}
@@ -10566,7 +10565,7 @@ Disassembly of section .ram_image1.text:
 30009e8a:	f002 bae5 	b.w	3000c458 <__SBOOT_Validate_ImgHash_B_veneer>
 30009e8e:	bf00      	nop
 30009e90:	42008000 	.word	0x42008000
-30009e94:	3000fc84 	.word	0x3000fc84
+30009e94:	3000fc74 	.word	0x3000fc74
 
 30009e98 <CRYPTO_SHA_Init>:
 30009e98:	4b0b      	ldr	r3, [pc, #44]	; (30009ec8 <CRYPTO_SHA_Init+0x30>)
@@ -10585,7 +10584,7 @@ Disassembly of section .ram_image1.text:
 30009ec2:	f002 ba71 	b.w	3000c3a8 <__CRYPTO_SHA_Init_B_veneer>
 30009ec6:	bf00      	nop
 30009ec8:	42008000 	.word	0x42008000
-30009ecc:	3000fc84 	.word	0x3000fc84
+30009ecc:	3000fc74 	.word	0x3000fc74
 
 30009ed0 <SBOOT_Validate_Algorithm>:
 30009ed0:	b4f0      	push	{r4, r5, r6, r7}
@@ -10606,7 +10605,7 @@ Disassembly of section .ram_image1.text:
 30009efe:	f002 ba83 	b.w	3000c408 <__SBOOT_Validate_Algorithm_B_veneer>
 30009f02:	bf00      	nop
 30009f04:	42008000 	.word	0x42008000
-30009f08:	3000fc84 	.word	0x3000fc84
+30009f08:	3000fc74 	.word	0x3000fc74
 
 30009f0c <ddr_init_index>:
 30009f0c:	b570      	push	{r4, r5, r6, lr}
@@ -10642,8 +10641,8 @@ Disassembly of section .ram_image1.text:
 30009f4c:	30007f55 	.word	0x30007f55
 30009f50:	30007dd1 	.word	0x30007dd1
 30009f54:	00009be5 	.word	0x00009be5
-30009f58:	3000d84c 	.word	0x3000d84c
-30009f5c:	3000d850 	.word	0x3000d850
+30009f58:	3000d840 	.word	0x3000d840
+30009f5c:	3000d844 	.word	0x3000d844
 
 30009f60 <rxi316_perf_tune>:
 30009f60:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
@@ -11120,9 +11119,9 @@ Disassembly of section .ram_image1.text:
 3000a41a:	f007 071f 	and.w	r7, r7, #31
 3000a41e:	f000 81a2 	beq.w	3000a766 <rxi316_perf_tune+0x806>
 3000a422:	e005      	b.n	3000a430 <rxi316_perf_tune+0x4d0>
-3000a424:	3000d84c 	.word	0x3000d84c
-3000a428:	3000d874 	.word	0x3000d874
-3000a42c:	3000d8b8 	.word	0x3000d8b8
+3000a424:	3000d840 	.word	0x3000d840
+3000a428:	3000d868 	.word	0x3000d868
+3000a42c:	3000d8ac 	.word	0x3000d8ac
 3000a430:	1b63      	subs	r3, r4, r5
 3000a432:	3b02      	subs	r3, #2
 3000a434:	015b      	lsls	r3, r3, #5
@@ -12481,7 +12480,7 @@ Disassembly of section .ram_image1.text:
 3000b270:	bd10      	pop	{r4, pc}
 3000b272:	bf00      	nop
 3000b274:	41101000 	.word	0x41101000
-3000b278:	3000f500 	.word	0x3000f500
+3000b278:	3000f4f0 	.word	0x3000f4f0
 
 3000b27c <rxi316_DynSre_init>:
 3000b27c:	b538      	push	{r3, r4, r5, lr}
@@ -12542,7 +12541,7 @@ Disassembly of section .ram_image1.text:
 3000b306:	bf00      	nop
 3000b308:	30009bfd 	.word	0x30009bfd
 3000b30c:	41100000 	.word	0x41100000
-3000b310:	3000d8fc 	.word	0x3000d8fc
+3000b310:	3000d8f0 	.word	0x3000d8f0
 3000b314:	ffff0000 	.word	0xffff0000
 3000b318:	30007f55 	.word	0x30007f55
 
@@ -12559,7 +12558,7 @@ Disassembly of section .ram_image1.text:
 3000b336:	b003      	add	sp, #12
 3000b338:	f85d eb04 	ldr.w	lr, [sp], #4
 3000b33c:	f7ff bf7e 	b.w	3000b23c <rxi316_ftend_init>
-3000b340:	3000f500 	.word	0x3000f500
+3000b340:	3000f4f0 	.word	0x3000f4f0
 
 3000b344 <SWR_Calib_DCore>:
 3000b344:	4b0f      	ldr	r3, [pc, #60]	; (3000b384 <SWR_Calib_DCore+0x40>)
@@ -12705,9 +12704,9 @@ Disassembly of section .ram_image1.text:
 3000b4d2:	e7d2      	b.n	3000b47a <SWR_Calib_MEM+0xee>
 3000b4d4:	42008800 	.word	0x42008800
 3000b4d8:	fffffccc 	.word	0xfffffccc
-3000b4dc:	3000f69b 	.word	0x3000f69b
+3000b4dc:	3000f68b 	.word	0x3000f68b
 3000b4e0:	42008100 	.word	0x42008100
-3000b4e4:	3000f69a 	.word	0x3000f69a
+3000b4e4:	3000f68a 	.word	0x3000f68a
 
 3000b4e8 <SWR_Calib_AUD>:
 3000b4e8:	4b48      	ldr	r3, [pc, #288]	; (3000b60c <SWR_Calib_AUD+0x124>)
@@ -12815,8 +12814,8 @@ Disassembly of section .ram_image1.text:
 3000b60a:	bf00      	nop
 3000b60c:	42008800 	.word	0x42008800
 3000b610:	fffffccc 	.word	0xfffffccc
-3000b614:	3000f699 	.word	0x3000f699
-3000b618:	3000f698 	.word	0x3000f698
+3000b614:	3000f689 	.word	0x3000f689
+3000b618:	3000f688 	.word	0x3000f688
 
 3000b61c <SWR_MEM>:
 3000b61c:	2801      	cmp	r0, #1
@@ -12959,7 +12958,7 @@ Disassembly of section .ram_image1.text:
 3000b7ac:	bd38      	pop	{r3, r4, r5, pc}
 3000b7ae:	bf00      	nop
 3000b7b0:	42008800 	.word	0x42008800
-3000b7b4:	3000d910 	.word	0x3000d910
+3000b7b4:	3000d904 	.word	0x3000d904
 3000b7b8:	00009b2d 	.word	0x00009b2d
 
 3000b7bc <SWR_AUDIO>:
@@ -13095,14 +13094,14 @@ Disassembly of section .ram_image1.text:
 3000b916:	f000 fd5f 	bl	3000c3d8 <__DiagPrintf_veneer>
 3000b91a:	e7e1      	b.n	3000b8e0 <crash_dump_memory+0x54>
 3000b91c:	42008000 	.word	0x42008000
-3000b920:	3000d924 	.word	0x3000d924
-3000b924:	3000d928 	.word	0x3000d928
-3000b928:	3000d92c 	.word	0x3000d92c
-3000b92c:	3000d994 	.word	0x3000d994
-3000b930:	3000d950 	.word	0x3000d950
+3000b920:	3000d918 	.word	0x3000d918
+3000b924:	3000d91c 	.word	0x3000d91c
+3000b928:	3000d920 	.word	0x3000d920
+3000b92c:	3000d988 	.word	0x3000d988
+3000b930:	3000d944 	.word	0x3000d944
 3000b934:	3000cdf4 	.word	0x3000cdf4
-3000b938:	3000d99c 	.word	0x3000d99c
-3000b93c:	3000d98c 	.word	0x3000d98c
+3000b938:	3000d990 	.word	0x3000d990
+3000b93c:	3000d980 	.word	0x3000d980
 
 3000b940 <crash_dump>:
 3000b940:	e92d 4ff8 	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, sl, fp, lr}
@@ -13227,22 +13226,22 @@ Disassembly of section .ram_image1.text:
 3000ba7c:	2000      	movs	r0, #0
 3000ba7e:	e8bd 8ff8 	ldmia.w	sp!, {r3, r4, r5, r6, r7, r8, r9, sl, fp, pc}
 3000ba82:	bf00      	nop
-3000ba84:	3000fc88 	.word	0x3000fc88
-3000ba88:	3000d9b0 	.word	0x3000d9b0
+3000ba84:	3000fc78 	.word	0x3000fc78
+3000ba88:	3000d9a4 	.word	0x3000d9a4
 3000ba8c:	e000ed00 	.word	0xe000ed00
-3000ba90:	3000d9d4 	.word	0x3000d9d4
-3000ba94:	3000d9fc 	.word	0x3000d9fc
-3000ba98:	3000da0c 	.word	0x3000da0c
-3000ba9c:	3000da1c 	.word	0x3000da1c
-3000baa0:	3000da2c 	.word	0x3000da2c
-3000baa4:	3000d9a8 	.word	0x3000d9a8
-3000baa8:	3000da8c 	.word	0x3000da8c
-3000baac:	3000d9ac 	.word	0x3000d9ac
-3000bab0:	3000da4c 	.word	0x3000da4c
-3000bab4:	3000da3c 	.word	0x3000da3c
-3000bab8:	3000da50 	.word	0x3000da50
-3000babc:	3000da7c 	.word	0x3000da7c
-3000bac0:	3000daac 	.word	0x3000daac
+3000ba90:	3000d9c8 	.word	0x3000d9c8
+3000ba94:	3000d9f0 	.word	0x3000d9f0
+3000ba98:	3000da00 	.word	0x3000da00
+3000ba9c:	3000da10 	.word	0x3000da10
+3000baa0:	3000da20 	.word	0x3000da20
+3000baa4:	3000d99c 	.word	0x3000d99c
+3000baa8:	3000da80 	.word	0x3000da80
+3000baac:	3000d9a0 	.word	0x3000d9a0
+3000bab0:	3000da40 	.word	0x3000da40
+3000bab4:	3000da30 	.word	0x3000da30
+3000bab8:	3000da44 	.word	0x3000da44
+3000babc:	3000da70 	.word	0x3000da70
+3000bac0:	3000daa0 	.word	0x3000daa0
 
 3000bac4 <fault_diagnosis>:
 3000bac4:	b510      	push	{r4, lr}
@@ -13438,27 +13437,27 @@ Disassembly of section .ram_image1.text:
 3000bce2:	f000 fb79 	bl	3000c3d8 <__DiagPrintf_veneer>
 3000bce6:	f894 1048 	ldrb.w	r1, [r4, #72]	; 0x48
 3000bcea:	e727      	b.n	3000bb3c <fault_diagnosis+0x78>
-3000bcec:	3000dabc 	.word	0x3000dabc
-3000bcf0:	3000e34c 	.word	0x3000e34c
-3000bcf4:	3000e2a4 	.word	0x3000e2a4
-3000bcf8:	3000dad4 	.word	0x3000dad4
-3000bcfc:	3000db00 	.word	0x3000db00
-3000bd00:	3000e208 	.word	0x3000e208
-3000bd04:	3000e04c 	.word	0x3000e04c
-3000bd08:	3000db18 	.word	0x3000db18
-3000bd0c:	3000db48 	.word	0x3000db48
-3000bd10:	3000db60 	.word	0x3000db60
-3000bd14:	3000db98 	.word	0x3000db98
-3000bd18:	3000dbd0 	.word	0x3000dbd0
-3000bd1c:	3000dc08 	.word	0x3000dc08
-3000bd20:	3000dc38 	.word	0x3000dc38
-3000bd24:	3000dc74 	.word	0x3000dc74
-3000bd28:	3000dce4 	.word	0x3000dce4
-3000bd2c:	3000dd28 	.word	0x3000dd28
-3000bd30:	3000dd40 	.word	0x3000dd40
-3000bd34:	3000dd7c 	.word	0x3000dd7c
-3000bd38:	3000ddb4 	.word	0x3000ddb4
-3000bd3c:	3000dde8 	.word	0x3000dde8
+3000bcec:	3000dab0 	.word	0x3000dab0
+3000bcf0:	3000e340 	.word	0x3000e340
+3000bcf4:	3000e298 	.word	0x3000e298
+3000bcf8:	3000dac8 	.word	0x3000dac8
+3000bcfc:	3000daf4 	.word	0x3000daf4
+3000bd00:	3000e1fc 	.word	0x3000e1fc
+3000bd04:	3000e040 	.word	0x3000e040
+3000bd08:	3000db0c 	.word	0x3000db0c
+3000bd0c:	3000db3c 	.word	0x3000db3c
+3000bd10:	3000db54 	.word	0x3000db54
+3000bd14:	3000db8c 	.word	0x3000db8c
+3000bd18:	3000dbc4 	.word	0x3000dbc4
+3000bd1c:	3000dbfc 	.word	0x3000dbfc
+3000bd20:	3000dc2c 	.word	0x3000dc2c
+3000bd24:	3000dc68 	.word	0x3000dc68
+3000bd28:	3000dcd8 	.word	0x3000dcd8
+3000bd2c:	3000dd1c 	.word	0x3000dd1c
+3000bd30:	3000dd34 	.word	0x3000dd34
+3000bd34:	3000dd70 	.word	0x3000dd70
+3000bd38:	3000dda8 	.word	0x3000dda8
+3000bd3c:	3000dddc 	.word	0x3000dddc
 3000bd40:	4a51      	ldr	r2, [pc, #324]	; (3000be88 <fault_diagnosis+0x3c4>)
 3000bd42:	4852      	ldr	r0, [pc, #328]	; (3000be8c <fault_diagnosis+0x3c8>)
 3000bd44:	f000 fb48 	bl	3000c3d8 <__DiagPrintf_veneer>
@@ -13573,31 +13572,31 @@ Disassembly of section .ram_image1.text:
 3000be80:	f000 faaa 	bl	3000c3d8 <__DiagPrintf_veneer>
 3000be84:	e679      	b.n	3000bb7a <fault_diagnosis+0xb6>
 3000be86:	bf00      	nop
-3000be88:	3000de7c 	.word	0x3000de7c
-3000be8c:	3000deb0 	.word	0x3000deb0
-3000be90:	3000dec8 	.word	0x3000dec8
-3000be94:	3000df00 	.word	0x3000df00
-3000be98:	3000df38 	.word	0x3000df38
-3000be9c:	3000df60 	.word	0x3000df60
-3000bea0:	3000df88 	.word	0x3000df88
-3000bea4:	3000e004 	.word	0x3000e004
-3000bea8:	3000e04c 	.word	0x3000e04c
-3000beac:	3000e064 	.word	0x3000e064
-3000beb0:	3000e0b0 	.word	0x3000e0b0
-3000beb4:	3000e110 	.word	0x3000e110
-3000beb8:	3000e158 	.word	0x3000e158
-3000bebc:	3000e1b4 	.word	0x3000e1b4
-3000bec0:	3000dca4 	.word	0x3000dca4
-3000bec4:	3000dccc 	.word	0x3000dccc
-3000bec8:	3000e2f0 	.word	0x3000e2f0
-3000becc:	3000e2a4 	.word	0x3000e2a4
-3000bed0:	3000e2bc 	.word	0x3000e2bc
-3000bed4:	3000e274 	.word	0x3000e274
-3000bed8:	3000e31c 	.word	0x3000e31c
-3000bedc:	3000de34 	.word	0x3000de34
-3000bee0:	3000de64 	.word	0x3000de64
-3000bee4:	3000dfc8 	.word	0x3000dfc8
-3000bee8:	3000dfec 	.word	0x3000dfec
+3000be88:	3000de70 	.word	0x3000de70
+3000be8c:	3000dea4 	.word	0x3000dea4
+3000be90:	3000debc 	.word	0x3000debc
+3000be94:	3000def4 	.word	0x3000def4
+3000be98:	3000df2c 	.word	0x3000df2c
+3000be9c:	3000df54 	.word	0x3000df54
+3000bea0:	3000df7c 	.word	0x3000df7c
+3000bea4:	3000dff8 	.word	0x3000dff8
+3000bea8:	3000e040 	.word	0x3000e040
+3000beac:	3000e058 	.word	0x3000e058
+3000beb0:	3000e0a4 	.word	0x3000e0a4
+3000beb4:	3000e104 	.word	0x3000e104
+3000beb8:	3000e14c 	.word	0x3000e14c
+3000bebc:	3000e1a8 	.word	0x3000e1a8
+3000bec0:	3000dc98 	.word	0x3000dc98
+3000bec4:	3000dcc0 	.word	0x3000dcc0
+3000bec8:	3000e2e4 	.word	0x3000e2e4
+3000becc:	3000e298 	.word	0x3000e298
+3000bed0:	3000e2b0 	.word	0x3000e2b0
+3000bed4:	3000e268 	.word	0x3000e268
+3000bed8:	3000e310 	.word	0x3000e310
+3000bedc:	3000de28 	.word	0x3000de28
+3000bee0:	3000de58 	.word	0x3000de58
+3000bee4:	3000dfbc 	.word	0x3000dfbc
+3000bee8:	3000dfe0 	.word	0x3000dfe0
 
 3000beec <rtk_log_write>:
 3000beec:	b40c      	push	{r2, r3}
@@ -13644,10 +13643,10 @@ Disassembly of section .ram_image1.text:
 3000bf4a:	4770      	bx	lr
 3000bf4c:	2703      	movs	r7, #3
 3000bf4e:	e7d9      	b.n	3000bf04 <rtk_log_write+0x18>
-3000bf50:	300100c8 	.word	0x300100c8
-3000bf54:	300100cd 	.word	0x300100cd
-3000bf58:	300100cc 	.word	0x300100cc
-3000bf5c:	3000f6ac 	.word	0x3000f6ac
+3000bf50:	300100b8 	.word	0x300100b8
+3000bf54:	300100bd 	.word	0x300100bd
+3000bf58:	300100bc 	.word	0x300100bc
+3000bf5c:	3000f69c 	.word	0x3000f69c
 3000bf60:	00012c89 	.word	0x00012c89
 
 3000bf64 <BOOT_VerCheck>:
@@ -13703,14 +13702,14 @@ Disassembly of section .ram_image1.text:
 3000bfd6:	f7ff bf89 	b.w	3000beec <rtk_log_write>
 3000bfda:	bd70      	pop	{r4, r5, r6, pc}
 3000bfdc:	30009bfd 	.word	0x30009bfd
-3000bfe0:	3000e41e 	.word	0x3000e41e
-3000bfe4:	3000e466 	.word	0x3000e466
-3000bfe8:	3000e423 	.word	0x3000e423
-3000bfec:	3000e4a9 	.word	0x3000e4a9
-3000bff0:	3000e4ec 	.word	0x3000e4ec
-3000bff4:	3000e52f 	.word	0x3000e52f
-3000bff8:	3000e572 	.word	0x3000e572
-3000bffc:	3000e5b5 	.word	0x3000e5b5
+3000bfe0:	3000e40e 	.word	0x3000e40e
+3000bfe4:	3000e456 	.word	0x3000e456
+3000bfe8:	3000e413 	.word	0x3000e413
+3000bfec:	3000e499 	.word	0x3000e499
+3000bff0:	3000e4dc 	.word	0x3000e4dc
+3000bff4:	3000e51f 	.word	0x3000e51f
+3000bff8:	3000e562 	.word	0x3000e562
+3000bffc:	3000e5a5 	.word	0x3000e5a5
 
 3000c000 <__aeabi_uldivmod>:
 3000c000:	b953      	cbnz	r3, 3000c018 <__aeabi_uldivmod+0x18>
@@ -13993,8 +13992,8 @@ Disassembly of section .ram_image1.text:
 3000c2f2:	bc30      	pop	{r4, r5}
 3000c2f4:	4760      	bx	ip
 3000c2f6:	bf00      	nop
-3000c2f8:	3000f820 	.word	0x3000f820
-3000c2fc:	3000f6b0 	.word	0x3000f6b0
+3000c2f8:	3000f810 	.word	0x3000f810
+3000c2fc:	3000f6a0 	.word	0x3000f6a0
 
 3000c300 <__ascii_mbtowc>:
 3000c300:	b082      	sub	sp, #8
@@ -14029,8 +14028,8 @@ Disassembly of section .ram_image1.text:
 3000c33a:	bc30      	pop	{r4, r5}
 3000c33c:	4760      	bx	ip
 3000c33e:	bf00      	nop
-3000c340:	3000f820 	.word	0x3000f820
-3000c344:	3000f6b0 	.word	0x3000f6b0
+3000c340:	3000f810 	.word	0x3000f810
+3000c344:	3000f6a0 	.word	0x3000f6a0
 
 3000c348 <__ascii_wctomb>:
 3000c348:	b149      	cbz	r1, 3000c35e <__ascii_wctomb+0x16>
@@ -14941,585 +14940,582 @@ Disassembly of section .ram_image1.text:
 3000ced0:	20344d4b 	.word	0x20344d4b
 3000ced4:	4d415244 	.word	0x4d415244
 3000ced8:	00000000 	.word	0x00000000
-3000cedc:	58205041 	.word	0x58205041
-3000cee0:	49205049 	.word	0x49205049
-3000cee4:	0000474d 	.word	0x0000474d
+3000cedc:	42205041 	.word	0x42205041
+3000cee0:	5320314c 	.word	0x5320314c
+3000cee4:	004d4152 	.word	0x004d4152
 3000cee8:	42205041 	.word	0x42205041
-3000ceec:	5320314c 	.word	0x5320314c
+3000ceec:	4420314c 	.word	0x4420314c
 3000cef0:	004d4152 	.word	0x004d4152
-3000cef4:	42205041 	.word	0x42205041
-3000cef8:	4420314c 	.word	0x4420314c
-3000cefc:	004d4152 	.word	0x004d4152
-3000cf00:	46205041 	.word	0x46205041
-3000cf04:	00005049 	.word	0x00005049
-3000cf08:	2d73255b 	.word	0x2d73255b
-3000cf0c:	25205d49 	.word	0x25205d49
-3000cf10:	6e492073 	.word	0x6e492073
-3000cf14:	696c6176 	.word	0x696c6176
-3000cf18:	00000a64 	.word	0x00000a64
-3000cf1c:	2d73255b 	.word	0x2d73255b
-3000cf20:	25205d49 	.word	0x25205d49
-3000cf24:	30255b73 	.word	0x30255b73
-3000cf28:	253a7838 	.word	0x253a7838
-3000cf2c:	000a5d78 	.word	0x000a5d78
-3000cf30:	2d73255b 	.word	0x2d73255b
-3000cf34:	52205d49 	.word	0x52205d49
-3000cf38:	45205044 	.word	0x45205044
-3000cf3c:	00000a4e 	.word	0x00000a4e
-3000cf40:	2d73255b 	.word	0x2d73255b
-3000cf44:	46205d49 	.word	0x46205d49
-3000cf48:	206c6961 	.word	0x206c6961
-3000cf4c:	6c206f74 	.word	0x6c206f74
-3000cf50:	2064616f 	.word	0x2064616f
-3000cf54:	20504452 	.word	0x20504452
-3000cf58:	67616d69 	.word	0x67616d69
-3000cf5c:	000a2165 	.word	0x000a2165
-3000cf60:	2d73255b 	.word	0x2d73255b
-3000cf64:	52205d49 	.word	0x52205d49
-3000cf68:	4f205044 	.word	0x4f205044
-3000cf6c:	000a4646 	.word	0x000a4646
-3000cf70:	2d73255b 	.word	0x2d73255b
-3000cf74:	49205d49 	.word	0x49205d49
-3000cf78:	2032474d 	.word	0x2032474d
-3000cf7c:	2046544f 	.word	0x2046544f
-3000cf80:	000a4e45 	.word	0x000a4e45
-3000cf84:	2d73255b 	.word	0x2d73255b
-3000cf88:	4f205d45 	.word	0x4f205d45
-3000cf8c:	4d204654 	.word	0x4d204654
-3000cf90:	2065646f 	.word	0x2065646f
-3000cf94:	6f727265 	.word	0x6f727265
-3000cf98:	000a0d72 	.word	0x000a0d72
-3000cf9c:	494c4156 	.word	0x494c4156
-3000cfa0:	00000044 	.word	0x00000044
-3000cfa4:	41564e49 	.word	0x41564e49
-3000cfa8:	0044494c 	.word	0x0044494c
-3000cfac:	74726563 	.word	0x74726563
-3000cfb0:	63696669 	.word	0x63696669
-3000cfb4:	20657461 	.word	0x20657461
-3000cfb8:	20434345 	.word	0x20434345
-3000cfbc:	69726576 	.word	0x69726576
-3000cfc0:	66207966 	.word	0x66207966
-3000cfc4:	2c6c6961 	.word	0x2c6c6961
-3000cfc8:	6c6f7220 	.word	0x6c6f7220
-3000cfcc:	6361626c 	.word	0x6361626c
-3000cfd0:	000a0d6b 	.word	0x000a0d6b
-3000cfd4:	444f4d5b 	.word	0x444f4d5b
-3000cfd8:	5f454c55 	.word	0x5f454c55
-3000cfdc:	544f4f42 	.word	0x544f4f42
-3000cfe0:	56454c2d 	.word	0x56454c2d
-3000cfe4:	495f4c45 	.word	0x495f4c45
-3000cfe8:	5d4f464e 	.word	0x5d4f464e
-3000cfec:	474d493a 	.word	0x474d493a
-3000cff0:	544f2832 	.word	0x544f2832
-3000cff4:	29642541 	.word	0x29642541
-3000cff8:	2c732520 	.word	0x2c732520
-3000cffc:	74657220 	.word	0x74657220
-3000d000:	6425203a 	.word	0x6425203a
-3000d004:	0000000a 	.word	0x0000000a
-3000d008:	32474d49 	.word	0x32474d49
-3000d00c:	43434520 	.word	0x43434520
-3000d010:	72657620 	.word	0x72657620
-3000d014:	20796669 	.word	0x20796669
-3000d018:	6c696166 	.word	0x6c696166
-3000d01c:	6f72202c 	.word	0x6f72202c
-3000d020:	61626c6c 	.word	0x61626c6c
-3000d024:	0a0d6b63 	.word	0x0a0d6b63
-3000d028:	00000000 	.word	0x00000000
-3000d02c:	5f41544f 	.word	0x5f41544f
-3000d030:	45205041 	.word	0x45205041
-3000d034:	76204343 	.word	0x76204343
-3000d038:	66697265 	.word	0x66697265
-3000d03c:	61662079 	.word	0x61662079
-3000d040:	202c6c69 	.word	0x202c6c69
-3000d044:	6c6c6f72 	.word	0x6c6c6f72
-3000d048:	6b636162 	.word	0x6b636162
-3000d04c:	00000a0d 	.word	0x00000a0d
-3000d050:	64616f4c 	.word	0x64616f4c
-3000d054:	41544f20 	.word	0x41544f20
-3000d058:	2050415f 	.word	0x2050415f
-3000d05c:	67616d69 	.word	0x67616d69
-3000d060:	61662065 	.word	0x61662065
-3000d064:	202c6c69 	.word	0x202c6c69
-3000d068:	6c6c6f72 	.word	0x6c6c6f72
-3000d06c:	6b636162 	.word	0x6b636162
-3000d070:	00000a0d 	.word	0x00000a0d
-3000d074:	444f4d5b 	.word	0x444f4d5b
-3000d078:	5f454c55 	.word	0x5f454c55
-3000d07c:	544f4f42 	.word	0x544f4f42
-3000d080:	56454c2d 	.word	0x56454c2d
-3000d084:	455f4c45 	.word	0x455f4c45
-3000d088:	524f5252 	.word	0x524f5252
-3000d08c:	61463a5d 	.word	0x61463a5d
-3000d090:	74206c69 	.word	0x74206c69
-3000d094:	6f6c206f 	.word	0x6f6c206f
-3000d098:	41206461 	.word	0x41206461
-3000d09c:	6d692050 	.word	0x6d692050
-3000d0a0:	21656761 	.word	0x21656761
-3000d0a4:	0000000a 	.word	0x0000000a
+3000cef4:	46205041 	.word	0x46205041
+3000cef8:	00005049 	.word	0x00005049
+3000cefc:	2d73255b 	.word	0x2d73255b
+3000cf00:	25205d49 	.word	0x25205d49
+3000cf04:	6e492073 	.word	0x6e492073
+3000cf08:	696c6176 	.word	0x696c6176
+3000cf0c:	00000a64 	.word	0x00000a64
+3000cf10:	2d73255b 	.word	0x2d73255b
+3000cf14:	25205d49 	.word	0x25205d49
+3000cf18:	30255b73 	.word	0x30255b73
+3000cf1c:	253a7838 	.word	0x253a7838
+3000cf20:	000a5d78 	.word	0x000a5d78
+3000cf24:	2d73255b 	.word	0x2d73255b
+3000cf28:	52205d49 	.word	0x52205d49
+3000cf2c:	45205044 	.word	0x45205044
+3000cf30:	00000a4e 	.word	0x00000a4e
+3000cf34:	2d73255b 	.word	0x2d73255b
+3000cf38:	46205d49 	.word	0x46205d49
+3000cf3c:	206c6961 	.word	0x206c6961
+3000cf40:	6c206f74 	.word	0x6c206f74
+3000cf44:	2064616f 	.word	0x2064616f
+3000cf48:	20504452 	.word	0x20504452
+3000cf4c:	67616d69 	.word	0x67616d69
+3000cf50:	000a2165 	.word	0x000a2165
+3000cf54:	2d73255b 	.word	0x2d73255b
+3000cf58:	52205d49 	.word	0x52205d49
+3000cf5c:	4f205044 	.word	0x4f205044
+3000cf60:	000a4646 	.word	0x000a4646
+3000cf64:	2d73255b 	.word	0x2d73255b
+3000cf68:	49205d49 	.word	0x49205d49
+3000cf6c:	2032474d 	.word	0x2032474d
+3000cf70:	2046544f 	.word	0x2046544f
+3000cf74:	000a4e45 	.word	0x000a4e45
+3000cf78:	2d73255b 	.word	0x2d73255b
+3000cf7c:	4f205d45 	.word	0x4f205d45
+3000cf80:	4d204654 	.word	0x4d204654
+3000cf84:	2065646f 	.word	0x2065646f
+3000cf88:	6f727265 	.word	0x6f727265
+3000cf8c:	000a0d72 	.word	0x000a0d72
+3000cf90:	494c4156 	.word	0x494c4156
+3000cf94:	00000044 	.word	0x00000044
+3000cf98:	41564e49 	.word	0x41564e49
+3000cf9c:	0044494c 	.word	0x0044494c
+3000cfa0:	74726563 	.word	0x74726563
+3000cfa4:	63696669 	.word	0x63696669
+3000cfa8:	20657461 	.word	0x20657461
+3000cfac:	20434345 	.word	0x20434345
+3000cfb0:	69726576 	.word	0x69726576
+3000cfb4:	66207966 	.word	0x66207966
+3000cfb8:	2c6c6961 	.word	0x2c6c6961
+3000cfbc:	6c6f7220 	.word	0x6c6f7220
+3000cfc0:	6361626c 	.word	0x6361626c
+3000cfc4:	000a0d6b 	.word	0x000a0d6b
+3000cfc8:	444f4d5b 	.word	0x444f4d5b
+3000cfcc:	5f454c55 	.word	0x5f454c55
+3000cfd0:	544f4f42 	.word	0x544f4f42
+3000cfd4:	56454c2d 	.word	0x56454c2d
+3000cfd8:	495f4c45 	.word	0x495f4c45
+3000cfdc:	5d4f464e 	.word	0x5d4f464e
+3000cfe0:	474d493a 	.word	0x474d493a
+3000cfe4:	544f2832 	.word	0x544f2832
+3000cfe8:	29642541 	.word	0x29642541
+3000cfec:	2c732520 	.word	0x2c732520
+3000cff0:	74657220 	.word	0x74657220
+3000cff4:	6425203a 	.word	0x6425203a
+3000cff8:	0000000a 	.word	0x0000000a
+3000cffc:	32474d49 	.word	0x32474d49
+3000d000:	43434520 	.word	0x43434520
+3000d004:	72657620 	.word	0x72657620
+3000d008:	20796669 	.word	0x20796669
+3000d00c:	6c696166 	.word	0x6c696166
+3000d010:	6f72202c 	.word	0x6f72202c
+3000d014:	61626c6c 	.word	0x61626c6c
+3000d018:	0a0d6b63 	.word	0x0a0d6b63
+3000d01c:	00000000 	.word	0x00000000
+3000d020:	5f41544f 	.word	0x5f41544f
+3000d024:	45205041 	.word	0x45205041
+3000d028:	76204343 	.word	0x76204343
+3000d02c:	66697265 	.word	0x66697265
+3000d030:	61662079 	.word	0x61662079
+3000d034:	202c6c69 	.word	0x202c6c69
+3000d038:	6c6c6f72 	.word	0x6c6c6f72
+3000d03c:	6b636162 	.word	0x6b636162
+3000d040:	00000a0d 	.word	0x00000a0d
+3000d044:	64616f4c 	.word	0x64616f4c
+3000d048:	41544f20 	.word	0x41544f20
+3000d04c:	2050415f 	.word	0x2050415f
+3000d050:	67616d69 	.word	0x67616d69
+3000d054:	61662065 	.word	0x61662065
+3000d058:	202c6c69 	.word	0x202c6c69
+3000d05c:	6c6c6f72 	.word	0x6c6c6f72
+3000d060:	6b636162 	.word	0x6b636162
+3000d064:	00000a0d 	.word	0x00000a0d
+3000d068:	444f4d5b 	.word	0x444f4d5b
+3000d06c:	5f454c55 	.word	0x5f454c55
+3000d070:	544f4f42 	.word	0x544f4f42
+3000d074:	56454c2d 	.word	0x56454c2d
+3000d078:	455f4c45 	.word	0x455f4c45
+3000d07c:	524f5252 	.word	0x524f5252
+3000d080:	61463a5d 	.word	0x61463a5d
+3000d084:	74206c69 	.word	0x74206c69
+3000d088:	6f6c206f 	.word	0x6f6c206f
+3000d08c:	41206461 	.word	0x41206461
+3000d090:	6d692050 	.word	0x6d692050
+3000d094:	21656761 	.word	0x21656761
+3000d098:	0000000a 	.word	0x0000000a
+3000d09c:	20344d4b 	.word	0x20344d4b
+3000d0a0:	33474d49 	.word	0x33474d49
+3000d0a4:	00000000 	.word	0x00000000
 3000d0a8:	20344d4b 	.word	0x20344d4b
-3000d0ac:	33474d49 	.word	0x33474d49
-3000d0b0:	00000000 	.word	0x00000000
-3000d0b4:	20344d4b 	.word	0x20344d4b
-3000d0b8:	0043534e 	.word	0x0043534e
-3000d0bc:	31474d49 	.word	0x31474d49
-3000d0c0:	00000000 	.word	0x00000000
-3000d0c4:	32474d49 	.word	0x32474d49
-3000d0c8:	00000000 	.word	0x00000000
-3000d0cc:	42205041 	.word	0x42205041
-3000d0d0:	4626314c 	.word	0x4626314c
-3000d0d4:	00005049 	.word	0x00005049
-3000d0d8:	444f4d5b 	.word	0x444f4d5b
-3000d0dc:	5f454c55 	.word	0x5f454c55
-3000d0e0:	544f4f42 	.word	0x544f4f42
-3000d0e4:	56454c2d 	.word	0x56454c2d
-3000d0e8:	495f4c45 	.word	0x495f4c45
-3000d0ec:	5d4f464e 	.word	0x5d4f464e
-3000d0f0:	5b73253a 	.word	0x5b73253a
-3000d0f4:	78383025 	.word	0x78383025
-3000d0f8:	5d78253a 	.word	0x5d78253a
+3000d0ac:	0043534e 	.word	0x0043534e
+3000d0b0:	31474d49 	.word	0x31474d49
+3000d0b4:	00000000 	.word	0x00000000
+3000d0b8:	32474d49 	.word	0x32474d49
+3000d0bc:	00000000 	.word	0x00000000
+3000d0c0:	42205041 	.word	0x42205041
+3000d0c4:	4626314c 	.word	0x4626314c
+3000d0c8:	00005049 	.word	0x00005049
+3000d0cc:	444f4d5b 	.word	0x444f4d5b
+3000d0d0:	5f454c55 	.word	0x5f454c55
+3000d0d4:	544f4f42 	.word	0x544f4f42
+3000d0d8:	56454c2d 	.word	0x56454c2d
+3000d0dc:	495f4c45 	.word	0x495f4c45
+3000d0e0:	5d4f464e 	.word	0x5d4f464e
+3000d0e4:	5b73253a 	.word	0x5b73253a
+3000d0e8:	78383025 	.word	0x78383025
+3000d0ec:	5d78253a 	.word	0x5d78253a
+3000d0f0:	0000000a 	.word	0x0000000a
+3000d0f4:	20504452 	.word	0x20504452
+3000d0f8:	4c494146 	.word	0x4c494146
 3000d0fc:	0000000a 	.word	0x0000000a
 3000d100:	20504452 	.word	0x20504452
-3000d104:	4c494146 	.word	0x4c494146
-3000d108:	0000000a 	.word	0x0000000a
-3000d10c:	20504452 	.word	0x20504452
-3000d110:	43435553 	.word	0x43435553
-3000d114:	0a535345 	.word	0x0a535345
-3000d118:	00000000 	.word	0x00000000
-3000d11c:	059e4eb3 	.word	0x059e4eb3
-3000d120:	4b11ea39 	.word	0x4b11ea39
-3000d124:	2a1b920a 	.word	0x2a1b920a
-3000d128:	29939cee 	.word	0x29939cee
-3000d12c:	00000000 	.word	0x00000000
-3000d130:	42205041 	.word	0x42205041
-3000d134:	0032334c 	.word	0x0032334c
-3000d138:	2d73255b 	.word	0x2d73255b
-3000d13c:	25205d49 	.word	0x25205d49
-3000d140:	45562073 	.word	0x45562073
-3000d144:	59464952 	.word	0x59464952
-3000d148:	53415020 	.word	0x53415020
-3000d14c:	00000a53 	.word	0x00000a53
-3000d150:	2d73255b 	.word	0x2d73255b
-3000d154:	25205d45 	.word	0x25205d45
-3000d158:	45562073 	.word	0x45562073
-3000d15c:	59464952 	.word	0x59464952
-3000d160:	49414620 	.word	0x49414620
-3000d164:	72202c4c 	.word	0x72202c4c
-3000d168:	3d207465 	.word	0x3d207465
-3000d16c:	0a642520 	.word	0x0a642520
-3000d170:	00000000 	.word	0x00000000
-3000d174:	2d73255b 	.word	0x2d73255b
-3000d178:	43205d45 	.word	0x43205d45
-3000d17c:	69747265 	.word	0x69747265
-3000d180:	61636966 	.word	0x61636966
-3000d184:	56206574 	.word	0x56206574
-3000d188:	46495245 	.word	0x46495245
-3000d18c:	41462059 	.word	0x41462059
-3000d190:	202c4c49 	.word	0x202c4c49
-3000d194:	20746572 	.word	0x20746572
-3000d198:	6425203d 	.word	0x6425203d
-3000d19c:	0000000a 	.word	0x0000000a
-3000d1a0:	6c630a0d 	.word	0x6c630a0d
-3000d1a4:	2065736f 	.word	0x2065736f
-3000d1a8:	646f4d79 	.word	0x646f4d79
-3000d1ac:	54206d65 	.word	0x54206d65
-3000d1b0:	736e6172 	.word	0x736e6172
-3000d1b4:	20726566 	.word	0x20726566
-3000d1b8:	0d2e2e2e 	.word	0x0d2e2e2e
-3000d1bc:	0000000a 	.word	0x0000000a
-3000d1c0:	50494843 	.word	0x50494843
-3000d1c4:	4f464e49 	.word	0x4f464e49
-3000d1c8:	00000000 	.word	0x00000000
-3000d1cc:	2d73255b 	.word	0x2d73255b
-3000d1d0:	49205d45 	.word	0x49205d45
-3000d1d4:	6c61766e 	.word	0x6c61766e
-3000d1d8:	43206469 	.word	0x43206469
-3000d1dc:	696e6968 	.word	0x696e6968
-3000d1e0:	216f666e 	.word	0x216f666e
-3000d1e4:	65684320 	.word	0x65684320
-3000d1e8:	4f206b63 	.word	0x4f206b63
-3000d1ec:	000a5054 	.word	0x000a5054
-3000d1f0:	2d73255b 	.word	0x2d73255b
-3000d1f4:	50205d57 	.word	0x50205d57
-3000d1f8:	7361656c 	.word	0x7361656c
-3000d1fc:	72702065 	.word	0x72702065
-3000d200:	6172676f 	.word	0x6172676f
-3000d204:	6863206d 	.word	0x6863206d
-3000d208:	6e697069 	.word	0x6e697069
-3000d20c:	69206f66 	.word	0x69206f66
-3000d210:	544f206e 	.word	0x544f206e
-3000d214:	0a212050 	.word	0x0a212050
-3000d218:	00000000 	.word	0x00000000
+3000d104:	43435553 	.word	0x43435553
+3000d108:	0a535345 	.word	0x0a535345
+3000d10c:	00000000 	.word	0x00000000
+3000d110:	059e4eb3 	.word	0x059e4eb3
+3000d114:	4b11ea39 	.word	0x4b11ea39
+3000d118:	2a1b920a 	.word	0x2a1b920a
+3000d11c:	29939cee 	.word	0x29939cee
+3000d120:	00000000 	.word	0x00000000
+3000d124:	42205041 	.word	0x42205041
+3000d128:	0032334c 	.word	0x0032334c
+3000d12c:	2d73255b 	.word	0x2d73255b
+3000d130:	25205d49 	.word	0x25205d49
+3000d134:	45562073 	.word	0x45562073
+3000d138:	59464952 	.word	0x59464952
+3000d13c:	53415020 	.word	0x53415020
+3000d140:	00000a53 	.word	0x00000a53
+3000d144:	2d73255b 	.word	0x2d73255b
+3000d148:	25205d45 	.word	0x25205d45
+3000d14c:	45562073 	.word	0x45562073
+3000d150:	59464952 	.word	0x59464952
+3000d154:	49414620 	.word	0x49414620
+3000d158:	72202c4c 	.word	0x72202c4c
+3000d15c:	3d207465 	.word	0x3d207465
+3000d160:	0a642520 	.word	0x0a642520
+3000d164:	00000000 	.word	0x00000000
+3000d168:	2d73255b 	.word	0x2d73255b
+3000d16c:	43205d45 	.word	0x43205d45
+3000d170:	69747265 	.word	0x69747265
+3000d174:	61636966 	.word	0x61636966
+3000d178:	56206574 	.word	0x56206574
+3000d17c:	46495245 	.word	0x46495245
+3000d180:	41462059 	.word	0x41462059
+3000d184:	202c4c49 	.word	0x202c4c49
+3000d188:	20746572 	.word	0x20746572
+3000d18c:	6425203d 	.word	0x6425203d
+3000d190:	0000000a 	.word	0x0000000a
+3000d194:	6c630a0d 	.word	0x6c630a0d
+3000d198:	2065736f 	.word	0x2065736f
+3000d19c:	646f4d79 	.word	0x646f4d79
+3000d1a0:	54206d65 	.word	0x54206d65
+3000d1a4:	736e6172 	.word	0x736e6172
+3000d1a8:	20726566 	.word	0x20726566
+3000d1ac:	0d2e2e2e 	.word	0x0d2e2e2e
+3000d1b0:	0000000a 	.word	0x0000000a
+3000d1b4:	50494843 	.word	0x50494843
+3000d1b8:	4f464e49 	.word	0x4f464e49
+3000d1bc:	00000000 	.word	0x00000000
+3000d1c0:	2d73255b 	.word	0x2d73255b
+3000d1c4:	49205d45 	.word	0x49205d45
+3000d1c8:	6c61766e 	.word	0x6c61766e
+3000d1cc:	43206469 	.word	0x43206469
+3000d1d0:	696e6968 	.word	0x696e6968
+3000d1d4:	216f666e 	.word	0x216f666e
+3000d1d8:	65684320 	.word	0x65684320
+3000d1dc:	4f206b63 	.word	0x4f206b63
+3000d1e0:	000a5054 	.word	0x000a5054
+3000d1e4:	2d73255b 	.word	0x2d73255b
+3000d1e8:	50205d57 	.word	0x50205d57
+3000d1ec:	7361656c 	.word	0x7361656c
+3000d1f0:	72702065 	.word	0x72702065
+3000d1f4:	6172676f 	.word	0x6172676f
+3000d1f8:	6863206d 	.word	0x6863206d
+3000d1fc:	6e697069 	.word	0x6e697069
+3000d200:	69206f66 	.word	0x69206f66
+3000d204:	544f206e 	.word	0x544f206e
+3000d208:	0a212050 	.word	0x0a212050
+3000d20c:	00000000 	.word	0x00000000
 
-3000d21c <Memory_Info>:
-3000d21c:	03e00007 00060004 010202c0 02010100     ................
-3000d22c:	02000102 00040302 02040400 01010102     ................
-3000d23c:	01020221 02240401 03000102 00030103     !.....$.........
-3000d24c:	01050500 06000002 01020206 01070700     ................
-3000d25c:	08000002 01020208 02280801 09000102     ..........(.....
-3000d26c:	00040309 03290901 0a000004 0003010a     ......).........
-3000d27c:	012a0a01 0b000003 0102020b 020c0c00     ..*.............
-3000d28c:	0d000102 0004030d 010e0e00 ffff0003     ................
-3000d29c:	ffffffff 50524444 00005948 2d73255b     ....DDRPHY..[%s-
-3000d2ac:	44205d45 204d4152 6e207369 4320746f     E] DRAM is not C
-3000d2bc:	62696c61 6f696172 000a0d6e              alibraion...
+3000d210 <Memory_Info>:
+3000d210:	03e00007 00060004 010202c0 02010100     ................
+3000d220:	02000102 00040302 02040400 01010102     ................
+3000d230:	01020221 02240401 03000102 00030103     !.....$.........
+3000d240:	01050500 06000002 01020206 01070700     ................
+3000d250:	08000002 01020208 02280801 09000102     ..........(.....
+3000d260:	00040309 03290901 0a000004 0003010a     ......).........
+3000d270:	012a0a01 0b000003 0102020b 020c0c00     ..*.............
+3000d280:	0d000102 0004030d 010e0e00 ffff0003     ................
+3000d290:	ffffffff 50524444 00005948 2d73255b     ....DDRPHY..[%s-
+3000d2a0:	44205d45 204d4152 6e207369 4320746f     E] DRAM is not C
+3000d2b0:	62696c61 6f696172 000a0d6e              alibraion...
 
-3000d2c8 <ddrphy_tx_scan>:
-3000d2c8:	00000000 00080000 00080808 00000000     ................
-3000d2d8:	20000000 33333333 000c0022 00000000     ... 3333".......
-3000d2e8:	07060012 000f0707 080f0f0f 00000008     ................
-3000d2f8:	20000001 22222222 000c0012 34000000     ... """".......4
-3000d308:	0b0b0016 00130b0b 0e131313 0000000e     ................
-3000d318:	200003c1 22222222 000c0012 34000000     ... """".......4
-3000d328:	0e0e0018 00170e0e 0e171717 0000000e     ................
-3000d338:	200003c1 22222222 000c0012 34000000     ... """".......4
-3000d348:	0a0a0018 00130a0a 0e131313 0000000e     ................
-3000d358:	200003c1 22222222 000c0012 34000000     ... """".......4
-3000d368:	0e0e001a 00170e0e 12171717 00000012     ................
-3000d378:	20000fc1 22222222 000c0012 34000000     ... """".......4
-3000d388:	0f0f0016 00180f0f 0e181818 0000000e     ................
-3000d398:	200003c1 22222222 000c0012 34000000     ... """".......4
-3000d3a8:	0f0f001b 00180f0f 13181818 00000013     ................
-3000d3b8:	20000fc1 22222222 000c0012 34000000     ... """".......4
-3000d3c8:	1110001b 00191111 13191919 00000013     ................
-3000d3d8:	20000ffd 22222222 000c0012 34000000     ... """".......4
-3000d3e8:	1313001c 001c1313 121c1c1c 00000012     ................
-3000d3f8:	20000ffd 22222222 000c0012 34000000     ... """".......4
+3000d2bc <ddrphy_tx_scan>:
+3000d2bc:	00000000 00080000 00080808 00000000     ................
+3000d2cc:	20000000 33333333 000c0022 00000000     ... 3333".......
+3000d2dc:	07060012 000f0707 080f0f0f 00000008     ................
+3000d2ec:	20000001 22222222 000c0012 34000000     ... """".......4
+3000d2fc:	0b0b0016 00130b0b 0e131313 0000000e     ................
+3000d30c:	200003c1 22222222 000c0012 34000000     ... """".......4
+3000d31c:	0e0e0018 00170e0e 0e171717 0000000e     ................
+3000d32c:	200003c1 22222222 000c0012 34000000     ... """".......4
+3000d33c:	0a0a0018 00130a0a 0e131313 0000000e     ................
+3000d34c:	200003c1 22222222 000c0012 34000000     ... """".......4
+3000d35c:	0e0e001a 00170e0e 12171717 00000012     ................
+3000d36c:	20000fc1 22222222 000c0012 34000000     ... """".......4
+3000d37c:	0f0f0016 00180f0f 0e181818 0000000e     ................
+3000d38c:	200003c1 22222222 000c0012 34000000     ... """".......4
+3000d39c:	0f0f001b 00180f0f 13181818 00000013     ................
+3000d3ac:	20000fc1 22222222 000c0012 34000000     ... """".......4
+3000d3bc:	1110001b 00191111 13191919 00000013     ................
+3000d3cc:	20000ffd 22222222 000c0012 34000000     ... """".......4
+3000d3dc:	1313001c 001c1313 121c1c1c 00000012     ................
+3000d3ec:	20000ffd 22222222 000c0012 34000000     ... """".......4
 
-3000d408 <ddrphy_zq_rx_scan>:
+3000d3fc <ddrphy_zq_rx_scan>:
 	...
-3000d410:	26262626 26262626 0303030f 0e141414     &&&&&&&&........
-3000d420:	140e0e0e 261f362e 261c3029 0302020f     .....6.&)0.&....
-3000d430:	0e141414 140e0e0e 261f362e 261c3029     .........6.&)0.&
-3000d440:	0302020f 0a0c0b0b 0b0b0a0a 26172721     ............!'.&
-3000d450:	2615231e 04020206 0a0e0c0c 0c0b0a0a     .#.&............
-3000d460:	261e362c 26162620 04020203 0e141414     ,6.& &.&........
-3000d470:	140e0e0e 26243c34 261c3029 0303030f     ....4<$&)0.&....
-3000d480:	090b0a0a 0a0a0909 2615231e 2613201b     .........#.&. .&
-3000d490:	04020204 0b0f0c0c 0c0b0b0b 26233a30     ............0:#&
-3000d4a0:	26182722 04020205 0e141414 140e0e0e     "'.&............
-3000d4b0:	26243c34 261b2f28 0303030f 0a0c0c0c     4<$&(/.&........
-3000d4c0:	0c0a0a0a 2616251f 2614221d 04020205     .....%.&.".&....
+3000d404:	26262626 26262626 0303030f 0e141414     &&&&&&&&........
+3000d414:	140e0e0e 261f362e 261c3029 0302020f     .....6.&)0.&....
+3000d424:	0e141414 140e0e0e 261f362e 261c3029     .........6.&)0.&
+3000d434:	0302020f 0a0c0b0b 0b0b0a0a 26172721     ............!'.&
+3000d444:	2615231e 04020206 0a0e0c0c 0c0b0a0a     .#.&............
+3000d454:	261e362c 26162620 04020203 0e141414     ,6.& &.&........
+3000d464:	140e0e0e 26243c34 261c3029 0303030f     ....4<$&)0.&....
+3000d474:	090b0a0a 0a0a0909 2615231e 2613201b     .........#.&. .&
+3000d484:	04020204 0b0f0c0c 0c0b0b0b 26233a30     ............0:#&
+3000d494:	26182722 04020205 0e141414 140e0e0e     "'.&............
+3000d4a4:	26243c34 261b2f28 0303030f 0a0c0c0c     4<$&(/.&........
+3000d4b4:	0c0a0a0a 2616251f 2614221d 04020205     .....%.&.".&....
 
-3000d4d0 <Flash_AVL>:
-3000d4d0:	000000ef 000000ff 00000000 000043fc     .............C..
-3000d4e0:	00000000 000000a1 000000ff 00000000     ................
-3000d4f0:	0000fffc 00000000 0000000b 000000ff     ................
-3000d500:	00000000 000043fc 00000000 0000000e     .....C..........
-3000d510:	000000ff 00000000 000043fc 00000000     .........C......
-3000d520:	000000c8 000000ff 00000001 000043fc     .............C..
-3000d530:	00000000 000028c2 0000ffff 00000005     .....(..........
-3000d540:	000200fc 00000000 000000c2 000000ff     ................
-3000d550:	00000002 000000fc 00000000 00000068     ............h...
-3000d560:	000000ff 00000002 000000fc 00000000     ................
-3000d570:	00000051 000000ff 00000002 000000fc     Q...............
-3000d580:	00000000 0000001c 000000ff 00000003     ................
-3000d590:	000000fc 00000000 00000020 000000ff     ........ .......
-3000d5a0:	00000004 000000fc 00000000 00000000     ................
-3000d5b0:	000000ff 000000fe ffffffff 300085f9     ...............0
-3000d5c0:	000000ff ffffffff 000000ff ffffffff     ................
-3000d5d0:	00000000                                ....
+3000d4c4 <Flash_AVL>:
+3000d4c4:	000000ef 000000ff 00000000 000043fc     .............C..
+3000d4d4:	00000000 000000a1 000000ff 00000000     ................
+3000d4e4:	0000fffc 00000000 0000000b 000000ff     ................
+3000d4f4:	00000000 000043fc 00000000 0000000e     .....C..........
+3000d504:	000000ff 00000000 000043fc 00000000     .........C......
+3000d514:	000000c8 000000ff 00000001 000043fc     .............C..
+3000d524:	00000000 000028c2 0000ffff 00000005     .....(..........
+3000d534:	000200fc 00000000 000000c2 000000ff     ................
+3000d544:	00000002 000000fc 00000000 00000068     ............h...
+3000d554:	000000ff 00000002 000000fc 00000000     ................
+3000d564:	00000051 000000ff 00000002 000000fc     Q...............
+3000d574:	00000000 0000001c 000000ff 00000003     ................
+3000d584:	000000fc 00000000 00000020 000000ff     ........ .......
+3000d594:	00000004 000000fc 00000000 00000000     ................
+3000d5a4:	000000ff 000000fe ffffffff 300085f9     ...............0
+3000d5b4:	000000ff ffffffff 000000ff ffffffff     ................
+3000d5c4:	00000000                                ....
 
-3000d5d4 <Flash_ReadMode>:
-3000d5d4:	                                         ..
+3000d5c8 <Flash_ReadMode>:
+3000d5c8:	                                         ..
 
-3000d5d6 <Flash_Speed>:
-3000d5d6:	                                         ..
+3000d5ca <Flash_Speed>:
+3000d5ca:	                                         ..
 
-3000d5d8 <NAND_AVL>:
-3000d5d8:	000000ef 000000ff 00000000 ffffffff     ................
-3000d5e8:	00000000 000000c8 000000ff 00000001     ................
-3000d5f8:	ffffffff 00000000 000000e5 000000ff     ................
-3000d608:	00000001 ffffffff 00000000 000000c2     ................
-3000d618:	000000ff 00000002 ffffffff 00000000     ................
-3000d628:	0000002c 000000ff 00000004 ffffffff     ,...............
+3000d5cc <NAND_AVL>:
+3000d5cc:	000000ef 000000ff 00000000 ffffffff     ................
+3000d5dc:	00000000 000000c8 000000ff 00000001     ................
+3000d5ec:	ffffffff 00000000 000000e5 000000ff     ................
+3000d5fc:	00000001 ffffffff 00000000 000000c2     ................
+3000d60c:	000000ff 00000002 ffffffff 00000000     ................
+3000d61c:	0000002c 000000ff 00000004 ffffffff     ,...............
 	...
-3000d640:	000000ff 000000fe ffffffff 30008659     ............Y..0
-3000d650:	000000ff ffffffff 000000ff ffffffff     ................
-3000d660:	00000000 3000c568 3000c56c 3000c570     ....h..0l..0p..0
-3000d670:	3000c574 3000c578                       t..0x..0
+3000d634:	000000ff 000000fe ffffffff 30008659     ............Y..0
+3000d644:	000000ff ffffffff 000000ff ffffffff     ................
+3000d654:	00000000 3000c568 3000c56c 3000c570     ....h..0l..0p..0
+3000d664:	3000c574 3000c578                       t..0x..0
 
-3000d678 <__FUNCTION__.0>:
-3000d678:	646e616e 7465675f 6e65765f 00726f64     nand_get_vendor.
+3000d66c <__FUNCTION__.0>:
+3000d66c:	646e616e 7465675f 6e65765f 00726f64     nand_get_vendor.
 
-3000d688 <__FUNCTION__.1>:
-3000d688:	73616c66 65675f68 65765f74 726f646e     flash_get_vendor
-3000d698:	00000000 444e414e 53414c46 00000048     ....NANDFLASH...
-3000d6a8:	2d73255b 42205d45 30206b6c 20782578     [%s-E] Blk 0x%x 
-3000d6b8:	42207369 000a2142 2d73255b 52205d49     is BB!..[%s-I] R
-3000d6c8:	20646165 65676150 25783020 666f2078     ead Page 0x%x of
-3000d6d8:	6f6c4220 30206b63 20782578 2079614d      Block 0x%x May 
-3000d6e8:	6c696146 7473202c 73757461 25783020     Fail, status 0x%
-3000d6f8:	000a2178 0050544f 2d73255b 4f205d45     x!..OTP.[%s-E] O
-3000d708:	525f5054 38646165 69614620 7825206c     TP_Read8 Fail %x
-3000d718:	00000a20                                 ...
+3000d67c <__FUNCTION__.1>:
+3000d67c:	73616c66 65675f68 65765f74 726f646e     flash_get_vendor
+3000d68c:	00000000 444e414e 53414c46 00000048     ....NANDFLASH...
+3000d69c:	2d73255b 42205d45 30206b6c 20782578     [%s-E] Blk 0x%x 
+3000d6ac:	42207369 000a2142 2d73255b 52205d49     is BB!..[%s-I] R
+3000d6bc:	20646165 65676150 25783020 666f2078     ead Page 0x%x of
+3000d6cc:	6f6c4220 30206b63 20782578 2079614d      Block 0x%x May 
+3000d6dc:	6c696146 7473202c 73757461 25783020     Fail, status 0x%
+3000d6ec:	000a2178 0050544f 2d73255b 4f205d45     x!..OTP.[%s-E] O
+3000d6fc:	525f5054 38646165 69614620 7825206c     TP_Read8 Fail %x
+3000d70c:	00000a20                                 ...
 
-3000d71c <__FUNCTION__.1>:
-3000d71c:	5f4c4c50 435f5041 65536b6c 00000074     PLL_AP_ClkSet...
-3000d72c:	41525350 0000004d 2d73255b 50205d49     PSRAM...[%s-I] P
-3000d73c:	4d415253 72744320 4c43206c 25203a4b     SRAM Ctrl CLK: %
-3000d74c:	7a482064 00000a20 2d73255b 43205d49     d Hz ...[%s-I] C
-3000d75c:	6d4e6c61 3d206e69 20782520 4e6c6143     alNmin = %x CalN
-3000d76c:	2078616d 7825203d 6e695720 53776f64     max = %x WindowS
-3000d77c:	20657a69 7825203d 61687020 203a6573     ize = %x phase: 
-3000d78c:	0a207825 00000000 504d4f52 48435441     %x .....ROMPATCH
-3000d79c:	00000000 2d73255b 4e205d45 6874206f     ....[%s-E] No th
-3000d7ac:	61207369 5f687475 65707974 29642528     is auth_type(%d)
-3000d7bc:	726f6620 41485320 00000a32 2d73255b      for SHA2...[%s-
-3000d7cc:	69205d57 255b7172 70205d64 726f6972     W] irq[%d] prior
-3000d7dc:	20797469 73206425 6c6c6168 203d3c20     ity %d shall <= 
-3000d7ec:	000a6425                                %d..
+3000d710 <__FUNCTION__.1>:
+3000d710:	5f4c4c50 435f5041 65536b6c 00000074     PLL_AP_ClkSet...
+3000d720:	41525350 0000004d 2d73255b 50205d49     PSRAM...[%s-I] P
+3000d730:	4d415253 72744320 4c43206c 25203a4b     SRAM Ctrl CLK: %
+3000d740:	7a482064 00000a20 2d73255b 43205d49     d Hz ...[%s-I] C
+3000d750:	6d4e6c61 3d206e69 20782520 4e6c6143     alNmin = %x CalN
+3000d760:	2078616d 7825203d 6e695720 53776f64     max = %x WindowS
+3000d770:	20657a69 7825203d 61687020 203a6573     ize = %x phase: 
+3000d780:	0a207825 00000000 504d4f52 48435441     %x .....ROMPATCH
+3000d790:	00000000 2d73255b 4e205d45 6874206f     ....[%s-E] No th
+3000d7a0:	61207369 5f687475 65707974 29642528     is auth_type(%d)
+3000d7b0:	726f6620 41485320 00000a32 2d73255b      for SHA2...[%s-
+3000d7c0:	69205d57 255b7172 70205d64 726f6972     W] irq[%d] prior
+3000d7d0:	20797469 73206425 6c6c6168 203d3c20     ity %d shall <= 
+3000d7e0:	000a6425                                %d..
 
-3000d7f0 <__FUNCTION__.0>:
-3000d7f0:	5f717269 5f746573 6f697270 79746972     irq_set_priority
-3000d800:	00000000                                ....
+3000d7e4 <__FUNCTION__.0>:
+3000d7e4:	5f717269 5f746573 6f697270 79746972     irq_set_priority
+3000d7f4:	00000000                                ....
 
-3000d804 <__FUNCTION__.1>:
-3000d804:	50495352 46544f5f 616e455f 00656c62     RSIP_OTF_Enable.
+3000d7f8 <__FUNCTION__.1>:
+3000d7f8:	50495352 46544f5f 616e455f 00656c62     RSIP_OTF_Enable.
 
-3000d814 <__FUNCTION__.3>:
-3000d814:	5f6c7472 70797263 685f6f74 5f63616d     rtl_crypto_hmac_
-3000d824:	32616873 696e695f 00000074              sha2_init...
+3000d808 <__FUNCTION__.3>:
+3000d808:	5f6c7472 70797263 685f6f74 5f63616d     rtl_crypto_hmac_
+3000d818:	32616873 696e695f 00000074              sha2_init...
 
-3000d830 <__FUNCTION__.4>:
-3000d830:	50595243 535f4f54 65537465 69727563     CRYPTO_SetSecuri
-3000d840:	6f4d7974 44416564 00000000 00524444     tyModeAD....DDR.
-3000d850:	2d73255b 44205d45 53205244 20657a69     [%s-E] DDR Size 
-3000d860:	6e207369 6320746f 69666e6f 65727567     is not configure
-3000d870:	00000a64 2d73255b 3e205d45 44415b20     d...[%s-E] > [AD
-3000d880:	52205244 50414d45 52524520 3a5d524f     DR REMAP ERROR]:
-3000d890:	6c6f6320 65725f75 5f70616d 73746962      colu_remap_bits
-3000d8a0:	203d2120 6d617264 6c6f635f 69625f75      != dram_colu_bi
-3000d8b0:	21217374 00000a21 2d73255b 3e205d45     ts!!!...[%s-E] >
-3000d8c0:	44415b20 52205244 50414d45 52524520      [ADDR REMAP ERR
-3000d8d0:	3a5d524f 6e616220 65725f6b 5f70616d     OR]: bank_remap_
-3000d8e0:	73746962 203d2120 6d617264 6e61625f     bits != dram_ban
-3000d8f0:	69625f6b 21217374 00000a21              k_bits!!!...
+3000d824 <__FUNCTION__.4>:
+3000d824:	50595243 535f4f54 65537465 69727563     CRYPTO_SetSecuri
+3000d834:	6f4d7974 44416564 00000000 00524444     tyModeAD....DDR.
+3000d844:	2d73255b 44205d45 53205244 20657a69     [%s-E] DDR Size 
+3000d854:	6e207369 6320746f 69666e6f 65727567     is not configure
+3000d864:	00000a64 2d73255b 3e205d45 44415b20     d...[%s-E] > [AD
+3000d874:	52205244 50414d45 52524520 3a5d524f     DR REMAP ERROR]:
+3000d884:	6c6f6320 65725f75 5f70616d 73746962      colu_remap_bits
+3000d894:	203d2120 6d617264 6c6f635f 69625f75      != dram_colu_bi
+3000d8a4:	21217374 00000a21 2d73255b 3e205d45     ts!!!...[%s-E] >
+3000d8b4:	44415b20 52205244 50414d45 52524520      [ADDR REMAP ERR
+3000d8c4:	3a5d524f 6e616220 65725f6b 5f70616d     OR]: bank_remap_
+3000d8d4:	73746962 203d2120 6d617264 6e61625f     bits != dram_ban
+3000d8e4:	69625f6b 21217374 00000a21              k_bits!!!...
 
-3000d8fc <__FUNCTION__.0>:
-3000d8fc:	33697872 445f3631 72536e79 6e695f65     rxi316_DynSre_in
-3000d90c:	00007469                                it..
+3000d8f0 <__FUNCTION__.0>:
+3000d8f0:	33697872 445f3631 72536e79 6e695f65     rxi316_DynSre_in
+3000d900:	00007469                                it..
 
-3000d910 <__FUNCTION__.1>:
-3000d910:	5f525753 5f4d454d 65646f4d 7465535f     SWR_MEM_Mode_Set
-3000d920:	00000000 00344d4b 00304d4b 3d3d3d3d     ....KM4.KM0.====
-3000d930:	3d3d3d3d 73253d3d 61745320 44206b63     ======%s Stack D
-3000d940:	20706d75 3d3d3d3d 3d3d3d3d 000a3d3d     ump ==========..
-3000d950:	72727543 20746e65 63617453 6f50206b     Current Stack Po
-3000d960:	65746e69 203d2072 70257830 6e61202c     inter = 0x%p, an
-3000d970:	75642064 7320706d 6b636174 70656420     d dump stack dep
-3000d980:	3d206874 0d642520 0000000a 3830255b     th = %d.....[%08
-3000d990:	00205d78 78383025 00000020 255b0a0d     x] .%08x .....[%
-3000d9a0:	5d783830 00000020 00003052 00003452     08x] ...R0..R4..
-3000d9b0:	3d3d3d3d 3d3d3d3d 43203d3d 68736172     ========== Crash
-3000d9c0:	6d754420 3d3d2070 3d3d3d3d 3d3d3d3d      Dump ==========
-3000d9d0:	0000000a 3d3d3d3d 3d3d3d3d 52203d3d     ....========== R
-3000d9e0:	73696765 20726574 706d7544 3d3d3d20     egister Dump ===
-3000d9f0:	3d3d3d3d 0a3d3d3d 00000000 4c20205b     =======.....[  L
-3000da00:	30205d52 78382578 0000000a 5020205b     R] 0x%8x....[  P
-3000da10:	30205d43 78382578 0000000a 5350785b     C] 0x%8x....[xPS
-3000da20:	30205d52 78382578 0000000a 4358455b     R] 0x%8x....[EXC
-3000da30:	30205d52 78382578 0000000a 7325205b     R] 0x%8x....[ %s
-3000da40:	7830205d 0a783825 00000000 00323152     ] 0x%8x.....R12.
-3000da50:	3d3d3d3d 3d3d3d3d 45203d3d 6f20646e     ========== End o
-3000da60:	72432066 20687361 706d7544 3d3d3d20     f Crash Dump ===
-3000da70:	3d3d3d3d 0a3d3d3d 00000000 0a0d0a0d     =======.........
-3000da80:	00000000                                ....
+3000d904 <__FUNCTION__.1>:
+3000d904:	5f525753 5f4d454d 65646f4d 7465535f     SWR_MEM_Mode_Set
+3000d914:	00000000 00344d4b 00304d4b 3d3d3d3d     ....KM4.KM0.====
+3000d924:	3d3d3d3d 73253d3d 61745320 44206b63     ======%s Stack D
+3000d934:	20706d75 3d3d3d3d 3d3d3d3d 000a3d3d     ump ==========..
+3000d944:	72727543 20746e65 63617453 6f50206b     Current Stack Po
+3000d954:	65746e69 203d2072 70257830 6e61202c     inter = 0x%p, an
+3000d964:	75642064 7320706d 6b636174 70656420     d dump stack dep
+3000d974:	3d206874 0d642520 0000000a 3830255b     th = %d.....[%08
+3000d984:	00205d78 78383025 00000020 255b0a0d     x] .%08x .....[%
+3000d994:	5d783830 00000020 00003052 00003452     08x] ...R0..R4..
+3000d9a4:	3d3d3d3d 3d3d3d3d 43203d3d 68736172     ========== Crash
+3000d9b4:	6d754420 3d3d2070 3d3d3d3d 3d3d3d3d      Dump ==========
+3000d9c4:	0000000a 3d3d3d3d 3d3d3d3d 52203d3d     ....========== R
+3000d9d4:	73696765 20726574 706d7544 3d3d3d20     egister Dump ===
+3000d9e4:	3d3d3d3d 0a3d3d3d 00000000 4c20205b     =======.....[  L
+3000d9f4:	30205d52 78382578 0000000a 5020205b     R] 0x%8x....[  P
+3000da04:	30205d43 78382578 0000000a 5350785b     C] 0x%8x....[xPS
+3000da14:	30205d52 78382578 0000000a 4358455b     R] 0x%8x....[EXC
+3000da24:	30205d52 78382578 0000000a 7325205b     R] 0x%8x....[ %s
+3000da34:	7830205d 0a783825 00000000 00323152     ] 0x%8x.....R12.
+3000da44:	3d3d3d3d 3d3d3d3d 45203d3d 6f20646e     ========== End o
+3000da54:	72432066 20687361 706d7544 3d3d3d20     f Crash Dump ===
+3000da64:	3d3d3d3d 0a3d3d3d 00000000 0a0d0a0d     =======.........
+3000da74:	00000000                                ....
 
-3000da84 <register_string>:
-3000da84:	00000000 3000d9ac 3000c688 3000c68c     .......0...0...0
-3000da94:	3000c690 3000c694 3000c698 3000c69c     ...0...0...0...0
-3000daa4:	3000c6a0 3000d9a8 3000c6a4 3000c6a8     ...0...0...0...0
-3000dab4:	3000c6ac 3000da4c 65637845 6f697470     ...0L..0Exceptio
-3000dac4:	6163206e 74686775 206e6f20 000a7025     n caught on %p..
-3000dad4:	64726148 75616620 6920746c 61632073     Hard fault is ca
-3000dae4:	64657375 20796220 6c696166 76206465     used by failed v
-3000daf4:	6f746365 65662072 00686374 52534648     ector fetch.HFSR
-3000db04:	305b203a 78382578 3e2d205d 0a732520     : [0x%8x] -> %s.
-3000db14:	00000000 75636553 79746972 75616620     ....Security fau
-3000db24:	6920746c 61632073 64657375 20796220     lt is caused by 
-3000db34:	61766e49 2064696c 72746e65 6f702079     Invalid entry po
-3000db44:	00746e69 52534653 305b203a 78382578     int.SFSR: [0x%8x
-3000db54:	3e2d205d 0a732520 00000000 75636553     ] -> %s.....Secu
-3000db64:	79746972 75616620 6920746c 61632073     rity fault is ca
-3000db74:	64657375 20796220 61766e49 2064696c     used by Invalid 
-3000db84:	65746e69 74697267 69732079 74616e67     integrity signat
-3000db94:	00657275 75636553 79746972 75616620     ure.Security fau
-3000dba4:	6920746c 61632073 64657375 20796220     lt is caused by 
-3000dbb4:	61766e49 2064696c 65637865 6f697470     Invalid exceptio
-3000dbc4:	6572206e 6e727574 00000000 75636553     n return....Secu
-3000dbd4:	79746972 75616620 6920746c 61632073     rity fault is ca
-3000dbe4:	64657375 20796220 72747441 74756269     used by Attribut
-3000dbf4:	206e6f69 74696e75 6f697620 6974616c     ion unit violati
-3000dc04:	00006e6f 75636553 79746972 75616620     on..Security fau
-3000dc14:	6920746c 61632073 64657375 20796220     lt is caused by 
-3000dc24:	61766e49 2064696c 6e617274 69746973     Invalid transiti
-3000dc34:	00006e6f 75636553 79746972 75616620     on..Security fau
-3000dc44:	6920746c 61632073 64657375 20796220     lt is caused by 
-3000dc54:	797a614c 61747320 70206574 65736572     Lazy state prese
-3000dc64:	74617672 206e6f69 6f727265 00000072     rvation error...
-3000dc74:	75636553 79746972 75616620 6920746c     Security fault i
-3000dc84:	61632073 64657375 20796220 797a614c     s caused by Lazy
-3000dc94:	61747320 65206574 726f7272 00000000      state error....
-3000dca4:	20656854 75636573 79746972 75616620     The security fau
-3000dcb4:	6f20746c 72756363 20646572 72646461     lt occurred addr
-3000dcc4:	20737365 00007369 52414653 305b203a     ess is..SFAR: [0
-3000dcd4:	78382578 3e2d205d 0a732520 00000000     x%8x] -> %s.....
-3000dce4:	6f6d654d 6d207972 67616e61 6e656d65     Memory managemen
-3000dcf4:	61662074 20746c75 63207369 65737561     t fault is cause
-3000dd04:	79622064 736e6920 63757274 6e6f6974     d by instruction
-3000dd14:	63636120 20737365 6c6f6976 6f697461      access violatio
-3000dd24:	0000006e 53464d4d 5b203a52 38257830     n...MMFSR: [0x%8
-3000dd34:	2d205d78 7325203e 0000000a 6f6d654d     x] -> %s....Memo
-3000dd44:	6d207972 67616e61 6e656d65 61662074     ry management fa
-3000dd54:	20746c75 63207369 65737561 79622064     ult is caused by
-3000dd64:	74616420 63612061 73736563 6f697620      data access vio
-3000dd74:	6974616c 00006e6f 6f6d654d 6d207972     lation..Memory m
-3000dd84:	67616e61 6e656d65 61662074 20746c75     anagement fault 
-3000dd94:	63207369 65737561 79622064 736e7520     is caused by uns
-3000dda4:	6b636174 20676e69 6f727265 00000072     tacking error...
-3000ddb4:	6f6d654d 6d207972 67616e61 6e656d65     Memory managemen
-3000ddc4:	61662074 20746c75 63207369 65737561     t fault is cause
-3000ddd4:	79622064 61747320 6e696b63 72652067     d by stacking er
-3000dde4:	00726f72 6f6d654d 6d207972 67616e61     ror.Memory manag
-3000ddf4:	6e656d65 61662074 20746c75 63207369     ement fault is c
-3000de04:	65737561 79622064 6f6c6620 6e697461     aused by floatin
-3000de14:	6f702d67 20746e69 797a616c 61747320     g-point lazy sta
-3000de24:	70206574 65736572 74617672 006e6f69     te preservation.
-3000de34:	20656854 6f6d656d 6d207972 67616e61     The memory manag
-3000de44:	6e656d65 61662074 20746c75 7563636f     ement fault occu
-3000de54:	64657272 64646120 73736572 00736920     rred address is.
-3000de64:	52414d4d 305b203a 78382578 3e2d205d     MMAR: [0x%8x] ->
-3000de74:	0a732520 00000000 20737542 6c756166      %s.....Bus faul
-3000de84:	73692074 75616320 20646573 69207962     t is caused by i
-3000de94:	7274736e 69746375 61206e6f 73656363     nstruction acces
-3000dea4:	69762073 74616c6f 006e6f69 52534642     s violation.BFSR
-3000deb4:	305b203a 78382578 3e2d205d 0a732520     : [0x%8x] -> %s.
-3000dec4:	00000000 20737542 6c756166 73692074     ....Bus fault is
-3000ded4:	75616320 20646573 70207962 69636572      caused by preci
-3000dee4:	64206573 20617461 65636361 76207373     se data access v
-3000def4:	616c6f69 6e6f6974 00000000 20737542     iolation....Bus 
-3000df04:	6c756166 73692074 75616320 20646573     fault is caused 
-3000df14:	69207962 6572706d 65736963 74616420     by imprecise dat
-3000df24:	63612061 73736563 6f697620 6974616c     a access violati
-3000df34:	00006e6f 20737542 6c756166 73692074     on..Bus fault is
-3000df44:	75616320 20646573 75207962 6174736e      caused by unsta
-3000df54:	6e696b63 72652067 00726f72 20737542     cking error.Bus 
-3000df64:	6c756166 73692074 75616320 20646573     fault is caused 
-3000df74:	73207962 6b636174 20676e69 6f727265     by stacking erro
-3000df84:	00000072 20737542 6c756166 73692074     r...Bus fault is
-3000df94:	75616320 20646573 66207962 74616f6c      caused by float
-3000dfa4:	2d676e69 6e696f70 616c2074 7320797a     ing-point lazy s
-3000dfb4:	65746174 65727020 76726573 6f697461     tate preservatio
-3000dfc4:	0000006e 20656854 20737562 6c756166     n...The bus faul
-3000dfd4:	636f2074 72727563 61206465 65726464     t occurred addre
-3000dfe4:	69207373 00000073 52414642 305b203a     ss is...BFAR: [0
-3000dff4:	78382578 3e2d205d 0a732520 00000000     x%8x] -> %s.....
-3000e004:	67617355 61662065 20746c75 63207369     Usage fault is c
-3000e014:	65737561 79622064 74746120 74706d65     aused by attempt
-3000e024:	6f742073 65786520 65747563 206e6120     s to execute an 
-3000e034:	65646e75 656e6966 6e692064 75727473     undefined instru
-3000e044:	6f697463 0000006e 52534655 305b203a     ction...UFSR: [0
-3000e054:	78382578 3e2d205d 0a732520 00000000     x%8x] -> %s.....
-3000e064:	67617355 61662065 20746c75 63207369     Usage fault is c
-3000e074:	65737561 79622064 74746120 74706d65     aused by attempt
-3000e084:	6f742073 69777320 20686374 61206f74     s to switch to a
-3000e094:	6e69206e 696c6176 74732064 20657461     n invalid state 
-3000e0a4:	672e6528 41202c2e 00294d52 67617355     (e.g., ARM).Usag
-3000e0b4:	61662065 20746c75 63207369 65737561     e fault is cause
-3000e0c4:	79622064 74746120 74706d65 6f742073     d by attempts to
-3000e0d4:	206f6420 65206e61 70656378 6e6f6974      do an exception
-3000e0e4:	74697720 20612068 20646162 756c6176      with a bad valu
-3000e0f4:	6e692065 65687420 43584520 5445525f     e in the EXC_RET
-3000e104:	204e5255 626d756e 00007265 67617355     URN number..Usag
-3000e114:	61662065 20746c75 63207369 65737561     e fault is cause
-3000e124:	79622064 74746120 74706d65 6f742073     d by attempts to
-3000e134:	65786520 65747563 63206120 6f72706f      execute a copro
-3000e144:	73736563 6920726f 7274736e 69746375     cessor instructi
-3000e154:	00006e6f 67617355 61662065 20746c75     on..Usage fault 
-3000e164:	63207369 65737561 79622064 646e6920     is caused by ind
-3000e174:	74616369 74207365 20746168 74732061     icates that a st
-3000e184:	206b6361 7265766f 776f6c66 61682820     ack overflow (ha
-3000e194:	61776472 63206572 6b636568 61682029     rdware check) ha
-3000e1a4:	61742073 206e656b 63616c70 00000065     s taken place...
-3000e1b4:	67617355 61662065 20746c75 63207369     Usage fault is c
-3000e1c4:	65737561 79622064 646e6920 74616369     aused by indicat
-3000e1d4:	74207365 20746168 75206e61 696c616e     es that an unali
-3000e1e4:	64656e67 63636120 20737365 6c756166     gned access faul
-3000e1f4:	61682074 61742073 206e656b 63616c70     t has taken plac
-3000e204:	00000065 67617355 61662065 20746c75     e...Usage fault 
-3000e214:	63207369 65737561 79622064 646e4920     is caused by Ind
-3000e224:	74616369 61207365 76696420 20656469     icates a divide 
-3000e234:	7a207962 206f7265 20736168 656b6174     by zero has take
-3000e244:	6c70206e 20656361 6e616328 20656220     n place (can be 
-3000e254:	20746573 796c6e6f 20666920 5f564944     set only if DIV_
-3000e264:	52545f30 73692050 74657320 00000029     0_TRP is set)...
-3000e274:	75626544 61662067 20746c75 63207369     Debug fault is c
-3000e284:	65737561 79622064 6c616820 65722074     aused by halt re
-3000e294:	73657571 20646574 4e206e69 00434956     quested in NVIC.
-3000e2a4:	52534644 305b203a 78382578 3e2d205d     DFSR: [0x%8x] ->
-3000e2b4:	0a732520 00000000 75626544 61662067      %s.....Debug fa
-3000e2c4:	20746c75 63207369 65737561 79622064     ult is caused by
-3000e2d4:	504b4220 6e692054 75727473 6f697463      BKPT instructio
-3000e2e4:	7865206e 74756365 00006465 75626544     n executed..Debu
-3000e2f4:	61662067 20746c75 63207369 65737561     g fault is cause
-3000e304:	79622064 54574420 74616d20 6f206863     d by DWT match o
-3000e314:	72756363 00646572 75626544 61662067     ccurred.Debug fa
-3000e324:	20746c75 63207369 65737561 79622064     ult is caused by
-3000e334:	63655620 20726f74 63746566 636f2068      Vector fetch oc
-3000e344:	72727563 00006465 75626544 61662067     curred..Debug fa
-3000e354:	20746c75 63207369 65737561 79622064     ult is caused by
-3000e364:	42444520 20515247 6e676973 61206c61      EDBGRQ signal a
-3000e374:	72657373 00646574 00000208 0000020c     sserted.........
-3000e384:	00000210 00000008 00000214 00000218     ................
-3000e394:	0000021c 0000000c                       ........
+3000da78 <register_string>:
+3000da78:	00000000 3000d9a0 3000c688 3000c68c     .......0...0...0
+3000da88:	3000c690 3000c694 3000c698 3000c69c     ...0...0...0...0
+3000da98:	3000c6a0 3000d99c 3000c6a4 3000c6a8     ...0...0...0...0
+3000daa8:	3000c6ac 3000da40 65637845 6f697470     ...0@..0Exceptio
+3000dab8:	6163206e 74686775 206e6f20 000a7025     n caught on %p..
+3000dac8:	64726148 75616620 6920746c 61632073     Hard fault is ca
+3000dad8:	64657375 20796220 6c696166 76206465     used by failed v
+3000dae8:	6f746365 65662072 00686374 52534648     ector fetch.HFSR
+3000daf8:	305b203a 78382578 3e2d205d 0a732520     : [0x%8x] -> %s.
+3000db08:	00000000 75636553 79746972 75616620     ....Security fau
+3000db18:	6920746c 61632073 64657375 20796220     lt is caused by 
+3000db28:	61766e49 2064696c 72746e65 6f702079     Invalid entry po
+3000db38:	00746e69 52534653 305b203a 78382578     int.SFSR: [0x%8x
+3000db48:	3e2d205d 0a732520 00000000 75636553     ] -> %s.....Secu
+3000db58:	79746972 75616620 6920746c 61632073     rity fault is ca
+3000db68:	64657375 20796220 61766e49 2064696c     used by Invalid 
+3000db78:	65746e69 74697267 69732079 74616e67     integrity signat
+3000db88:	00657275 75636553 79746972 75616620     ure.Security fau
+3000db98:	6920746c 61632073 64657375 20796220     lt is caused by 
+3000dba8:	61766e49 2064696c 65637865 6f697470     Invalid exceptio
+3000dbb8:	6572206e 6e727574 00000000 75636553     n return....Secu
+3000dbc8:	79746972 75616620 6920746c 61632073     rity fault is ca
+3000dbd8:	64657375 20796220 72747441 74756269     used by Attribut
+3000dbe8:	206e6f69 74696e75 6f697620 6974616c     ion unit violati
+3000dbf8:	00006e6f 75636553 79746972 75616620     on..Security fau
+3000dc08:	6920746c 61632073 64657375 20796220     lt is caused by 
+3000dc18:	61766e49 2064696c 6e617274 69746973     Invalid transiti
+3000dc28:	00006e6f 75636553 79746972 75616620     on..Security fau
+3000dc38:	6920746c 61632073 64657375 20796220     lt is caused by 
+3000dc48:	797a614c 61747320 70206574 65736572     Lazy state prese
+3000dc58:	74617672 206e6f69 6f727265 00000072     rvation error...
+3000dc68:	75636553 79746972 75616620 6920746c     Security fault i
+3000dc78:	61632073 64657375 20796220 797a614c     s caused by Lazy
+3000dc88:	61747320 65206574 726f7272 00000000      state error....
+3000dc98:	20656854 75636573 79746972 75616620     The security fau
+3000dca8:	6f20746c 72756363 20646572 72646461     lt occurred addr
+3000dcb8:	20737365 00007369 52414653 305b203a     ess is..SFAR: [0
+3000dcc8:	78382578 3e2d205d 0a732520 00000000     x%8x] -> %s.....
+3000dcd8:	6f6d654d 6d207972 67616e61 6e656d65     Memory managemen
+3000dce8:	61662074 20746c75 63207369 65737561     t fault is cause
+3000dcf8:	79622064 736e6920 63757274 6e6f6974     d by instruction
+3000dd08:	63636120 20737365 6c6f6976 6f697461      access violatio
+3000dd18:	0000006e 53464d4d 5b203a52 38257830     n...MMFSR: [0x%8
+3000dd28:	2d205d78 7325203e 0000000a 6f6d654d     x] -> %s....Memo
+3000dd38:	6d207972 67616e61 6e656d65 61662074     ry management fa
+3000dd48:	20746c75 63207369 65737561 79622064     ult is caused by
+3000dd58:	74616420 63612061 73736563 6f697620      data access vio
+3000dd68:	6974616c 00006e6f 6f6d654d 6d207972     lation..Memory m
+3000dd78:	67616e61 6e656d65 61662074 20746c75     anagement fault 
+3000dd88:	63207369 65737561 79622064 736e7520     is caused by uns
+3000dd98:	6b636174 20676e69 6f727265 00000072     tacking error...
+3000dda8:	6f6d654d 6d207972 67616e61 6e656d65     Memory managemen
+3000ddb8:	61662074 20746c75 63207369 65737561     t fault is cause
+3000ddc8:	79622064 61747320 6e696b63 72652067     d by stacking er
+3000ddd8:	00726f72 6f6d654d 6d207972 67616e61     ror.Memory manag
+3000dde8:	6e656d65 61662074 20746c75 63207369     ement fault is c
+3000ddf8:	65737561 79622064 6f6c6620 6e697461     aused by floatin
+3000de08:	6f702d67 20746e69 797a616c 61747320     g-point lazy sta
+3000de18:	70206574 65736572 74617672 006e6f69     te preservation.
+3000de28:	20656854 6f6d656d 6d207972 67616e61     The memory manag
+3000de38:	6e656d65 61662074 20746c75 7563636f     ement fault occu
+3000de48:	64657272 64646120 73736572 00736920     rred address is.
+3000de58:	52414d4d 305b203a 78382578 3e2d205d     MMAR: [0x%8x] ->
+3000de68:	0a732520 00000000 20737542 6c756166      %s.....Bus faul
+3000de78:	73692074 75616320 20646573 69207962     t is caused by i
+3000de88:	7274736e 69746375 61206e6f 73656363     nstruction acces
+3000de98:	69762073 74616c6f 006e6f69 52534642     s violation.BFSR
+3000dea8:	305b203a 78382578 3e2d205d 0a732520     : [0x%8x] -> %s.
+3000deb8:	00000000 20737542 6c756166 73692074     ....Bus fault is
+3000dec8:	75616320 20646573 70207962 69636572      caused by preci
+3000ded8:	64206573 20617461 65636361 76207373     se data access v
+3000dee8:	616c6f69 6e6f6974 00000000 20737542     iolation....Bus 
+3000def8:	6c756166 73692074 75616320 20646573     fault is caused 
+3000df08:	69207962 6572706d 65736963 74616420     by imprecise dat
+3000df18:	63612061 73736563 6f697620 6974616c     a access violati
+3000df28:	00006e6f 20737542 6c756166 73692074     on..Bus fault is
+3000df38:	75616320 20646573 75207962 6174736e      caused by unsta
+3000df48:	6e696b63 72652067 00726f72 20737542     cking error.Bus 
+3000df58:	6c756166 73692074 75616320 20646573     fault is caused 
+3000df68:	73207962 6b636174 20676e69 6f727265     by stacking erro
+3000df78:	00000072 20737542 6c756166 73692074     r...Bus fault is
+3000df88:	75616320 20646573 66207962 74616f6c      caused by float
+3000df98:	2d676e69 6e696f70 616c2074 7320797a     ing-point lazy s
+3000dfa8:	65746174 65727020 76726573 6f697461     tate preservatio
+3000dfb8:	0000006e 20656854 20737562 6c756166     n...The bus faul
+3000dfc8:	636f2074 72727563 61206465 65726464     t occurred addre
+3000dfd8:	69207373 00000073 52414642 305b203a     ss is...BFAR: [0
+3000dfe8:	78382578 3e2d205d 0a732520 00000000     x%8x] -> %s.....
+3000dff8:	67617355 61662065 20746c75 63207369     Usage fault is c
+3000e008:	65737561 79622064 74746120 74706d65     aused by attempt
+3000e018:	6f742073 65786520 65747563 206e6120     s to execute an 
+3000e028:	65646e75 656e6966 6e692064 75727473     undefined instru
+3000e038:	6f697463 0000006e 52534655 305b203a     ction...UFSR: [0
+3000e048:	78382578 3e2d205d 0a732520 00000000     x%8x] -> %s.....
+3000e058:	67617355 61662065 20746c75 63207369     Usage fault is c
+3000e068:	65737561 79622064 74746120 74706d65     aused by attempt
+3000e078:	6f742073 69777320 20686374 61206f74     s to switch to a
+3000e088:	6e69206e 696c6176 74732064 20657461     n invalid state 
+3000e098:	672e6528 41202c2e 00294d52 67617355     (e.g., ARM).Usag
+3000e0a8:	61662065 20746c75 63207369 65737561     e fault is cause
+3000e0b8:	79622064 74746120 74706d65 6f742073     d by attempts to
+3000e0c8:	206f6420 65206e61 70656378 6e6f6974      do an exception
+3000e0d8:	74697720 20612068 20646162 756c6176      with a bad valu
+3000e0e8:	6e692065 65687420 43584520 5445525f     e in the EXC_RET
+3000e0f8:	204e5255 626d756e 00007265 67617355     URN number..Usag
+3000e108:	61662065 20746c75 63207369 65737561     e fault is cause
+3000e118:	79622064 74746120 74706d65 6f742073     d by attempts to
+3000e128:	65786520 65747563 63206120 6f72706f      execute a copro
+3000e138:	73736563 6920726f 7274736e 69746375     cessor instructi
+3000e148:	00006e6f 67617355 61662065 20746c75     on..Usage fault 
+3000e158:	63207369 65737561 79622064 646e6920     is caused by ind
+3000e168:	74616369 74207365 20746168 74732061     icates that a st
+3000e178:	206b6361 7265766f 776f6c66 61682820     ack overflow (ha
+3000e188:	61776472 63206572 6b636568 61682029     rdware check) ha
+3000e198:	61742073 206e656b 63616c70 00000065     s taken place...
+3000e1a8:	67617355 61662065 20746c75 63207369     Usage fault is c
+3000e1b8:	65737561 79622064 646e6920 74616369     aused by indicat
+3000e1c8:	74207365 20746168 75206e61 696c616e     es that an unali
+3000e1d8:	64656e67 63636120 20737365 6c756166     gned access faul
+3000e1e8:	61682074 61742073 206e656b 63616c70     t has taken plac
+3000e1f8:	00000065 67617355 61662065 20746c75     e...Usage fault 
+3000e208:	63207369 65737561 79622064 646e4920     is caused by Ind
+3000e218:	74616369 61207365 76696420 20656469     icates a divide 
+3000e228:	7a207962 206f7265 20736168 656b6174     by zero has take
+3000e238:	6c70206e 20656361 6e616328 20656220     n place (can be 
+3000e248:	20746573 796c6e6f 20666920 5f564944     set only if DIV_
+3000e258:	52545f30 73692050 74657320 00000029     0_TRP is set)...
+3000e268:	75626544 61662067 20746c75 63207369     Debug fault is c
+3000e278:	65737561 79622064 6c616820 65722074     aused by halt re
+3000e288:	73657571 20646574 4e206e69 00434956     quested in NVIC.
+3000e298:	52534644 305b203a 78382578 3e2d205d     DFSR: [0x%8x] ->
+3000e2a8:	0a732520 00000000 75626544 61662067      %s.....Debug fa
+3000e2b8:	20746c75 63207369 65737561 79622064     ult is caused by
+3000e2c8:	504b4220 6e692054 75727473 6f697463      BKPT instructio
+3000e2d8:	7865206e 74756365 00006465 75626544     n executed..Debu
+3000e2e8:	61662067 20746c75 63207369 65737561     g fault is cause
+3000e2f8:	79622064 54574420 74616d20 6f206863     d by DWT match o
+3000e308:	72756363 00646572 75626544 61662067     ccurred.Debug fa
+3000e318:	20746c75 63207369 65737561 79622064     ult is caused by
+3000e328:	63655620 20726f74 63746566 636f2068      Vector fetch oc
+3000e338:	72727563 00006465 75626544 61662067     curred..Debug fa
+3000e348:	20746c75 63207369 65737561 79622064     ult is caused by
+3000e358:	42444520 20515247 6e676973 61206c61      EDBGRQ signal a
+3000e368:	72657373 00646574 00000208 0000020c     sserted.........
+3000e378:	00000210 00000008 00000214 00000218     ................
+3000e388:	0000021c 0000000c                       ........
 
-3000e39c <__FUNCTION__.0>:
-3000e39c:	544f4f42 434f535f 6b6c435f 00746553     BOOT_SOC_ClkSet.
-3000e3ac:	3000ce94 3000cea0 3000ceac 3000ceb8     ...0...0...0...0
-3000e3bc:	3000cec4 3000ced0 3000cedc 3000cee8     ...0...0...0...0
-3000e3cc:	3000cef4 3000cf00 3000d0a8 3000d0b4     ...0...0...0...0
-3000e3dc:	3000d0bc 3000d0c4 3000d0ac 3000d0cc     ...0...0...0...0
+3000e390 <__FUNCTION__.0>:
+3000e390:	544f4f42 434f535f 6b6c435f 00746553     BOOT_SOC_ClkSet.
+3000e3a0:	3000ce94 3000cea0 3000ceac 3000ceb8     ...0...0...0...0
+3000e3b0:	3000cec4 3000ced0 3000cedc 3000cee8     ...0...0...0...0
+3000e3c0:	3000cef4 3000d09c 3000d0a8 3000d0b0     ...0...0...0...0
+3000e3d0:	3000d0b8 3000d0a0 3000d0c0              ...0...0...0
 
-3000e3ec <km4_bootloader_rev>:
-3000e3ec:	5f346d6b 746f6f62 64616f6c 765f7265     km4_bootloader_v
-3000e3fc:	615f7265 32323235 30636132 30325f31     er_a52222ac01_20
-3000e40c:	302f3432 38302f38 3a30312d 323a3733     24/08/08-10:37:2
-3000e41c:	4f420030 5b00544f 572d7325 2a2a205d     0.BOOT.[%s-W] **
-3000e42c:	2a2a2a2a 2a2a2a2a 2a2a2a2a 2a2a2a2a     ****************
-3000e43c:	2a2a2a2a 2a2a2a2a 52415720 474e494e     ******** WARNING
-3000e44c:	2a2a2a20 2a2a2a2a 2a2a2a2a 2a2a2a2a      ***************
-3000e45c:	2a2a2a2a 2a2a2a2a 255b000a 5d572d73     ********..[%s-W]
-3000e46c:	20202a20 20202020 20202020 20202020      *              
+3000e3dc <km4_bootloader_rev>:
+3000e3dc:	5f346d6b 746f6f62 64616f6c 765f7265     km4_bootloader_v
+3000e3ec:	655f7265 62643731 38323564 30325f38     er_e17dbd5288_20
+3000e3fc:	312f3432 30322f31 3a30322d 333a3930     24/11/20-20:09:3
+3000e40c:	4f420034 5b00544f 572d7325 2a2a205d     4.BOOT.[%s-W] **
+3000e41c:	2a2a2a2a 2a2a2a2a 2a2a2a2a 2a2a2a2a     ****************
+3000e42c:	2a2a2a2a 2a2a2a2a 52415720 474e494e     ******** WARNING
+3000e43c:	2a2a2a20 2a2a2a2a 2a2a2a2a 2a2a2a2a      ***************
+3000e44c:	2a2a2a2a 2a2a2a2a 255b000a 5d572d73     ********..[%s-W]
+3000e45c:	20202a20 20202020 20202020 20202020      *              
+3000e46c:	20202020 20202020 20202020 20202020                     
 3000e47c:	20202020 20202020 20202020 20202020                     
-3000e48c:	20202020 20202020 20202020 20202020                     
-3000e49c:	20202020 20202020 0a2a2020 73255b00               *..[%s
-3000e4ac:	205d572d 2020202a 20202020 20202020     -W] *           
-3000e4bc:	75432020 6e657272 68632074 76207069       Current chip v
-3000e4cc:	69737265 69206e6f 43412073 21217475     ersion is ACut!!
-3000e4dc:	20202021 20202020 20202020 000a2a20     !            *..
-3000e4ec:	2d73255b 2a205d57 52202020 53204b54     [%s-W] *   RTK S
-3000e4fc:	64204b44 2073656f 20746f6e 70707573     DK does not supp
-3000e50c:	2074726f 72727563 20746e65 73726576     ort current vers
-3000e51c:	206e6f69 20796e61 65726f6d 2020202e     ion any more.   
-3000e52c:	5b000a2a 572d7325 202a205d 20202020     *..[%s-W] *     
-3000e53c:	656c5020 20657361 746e6f63 20746361      Please contact 
-3000e54c:	204b5452 66204d50 6d20726f 2065726f     RTK PM for more 
-3000e55c:	646f7270 20746375 6f666e69 20202021     product info!   
-3000e56c:	2a202020 255b000a 5d572d73 2a2a2a20        *..[%s-W] ***
+3000e48c:	20202020 20202020 0a2a2020 73255b00               *..[%s
+3000e49c:	205d572d 2020202a 20202020 20202020     -W] *           
+3000e4ac:	75432020 6e657272 68632074 76207069       Current chip v
+3000e4bc:	69737265 69206e6f 43412073 21217475     ersion is ACut!!
+3000e4cc:	20202021 20202020 20202020 000a2a20     !            *..
+3000e4dc:	2d73255b 2a205d57 52202020 53204b54     [%s-W] *   RTK S
+3000e4ec:	64204b44 2073656f 20746f6e 70707573     DK does not supp
+3000e4fc:	2074726f 72727563 20746e65 73726576     ort current vers
+3000e50c:	206e6f69 20796e61 65726f6d 2020202e     ion any more.   
+3000e51c:	5b000a2a 572d7325 202a205d 20202020     *..[%s-W] *     
+3000e52c:	656c5020 20657361 746e6f63 20746361      Please contact 
+3000e53c:	204b5452 66204d50 6d20726f 2065726f     RTK PM for more 
+3000e54c:	646f7270 20746375 6f666e69 20202021     product info!   
+3000e55c:	2a202020 255b000a 5d572d73 2a2a2a20        *..[%s-W] ***
+3000e56c:	2a2a2a2a 2a2a2a2a 2a2a2a2a 2a2a2a2a     ****************
 3000e57c:	2a2a2a2a 2a2a2a2a 2a2a2a2a 2a2a2a2a     ****************
 3000e58c:	2a2a2a2a 2a2a2a2a 2a2a2a2a 2a2a2a2a     ****************
-3000e59c:	2a2a2a2a 2a2a2a2a 2a2a2a2a 2a2a2a2a     ****************
-3000e5ac:	2a2a2a2a 0a2a2a2a 73255b00 205d572d     *******..[%s-W] 
-3000e5bc:	0043000a 49534f50 002e0058              ..C.POSIX...
+3000e59c:	2a2a2a2a 0a2a2a2a 73255b00 205d572d     *******..[%s-W] 
+3000e5ac:	0043000a 49534f50 002e0058              ..C.POSIX...
 
-3000e5c8 <_ctype_>:
-3000e5c8:	20202000 20202020 28282020 20282828     .         ((((( 
-3000e5d8:	20202020 20202020 20202020 20202020                     
-3000e5e8:	10108820 10101010 10101010 10101010      ...............
-3000e5f8:	04040410 04040404 10040404 10101010     ................
-3000e608:	41411010 41414141 01010101 01010101     ..AAAAAA........
-3000e618:	01010101 01010101 01010101 10101010     ................
-3000e628:	42421010 42424242 02020202 02020202     ..BBBBBB........
-3000e638:	02020202 02020202 02020202 10101010     ................
-3000e648:	00000020 00000000 00000000 00000000      ...............
+3000e5b8 <_ctype_>:
+3000e5b8:	20202000 20202020 28282020 20282828     .         ((((( 
+3000e5c8:	20202020 20202020 20202020 20202020                     
+3000e5d8:	10108820 10101010 10101010 10101010      ...............
+3000e5e8:	04040410 04040404 10040404 10101010     ................
+3000e5f8:	41411010 41414141 01010101 01010101     ..AAAAAA........
+3000e608:	01010101 01010101 01010101 10101010     ................
+3000e618:	42421010 42424242 02020202 02020202     ..BBBBBB........
+3000e628:	02020202 02020202 02020202 10101010     ................
+3000e638:	00000020 00000000 00000000 00000000      ...............
 	...

@@ -55,7 +55,11 @@ ARCH_FAMILY = $(patsubst "%",%,$(CONFIG_ARCH_FAMILY))
 include ${TOPDIR}/arch/$(CONFIG_ARCH)/src/$(ARCH_FAMILY)/Toolchain.defs
 
 ifeq ($(CONFIG_RAM_DDR),y)
+ifeq ($(CONFIG_RUNFROMDDRRAM),y)
+LDSCRIPT = rlx8730e_img2_ddr_ram.ld
+else
 LDSCRIPT = rlx8730e_img2_ddr.ld
+endif
 else
 LDSCRIPT = rlx8730e_img2.ld
 endif
